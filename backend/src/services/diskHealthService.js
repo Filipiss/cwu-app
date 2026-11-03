@@ -12,6 +12,7 @@ $disks = @(Get-PhysicalDisk | ForEach-Object {
     model = $_.FriendlyName
     mediaType = [string]$_.MediaType
     busType = [string]$_.BusType
+    spindle = $_.SpindleSpeed
     sizeBytes = [int64]$_.Size
     health = [string]$_.HealthStatus
     wear = $r.Wear
@@ -32,7 +33,11 @@ function diskType(d) {
   if (/ssd/i.test(d.mediaType)) return 'SSD';
   // Só SSD informa desgaste: se veio "Wear", não é HD, mesmo que o Windows erre o tipo
   if (num(d.wear) !== null) return 'SSD';
-  if (/hdd/i.test(d.mediaType)) return 'HD';
+  // HD de verdade tem prato girando (RPM > 0); SSD informa 0. Sem RPM, não arrisca dizer que é HD.
+  const rpm = num(d.spindle);
+  if (rpm !== null && rpm > 0 && rpm < 4294967295) return 'HD';
+  if (rpm === 0) return 'SSD';
+  if (/hdd/i.test(d.mediaType) && rpm === null) return 'Disco';
   return 'Disco';
 }
 
