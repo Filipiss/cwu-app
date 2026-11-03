@@ -64,3 +64,38 @@
   text-align: left;
   line-height: 1.35;
 }
+
+/* ===== Selos de status: tom suave + ponto de cor =====
+ * Fundo levemente tingido sobre o card, borda quase invisível e a cor
+ * concentrada num ponto, para o status ser lido sem "gritar". */
+.c-badge--success { --badge-c: var(--color-success); }
+.c-badge--warning { --badge-c: var(--color-warning); }
+.c-badge--danger  { --badge-c: var(--color-danger); }
+.c-badge--info    { --badge-c: var(--color-primary); }
+
+.c-badge--success,
+.c-badge--warning,
+.c-badge--danger,
+.c-badge--info {
+  background-color: color-mix(in srgb, var(--badge-c) 9%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--badge-c) 16%, transparent);
+  color: color-mix(in srgb, var(--badge-c) 80%, var(--color-text-primary));
+  font-weight: 500;
+}
+
+.c-badge--success::before,
+.c-badge--warning::before,
+.c-badge--danger::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--badge-c);
+  align-self: flex-start;
+  margin-top: 0.42em;
+}
+
+/* Selo de nota (8.9 / 10) e selos do menu não levam ponto */
+.c-badge--score::before,
+.c-nav__badge::before { content: none !important; }

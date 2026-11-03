@@ -85,10 +85,10 @@
   font-size: 0.72rem;
 }
 
-[data-theme="graphite"] .c-badge--success { color: var(--color-success); border-color: rgba(var(--color-success-rgb), 0.35); }
-[data-theme="graphite"] .c-badge--warning { color: var(--color-warning); border-color: rgba(var(--color-warning-rgb), 0.35); }
-[data-theme="graphite"] .c-badge--danger { color: var(--color-danger); border-color: rgba(var(--color-danger-rgb), 0.35); }
-[data-theme="graphite"] .c-badge--info { color: var(--color-primary); border-color: rgba(var(--color-primary-rgb), 0.35); }
+[data-theme="graphite"] .c-badge--success { color: var(--color-success); border-color: rgba(var(--color-success-rgb), 0.2); }
+[data-theme="graphite"] .c-badge--warning { color: var(--color-warning); border-color: rgba(var(--color-warning-rgb), 0.2); }
+[data-theme="graphite"] .c-badge--danger { color: var(--color-danger); border-color: rgba(var(--color-danger-rgb), 0.2); }
+[data-theme="graphite"] .c-badge--info { color: var(--color-primary); border-color: rgba(var(--color-primary-rgb), 0.2); }
 
 [data-theme="graphite"] .c-header__dot {
   box-shadow: none;

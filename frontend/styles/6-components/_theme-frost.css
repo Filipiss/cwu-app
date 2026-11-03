@@ -71,3 +71,11 @@
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-left-width: 1px;
 }
+
+/* Cabeçalho de tabela claro, separado só por uma linha */
+[data-theme="frost"] .c-table thead,
+[data-theme="frost"] .c-table__th {
+  background: color-mix(in srgb, var(--color-text-primary) 3%, transparent);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
