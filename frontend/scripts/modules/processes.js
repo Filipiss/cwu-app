@@ -123,7 +123,7 @@ const ProcessesModule = {
       const prioLabel = this.data.priorities.find(x => x.value === p.persistentPriority)?.label || p.persistentPriority;
       label.textContent = `${p.exe} sempre ${prioLabel}`;
       const remove = document.createElement('button');
-      remove.className = 'c-btn c-btn--outline c-btn--sm js-proc-remove';
+      remove.className = 'c-btn c-btn--secondary c-btn--sm js-proc-remove';
       remove.dataset.exe = p.exe;
       remove.textContent = 'Remover fixo';
       row.append(label, remove);

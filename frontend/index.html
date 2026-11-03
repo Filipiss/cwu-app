@@ -54,6 +54,9 @@
     <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></symbol>
     <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2" /> <line x1="8" x2="16" y1="21" y2="21" /> <line x1="12" x2="12" y1="17" y2="21" /></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+    <symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4" /> <line x1="10" x2="3" y1="4" y2="4" /> <line x1="21" x2="12" y1="12" y2="12" /> <line x1="8" x2="3" y1="12" y2="12" /> <line x1="21" x2="16" y1="20" y2="20" /> <line x1="12" x2="3" y1="20" y2="20" /> <line x1="14" x2="14" y1="2" y2="6" /> <line x1="8" x2="8" y1="10" y2="14" /> <line x1="16" x2="16" y1="18" y2="22" /></symbol>
   </svg>
 
   <div class="o-app">
@@ -150,7 +153,7 @@
               <a class="c-btn c-btn--secondary c-btn--sm" id="btn-export-report" href="/api/report" download title="Baixa um relatório HTML com specs, drivers e erros (leva alguns segundos)">
                 <span>Exportar relatório</span> <svg class=c-icon aria-hidden=true><use href=#i-file-down></use></svg>
               </a>
-              <button class="c-btn c-btn--outline c-btn--sm" id="btn-refresh-specs">
+              <button class="c-btn c-btn--secondary c-btn--sm" id="btn-refresh-specs">
                 <span>Atualizar Leitura</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
               </button>
               </div>
@@ -369,16 +372,18 @@
 
             <!-- 3. INSTALAÇÃO EM LOTE VIA WINGET -->
             <div class="c-card u-mb-lg" id="winget-panel">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
+              <div class="c-card__head">
+                <div class="c-card__head-text">
                   <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> Instalação em lote (winget)</h4>
-                  <p id="winget-status-text" class="u-text-muted">Verificando o winget…</p>
+                  <p id="winget-status-text" class="c-card__desc">Verificando o winget…</p>
                 </div>
-                <div class="o-flex o-flex--gap-sm u-hidden" id="winget-panel-actions" style="flex-wrap: wrap;">
+                <div class="c-card__actions">
+                  <div class="o-flex o-flex--gap-sm u-hidden" id="winget-panel-actions" style="flex-wrap: wrap;">
                   <button class="c-btn c-btn--secondary c-btn--sm" id="btn-winget-kit" title="Marca todos os programas obrigatórios ainda não instalados">Kit essencial pós-formatação</button>
-                  <button class="c-btn c-btn--outline c-btn--sm" id="btn-winget-clear">Limpar seleção</button>
-                  <button class="c-btn c-btn--primary c-btn--sm" id="btn-winget-install" disabled>Instalar selecionados (<span id="winget-selected-count">0</span>)</button>
-                  <button class="c-btn c-btn--outline c-btn--sm u-hidden" id="btn-winget-cancel">Cancelar restantes</button>
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-winget-clear">Limpar seleção</button>
+                  <button class="c-btn c-btn--primary c-btn--sm" id="btn-winget-install" disabled><span>Instalar selecionados (<span id="winget-selected-count">0</span>)</span></button>
+                  <button class="c-btn c-btn--secondary c-btn--sm u-hidden" id="btn-winget-cancel">Cancelar restantes</button>
+                </div>
                 </div>
               </div>
               <div id="winget-job-container"></div>
@@ -437,12 +442,14 @@
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="boost" data-view="priority">
             <!-- PRIORIDADE DE PROCESSOS -->
             <div class="c-card" id="proc-card">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
+              <div class="c-card__head">
+                <div class="c-card__head-text">
                   <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-crosshair></use></svg> Prioridade de processos</h4>
-                  <p class="u-text-muted">Escolha um programa em execução e defina a prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
+                  <p class="c-card__desc">Escolha um programa em execução e defina a prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                </div>
               </div>
               <div class="o-flex o-flex--gap-md u-mt-md" style="flex-wrap: wrap; align-items: center;">
                 <div class="c-select-wrapper" style="flex: 1; min-width: 260px;">
@@ -485,15 +492,17 @@
             <!-- ===== VISÃO 1: ERROS DO WINDOWS ===== -->
             <div id="logs-view-windows" class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="logs" data-view="windows">
               <div class="c-card u-mb-lg">
-                <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                  <div>
+                <div class="c-card__head">
+                <div class="c-card__head-text">
                     <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-app-window></use></svg> Erros do Windows (Visualizador de Eventos)</h4>
-                    <p id="errors-summary-text" class="u-text-muted">Telas azuis, desligamentos inesperados, falhas de hardware, disco e aplicativos registrados pelo próprio Windows.</p>
+                    <p id="errors-summary-text" class="c-card__desc">Telas azuis, desligamentos inesperados, falhas de hardware, disco e aplicativos registrados pelo próprio Windows.</p>
                   </div>
+                <div class="c-card__actions">
                   <button class="c-btn c-btn--primary c-btn--sm" id="btn-analyze-errors">
                     <span>Analisar Erros</span> <svg class=c-icon aria-hidden=true><use href=#i-stethoscope></use></svg>
                   </button>
                 </div>
+              </div>
 
                 <!-- FILTROS -->
                 <div class="o-flex o-flex--gap-sm u-mt-md" style="flex-wrap: wrap; align-items: center; border-top: 1px solid var(--color-border); padding-top: 14px;">
@@ -509,8 +518,15 @@
 
             <!-- ===== VISÃO 2: HISTÓRICO DO CWU APP ===== -->
             <div id="logs-view-app" class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="logs" data-view="app">
-              <div class="o-flex o-flex--gap-sm u-mb-md" style="flex-wrap: wrap; justify-content: flex-end;">
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
+            <!-- RESUMO DE MODIFICAÇÕES -->
+            <div class="c-card u-mb-lg">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg> Alterações feitas pelo CWU App</h4>
+                  <p id="logs-summary-text" class="c-card__desc">Tudo o que o app instalou ou configurou neste PC, com opção de reverter.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
                   <span>Limpar Histórico</span> <svg class=c-icon aria-hidden=true><use href=#i-trash-2></use></svg>
                 </button>
                 <button class="c-btn c-btn--secondary c-btn--sm" id="btn-restore-point" title="Cria um ponto de restauração do Windows agora">
@@ -519,32 +535,16 @@
                 <button class="c-btn c-btn--primary c-btn--sm" id="btn-refresh-logs">
                   <span>Atualizar Lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
                 </button>
+                </div>
               </div>
-            <!-- RESUMO DE MODIFICAÇÕES -->
-            <div class="c-card u-mb-lg">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
-                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg> Alterações feitas pelo CWU App</h4>
-                  <p id="logs-summary-text" class="u-text-muted">Tudo o que o app instalou ou configurou neste PC, com opção de reverter.</p>
-                </div>
-                <div class="o-flex o-flex--gap-md" id="logs-stats-container">
-                  <div class="u-text-center">
-                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Total Registrado</span>
-                    <p class="u-font-bold u-mt-xs" id="log-stat-total" style="font-size: 1.25rem;">0</p>
-                  </div>
-                  <div class="u-text-center">
-                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Ativos</span>
-                    <p class="u-font-bold u-mt-xs u-text-success" id="log-stat-active" style="font-size: 1.25rem;">0</p>
-                  </div>
-                  <div class="u-text-center">
-                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Revertidos</span>
-                    <p class="u-font-bold u-mt-xs u-text-warning" id="log-stat-reverted" style="font-size: 1.25rem;">0</p>
-                  </div>
-                </div>
+              <div class="c-stat-row" id="logs-stats-container">
+                <div class="c-stat"><span class="c-stat__label">Total registrado</span><span class="c-stat__value " id="log-stat-total">0</span></div>
+                <div class="c-stat"><span class="c-stat__label">Ativos</span><span class="c-stat__value u-text-success" id="log-stat-active">0</span></div>
+                <div class="c-stat"><span class="c-stat__label">Revertidos</span><span class="c-stat__value u-text-warning" id="log-stat-reverted">0</span></div>
               </div>
 
               <!-- FILTROS POR CATEGORIA -->
-              <div class="o-flex o-flex--gap-sm u-mt-md" style="border-top: 1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); padding-top: 14px;">
+              <div class="o-flex o-flex--gap-sm o-flex--wrap">
                 <button class="c-btn c-btn--secondary c-btn--sm js-log-filter c-btn--active" data-filter="all">Todas</button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="driver">Drivers</button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="boost">Boost Gamer</button>
@@ -634,12 +634,14 @@
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="tweaks">
             <!-- AJUSTES DE JOGOS DO WINDOWS -->
             <div class="c-card">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
+              <div class="c-card__head">
+                <div class="c-card__head-text">
                   <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajustes de jogos do Windows</h4>
-                  <p class="u-text-muted">Configurações reais do Windows que afetam jogos. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
+                  <p class="c-card__desc">Configurações reais do Windows que afetam jogos. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                </div>
               </div>
               <div id="perf-tweaks-list" class="u-mt-sm"></div>
             </div>
@@ -648,12 +650,14 @@
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="ram">
             <!-- DIAGNÓSTICO DE RAM -->
             <div class="c-card">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
+              <div class="c-card__head">
+                <div class="c-card__head-text">
                   <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-memory-stick></use></svg> Diagnóstico de memória RAM</h4>
-                  <p class="u-text-muted">Verifica XMP/EXPO, dual channel e compatibilidade entre os pentes.</p>
+                  <p class="c-card__desc">Verifica XMP/EXPO, dual channel e compatibilidade entre os pentes.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-ram-refresh"><span>Analisar</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></button>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-ram-refresh"><span>Analisar</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></button>
+                </div>
               </div>
               <div id="perf-ram-result" class="u-mt-sm"></div>
             </div>
@@ -662,12 +666,14 @@
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="startup">
             <!-- PROGRAMAS DA INICIALIZAÇÃO -->
             <div class="c-card">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
+              <div class="c-card__head">
+                <div class="c-card__head-text">
                   <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-timer></use></svg> Programas na inicialização</h4>
-                  <p class="u-text-muted" id="perf-startup-summary">Programas que abrem junto com o Windows. Desativar acelera o boot; nada é apagado.</p>
+                  <p class="c-card__desc" id="perf-startup-summary">Programas que abrem junto com o Windows. Desativar acelera o boot; nada é apagado.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-startup-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-startup-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                </div>
               </div>
               <div id="perf-startup-list" class="u-mt-sm"></div>
             </div>
@@ -750,20 +756,24 @@
               <div class="c-card__header">
                 <h3 class="c-card__title">Preferências & Idioma</h3>
               </div>
-              <div class="o-grid o-grid--2">
-                <div>
-                  <label style="display: block; font-weight: 600; margin-bottom: 8px;">Idioma do Utilitário</label>
-                  <select id="setting-language-select" style="width: 100%; padding: 8px 12px; background: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-primary);">
-                    <option value="pt-BR">Português (Brasil)</option>
-                    <option value="en-US">English (US)</option>
-                  </select>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px; padding-top: 24px;">
-                  <input type="checkbox" id="setting-auto-scan" style="width: 18px; height: 18px; cursor: pointer;">
-                  <label for="setting-auto-scan" style="cursor: pointer; font-size: 0.9rem;">
-                    Executar escaneamento automático de drivers ao abrir o CWU App
-                  </label>
-                </div>
+              <div class="c-form">
+                <label class="c-field" for="setting-language-select" style="max-width: 360px;">
+                  <span class="c-field__label">Idioma do utilitário</span>
+                  <div class="c-select-wrapper">
+                    <select id="setting-language-select" class="c-select">
+                      <option value="pt-BR">Português (Brasil)</option>
+                      <option value="en-US">English (US)</option>
+                    </select>
+                    <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
+                  </div>
+                </label>
+                <label class="c-check-row" for="setting-auto-scan">
+                  <input type="checkbox" id="setting-auto-scan">
+                  <span class="c-check-row__text">
+                    <span>Escanear drivers automaticamente ao abrir o CWU App</span>
+                    <span class="c-field__hint">A varredura roda em segundo plano logo após o app iniciar.</span>
+                  </span>
+                </label>
               </div>
             </div>
             </div>

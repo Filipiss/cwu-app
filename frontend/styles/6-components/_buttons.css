@@ -94,3 +94,20 @@
 .c-btn__icon {
   font-size: 1rem;
 }
+
+/* ===== Alturas padronizadas =====
+ * Todos os botões do mesmo tamanho têm a mesma altura, com ou sem ícone. */
+.c-btn {
+  min-height: 38px;
+  padding: 0 16px;
+  gap: 6px;
+  line-height: 1;
+  font-size: 0.875rem;
+}
+.c-btn--xs { min-height: 26px; padding: 0 10px; font-size: 0.74rem; gap: 5px; }
+.c-btn--sm { min-height: 32px; padding: 0 12px; font-size: 0.8rem; }
+.c-btn--lg { min-height: 44px; padding: 0 22px; font-size: 0.95rem; }
+
+/* Sem "pulo" ao passar o mouse: o retorno visual é só de cor */
+.c-btn:hover,
+.c-btn:active { transform: none; }

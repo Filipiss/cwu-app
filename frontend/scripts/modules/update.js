@@ -79,7 +79,7 @@ const UpdateModule = {
             <div class="c-card__body">
               <p class="u-mb-md">${item.description}</p>
               <div class="o-flex o-flex--between o-flex--gap-sm">
-                <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Página oficial do fornecedor">
+                <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--secondary c-btn--sm" title="Página oficial do fornecedor">
                   <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
                 </a>
                 ${item.autoDetectUrl ? `

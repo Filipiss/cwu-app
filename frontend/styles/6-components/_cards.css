@@ -118,3 +118,129 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
 }
+
+/* ===== Estrutura padrão de cartão =====
+ *  .c-card__head    → título + descrição à esquerda, ações à direita
+ *  .c-card__body    → conteúdo
+ *  .c-card__footer  → ações no fim do cartão (alinhadas entre cartões da mesma linha)
+ */
+.c-card {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+}
+
+/* Cartões estáticos não reagem ao mouse; só os clicáveis */
+.c-card:hover { border-color: var(--color-border); box-shadow: var(--glow-card); }
+.c-card.js-theme-option:hover,
+.c-card--interactive:hover { border-color: var(--color-border-bright); }
+
+.c-card__head,
+.c-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: 0;
+}
+
+.c-card__head-text { flex: 1; min-width: 0; }
+
+.c-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.c-card__desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.c-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Conteúdo depois do cabeçalho sempre com o mesmo respiro */
+.c-card__head + *,
+.c-card__header + * { margin-top: var(--spacing-md); }
+
+.c-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: var(--spacing-md);
+}
+
+.c-card__footer-group { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
+
+/* Linha de selos no topo do cartão */
+.c-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Bloco de instruções ("passo a passo"), com as cores do tema */
+.c-callout {
+  margin-top: var(--spacing-sm);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+.c-callout strong { color: var(--color-text-primary); font-weight: 600; }
+.c-callout__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+/* Linha de estatísticas (ex.: Logs › total / ativos / revertidos) */
+.c-stat-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+.c-stat { display: flex; flex-direction: column; gap: 2px; }
+.c-stat__label { font-size: 0.72rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.c-stat__value { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Formulários (Configurações) */
+.c-field { display: flex; flex-direction: column; gap: 6px; }
+.c-field__label { font-size: 0.85rem; font-weight: 600; color: var(--color-text-primary); }
+.c-field__hint { font-size: 0.8rem; color: var(--color-text-muted); }
+
+.c-check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.c-check-row input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--color-primary); cursor: pointer; flex-shrink: 0; }
+.c-check-row__text { display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+
+.c-form { display: flex; flex-direction: column; gap: var(--spacing-md); align-items: stretch; }
+
+.c-card__head ~ * { margin-top: var(--spacing-md); }

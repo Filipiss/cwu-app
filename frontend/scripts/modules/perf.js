@@ -250,7 +250,7 @@ const PerfModule = {
 
         const btn = document.createElement('button');
         const enable = t.enabled !== true;
-        btn.className = `c-btn c-btn--sm js-tweak-toggle ${enable === t.recommended ? 'c-btn--primary' : 'c-btn--outline'}`;
+        btn.className = `c-btn c-btn--sm js-tweak-toggle ${enable === t.recommended ? 'c-btn--primary' : 'c-btn--secondary'}`;
         btn.dataset.id = t.id;
         btn.dataset.enable = enable ? '1' : '0';
         btn.textContent = enable ? 'Ativar' : 'Desativar';
@@ -340,7 +340,7 @@ const PerfModule = {
         main.append(name, badge, desc);
 
         const btn = document.createElement('button');
-        btn.className = `c-btn c-btn--sm js-startup-toggle ${item.enabled ? 'c-btn--outline' : 'c-btn--secondary'}`;
+        btn.className = `c-btn c-btn--sm js-startup-toggle ${item.enabled ? 'c-btn--secondary' : 'c-btn--secondary'}`;
         btn.dataset.id = item.id;
         btn.dataset.enable = item.enabled ? '0' : '1';
         btn.textContent = item.enabled ? 'Desativar' : 'Ativar';

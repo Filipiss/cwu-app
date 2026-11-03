@@ -118,9 +118,9 @@ const ScanModule = {
           </span>
         </td>
         <td class="c-table__td u-text-right">
-          <div class="o-flex o-flex--gap-xs" style="justify-content: flex-end; flex-wrap: wrap;">
+          <div class="o-flex o-flex--gap-sm" style="justify-content: flex-end; flex-wrap: nowrap;">
             ${item.officialUrl ? `
-              <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--xs" title="Acessar portal oficial do fabricante">
+              <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--secondary c-btn--xs" title="Acessar portal oficial do fabricante">
                 <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </a>
             ` : ''}
@@ -191,7 +191,7 @@ const ScanModule = {
 
               <div class="o-flex o-flex--column o-flex--gap-xs" style="margin-top: 12px;">
                 ${item.officialUrl ? `
-                  <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Acessar portal oficial">
+                  <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--secondary c-btn--sm" title="Acessar portal oficial">
                     <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
                   </a>
                 ` : ''}

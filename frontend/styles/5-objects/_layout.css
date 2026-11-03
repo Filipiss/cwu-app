@@ -83,3 +83,31 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Ritmo vertical padrão =====
+ * Cada aba e sub-aba empilha seus blocos com o mesmo espaçamento (gap),
+ * em vez de cada bloco ter sua própria margem. */
+.c-tab-panel.c-tab-panel--active {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.c-subtab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.c-tab-panel > *,
+.c-subtab-panel > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Grades: cartões da mesma linha com a mesma altura */
+.o-grid { align-items: stretch; }
+.o-grid > .c-card { display: flex; flex-direction: column; }
+
+.o-flex--gap-xs { gap: var(--spacing-xxs); }
+.o-flex--wrap { flex-wrap: wrap; }

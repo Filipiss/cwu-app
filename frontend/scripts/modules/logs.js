@@ -351,7 +351,7 @@ const LogsModule = {
 
           const revertBtn = isReverted
             ? `<span class="c-badge c-badge--warning" style="font-size: 0.8rem; padding: 5px 12px;"><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> Revertido em ${this.formatDate(item.revertedAt)}</span>`
-            : `<button class="c-btn c-btn--outline c-btn--sm js-btn-revert" data-id="${item.id}" title="Desfazer ou restaurar estado anterior desta alteração">
+            : `<button class="c-btn c-btn--secondary c-btn--sm js-btn-revert" data-id="${item.id}" title="Desfazer ou restaurar estado anterior desta alteração">
                 <span>Reverter</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
               </button>`;
 

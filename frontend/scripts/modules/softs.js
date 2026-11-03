@@ -213,7 +213,7 @@ const SoftsModule = {
           <p class="c-soft-empty-state__desc">
             Não encontramos nenhum software com o termo "<strong>${this.escapeHtml(this.currentQuery)}</strong>". Tente buscar por palavras alternativas ou clique no botão de limpar.
           </p>
-          <button class="c-btn c-btn--outline c-btn--sm u-mt-md" onclick="SoftsModule.clearSearch()">
+          <button class="c-btn c-btn--secondary c-btn--sm u-mt-md" onclick="SoftsModule.clearSearch()">
             Limpar Filtros e Busca
           </button>
         </div>
@@ -237,7 +237,7 @@ const SoftsModule = {
               <p class="c-soft-item__desc">${item.description}</p>
             </div>
             <div class="c-soft-item__actions">
-              <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Visitar site oficial">
+              <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--secondary c-btn--sm" title="Visitar site oficial">
                 Portal
               </a>
               <a href="${item.downloadUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" onclick="SoftsModule.onDownloadSoftware('${encodeURIComponent(item.name)}', '${encodeURIComponent(item.categoryLabel || item.category)}')" title="Baixar instalador oficial">

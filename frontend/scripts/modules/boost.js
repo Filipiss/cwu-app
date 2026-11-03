@@ -47,9 +47,9 @@ const BoostModule = {
       ramBarEl.style.width = `${memory.usedPercent}%`;
       // Cor dinâmica: se acima de 80%, aviso
       if (memory.usedPercent >= 80) {
-        ramBarEl.style.background = 'linear-gradient(90deg, #f59e0b, #ef4444)';
+        ramBarEl.style.background = 'var(--color-warning)';
       } else {
-        ramBarEl.style.background = 'linear-gradient(90deg, var(--color-primary), var(--color-accent))';
+        ramBarEl.style.background = 'var(--color-primary)';
       }
     }
 
@@ -57,118 +57,63 @@ const BoostModule = {
     const grid = document.getElementById('boost-optimizations-grid');
     if (!grid) return;
 
-    grid.innerHTML = optimizations.map(opt => {
-      let badgeHtml = `<span class="c-badge c-badge--info">Otimização</span>`;
-      let cardHighlightClass = '';
-      let btnHtml = '';
+    const icon = (n) => `<svg class="c-icon" aria-hidden="true"><use href="#i-${n}"></use></svg>`;
+    const esc = (v) => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const btn = (variant, attrs, label, ic, title) =>
+      `<button class="c-btn c-btn--${variant} c-btn--sm ${attrs.cls}" ${attrs.data}${title ? ` title="${esc(title)}"` : ''}><span>${esc(label)}</span>${icon(ic)}</button>`;
 
-      if (opt.id === 'purge_standby') {
-        badgeHtml = `<span class="c-badge c-badge--danger"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> RAMMap / ISLC</span>`;
-        cardHighlightClass = 'c-card--highlight';
-        btnHtml = `
-          <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="${opt.id}">
-            <span>${opt.btnLabel || 'Zerar Standby List Agora'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-          </button>
-        `;
-      } else if (opt.gpuType === 'nvidia') {
-        badgeHtml = `<span class="c-badge" style="background: rgba(118, 185, 0, 0.15); color: #84cc16; border: 1px solid rgba(132, 204, 22, 0.4);"><svg class=c-icon aria-hidden=true><use href=#i-circle></use></svg> GPU NVIDIA</span>`;
-        if (opt.active) {
-          cardHighlightClass = 'c-card--highlight';
-          btnHtml = `
-            <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
-              <div class="o-flex o-flex--gap-sm">
-                <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="nvidia_default" title="Remove do registro os valores gravados por versões antigas do CWU (o driver NVIDIA não os utiliza)">
-                  <span>Remover ajuste antigo</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
-                </button>
-                <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Reabrir Painel NVIDIA para verificar ou aplicar configurações">
-                  <span>Reabrir Painel</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-                </button>
-              </div>
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="nvidia" title="Abre o Painel de Controle NVIDIA diretamente na sua tela">
-                <span>Abrir Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
-              </button>
-            </div>
-          `;
-        } else {
-          btnHtml = `
-            <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
-              <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Ativa o modo no CWU e abre o Painel de Controle NVIDIA">
-                <span>Configurar no Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-              </button>
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="nvidia" title="Abre o Painel de Controle NVIDIA diretamente na sua tela">
-                <span>Abrir Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
-              </button>
-            </div>
-          `;
-        }
-      } else if (opt.gpuType === 'amd') {
-        badgeHtml = `<span class="c-badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4);"><svg class=c-icon aria-hidden=true><use href=#i-circle></use></svg> GPU AMD</span>`;
-        if (opt.active) {
-          btnHtml = `
-            <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
-              <div class="o-flex o-flex--gap-sm">
-                <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="amd_default" title="Clique para desativar Anti-Lag">
-                  <span>Remover ajuste antigo</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
-                </button>
-                <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
-                  <span>Reabrir AMD</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-                </button>
-              </div>
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="amd" title="Abre o AMD Software Adrenalin diretamente na aba de Gráficos / Jogos">
-                <span>Abrir AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
-              </button>
-            </div>
-          `;
-        } else {
-          btnHtml = `
-            <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
-                <span>Configurar no AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-              </button>
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="amd" title="Abre o AMD Software Adrenalin diretamente na aba de Gráficos / Jogos">
-                <span>Abrir AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
-              </button>
-            </div>
-          `;
-        }
+    // Categoria de cada otimização (selo neutro com ícone, igual para todos os cartões)
+    const CATEGORY = {
+      purge_standby: ['memory-stick', 'Memória'], ram_clean: ['memory-stick', 'Memória'],
+      nvidia_ultra: ['monitor', 'GPU NVIDIA'], amd_antilag: ['monitor', 'GPU AMD'],
+      power_plan: ['zap', 'Energia'], telemetry_services: ['lock', 'Privacidade'], temp_cleanup: ['hard-drive', 'Disco']
+    };
+
+    // A descrição vinda do backend tem o texto principal e, depois do <br>, instruções
+    // com estilos fixos. Separamos as duas partes e removemos os estilos.
+    const splitDescription = (html) => {
+      const box = document.createElement('div');
+      box.innerHTML = html || '';
+      box.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+      const parts = box.innerHTML.split(/<br\s*\/?>/i);
+      const main = parts.shift().trim();
+      const extra = parts.join('<br>').replace(/^(\s|<br>)+/, '').trim();
+      return { main, extra };
+    };
+
+    grid.innerHTML = optimizations.map(opt => {
+      const [catIcon, catLabel] = CATEGORY[opt.id] || ['sliders-horizontal', 'Otimização'];
+      const { main, extra } = splitDescription(opt.description);
+      const isGpu = opt.gpuType === 'nvidia' || opt.gpuType === 'amd';
+      const vendor = opt.gpuType === 'nvidia' ? 'NVIDIA' : 'AMD';
+
+      // Ação principal sempre à esquerda (primária); ações de apoio à direita (secundárias)
+      let primary = '';
+      const secondary = [];
+      if (isGpu) {
+        const prefix = opt.gpuType === 'nvidia' ? 'nvidia' : 'amd';
+        primary = btn('primary', { cls: 'js-btn-opt', data: `data-id="${opt.id}"` }, `Configurar no ${opt.gpuType === 'nvidia' ? 'Painel NVIDIA' : 'AMD Software'}`, 'arrow-up-right', `Abre o painel oficial ${vendor} com o passo a passo`);
+        if (opt.active) secondary.push(btn('secondary', { cls: 'js-btn-opt', data: `data-id="${prefix}_default"` }, 'Remover ajuste antigo', 'undo-2', 'Remove valores de registro gravados por versões antigas do CWU (o driver não os utiliza)'));
       } else {
-        if (opt.manualAction) {
-          btnHtml = `
-            <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="${opt.id}">
-                <span>${opt.btnLabel || 'Executar'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-              </button>
-              <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-action="${opt.manualAction}" title="${opt.manualTooltip || 'Abrir configuração no Windows'}">
-                <span>${opt.manualLabel || 'Mudar Manualmente'}</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
-              </button>
-            </div>
-          `;
-        } else {
-          btnHtml = `
-            <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="${opt.id}">
-              <span>${opt.btnLabel || 'Executar'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
-            </button>
-          `;
-        }
+        primary = btn('primary', { cls: 'js-btn-opt', data: `data-id="${opt.id}"` }, opt.btnLabel || 'Executar', 'zap');
+        if (opt.manualAction) secondary.push(btn('secondary', { cls: 'js-btn-manual', data: `data-action="${opt.manualAction}"` }, opt.manualLabel || 'Mudar manualmente', 'arrow-up-right', opt.manualTooltip || 'Abrir a configuração no Windows'));
       }
 
       return `
-        <div class="c-card ${cardHighlightClass}">
-          <div class="c-card__header">
-            <div>
-              <div class="o-flex o-flex--gap-sm u-mb-sm">
-                ${badgeHtml}
-                <span class="c-badge c-badge--neutral">${opt.potentialGain}</span>
-                ${opt.active ? '<span class="c-badge c-badge--success"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Ativado</span>' : ''}
-              </div>
-              <h4 class="c-card__title">${opt.title}</h4>
-            </div>
+        <article class="c-card ${opt.active ? 'c-card--highlight' : ''}">
+          <div class="c-card__tags">
+            <span class="c-badge c-badge--neutral">${icon(catIcon)} ${catLabel}</span>
+            <span class="c-badge c-badge--info">${esc(opt.potentialGain)}</span>
+            ${opt.active ? `<span class="c-badge c-badge--success">${icon('check')} Ativado</span>` : ''}
           </div>
-          <div class="c-card__body">
-            <p class="u-mb-md">${opt.description}</p>
-            ${btnHtml}
+          <h4 class="c-card__title">${esc(opt.title)}</h4>
+          <p class="c-card__desc">${main}</p>
+          ${extra ? `<div class="c-callout">${extra}</div>` : ''}
+          <div class="c-card__footer">
+            ${primary}
+            ${secondary.length ? `<div class="c-card__footer-group">${secondary.join('')}</div>` : ''}
           </div>
-        </div>
+        </article>
       `;
     }).join('');
 

@@ -48,3 +48,19 @@
   font-weight: 700;
   padding: 4px 10px;
 }
+
+/* ===== Altura padronizada ===== */
+.c-badge {
+  min-height: 22px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+/* Em tabelas, textos longos quebram dentro de um retângulo em vez de uma pílula */
+.c-table .c-badge {
+  white-space: normal;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  line-height: 1.35;
+}
