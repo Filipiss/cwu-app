@@ -291,7 +291,8 @@ New-ItemProperty $k -Name UseNexusForGameBarEnabled -Value ${enabled ? 1 : 0} -P
     const status = await this.getStatus();
 
     if (!enabled) {
-      const back = state.previousScheme || '381b4222-f694-41f0-9685-ff5bb260df2e'; // Equilibrado
+      const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const back = GUID_RE.test(state.previousScheme || '') ? state.previousScheme : '381b4222-f694-41f0-9685-ff5bb260df2e'; // Equilibrado
       await runPowerShell(`powercfg /setactive ${back}`, 10000);
       db.save();
       this.log('power_plan', 'Plano de energia restaurado', { enabled: true });
@@ -301,7 +302,7 @@ New-ItemProperty $k -Name UseNexusForGameBarEnabled -Value ${enabled ? 1 : 0} -P
     // Reaproveita o plano criado antes, se ainda existir (evita duplicar a cada clique)
     const schemes = await runPowerShell(`(powercfg /list) -join ' '`, 10000);
     const listText = schemes.raw || (schemes.data ? String(schemes.data) : '');
-    let guid = state.ultimateGuid && listText.toLowerCase().includes(state.ultimateGuid) ? state.ultimateGuid : null;
+    let guid = /^[0-9a-f-]{36}$/i.test(state.ultimateGuid || '') && listText.toLowerCase().includes(state.ultimateGuid) ? state.ultimateGuid : null;
     if (!guid) {
       const dup = await runPowerShell(`(powercfg -duplicatescheme ${POWER.ultimate}) -join ' '`, 15000);
       guid = parseGuid(dup.raw || dup.data);

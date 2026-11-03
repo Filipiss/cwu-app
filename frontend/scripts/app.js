@@ -15,6 +15,16 @@ const App = {
     // Inicializa módulos principais
     await SpecsModule.init();
     SubTabs.init();
+    // Ações de botões gerados dinamicamente (sem onclick inline, compatível com a CSP)
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      const arg = el.dataset.arg;
+      if (el.dataset.action === 'tab') App.switchTab(arg);
+      else if (el.dataset.action === 'driver-download') ScanModule.onDownloadDriver(arg);
+      else if (el.dataset.action === 'soft-download') SoftsModule.onDownloadSoftware(arg, el.dataset.arg2);
+      else if (el.dataset.action === 'softs-clear') SoftsModule.clearSearch();
+    });
     Sidebar.init();
     ElevationBanner.init();
     ScanModule.init();

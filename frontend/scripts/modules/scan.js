@@ -125,7 +125,7 @@ const ScanModule = {
               </a>
             ` : ''}
             ${(item.status !== 'updated' && item.directDownload) ? `
-              <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--xs" onclick="ScanModule.onDownloadDriver('${item.id}')" title="Download direto do instalador/driver oficial">
+              <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--xs" data-action="driver-download" data-arg="${item.id}" title="Download direto do instalador/driver oficial">
                 <span>Download Direto</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
               </a>
             ` : ''}
@@ -196,7 +196,7 @@ const ScanModule = {
                   </a>
                 ` : ''}
                 ${(item.status !== 'updated' && item.directDownload) ? `
-                  <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" onclick="ScanModule.onDownloadDriver('${item.id}')" title="Download direto do driver">
+                  <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" data-action="driver-download" data-arg="${item.id}" title="Download direto do driver">
                     <span>Download Direto</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
                 ` : ''}

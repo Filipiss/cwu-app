@@ -2,6 +2,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const config = require('./src/config');
 const routes = require('./src/routes/api');
 
@@ -28,6 +29,24 @@ const MIME_TYPES = {
 
 const HOST = '127.0.0.1';
 const MAX_BODY_BYTES = 1024 * 1024;
+
+// Token de sessão (só no app Electron): gerado a cada abertura e entregue à janela
+// como cookie HttpOnly. Outros programas do PC não conseguem chamar a API, o que
+// impede que um processo sem privilégio use o app elevado para agir como administrador.
+const REQUIRE_SESSION = Boolean(process.versions.electron);
+const SESSION_TOKEN = process.env.CWU_SESSION_TOKEN || crypto.randomBytes(32).toString('hex');
+const SESSION_COOKIE = 'cwu_session';
+
+function readCookie(req, name) {
+  const m = String(req.headers.cookie || '').match(new RegExp('(?:^|;\\s*)' + name + '=([a-f0-9]{64})'));
+  return m ? m[1] : null;
+}
+function safeEqual(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
+
+const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const ALLOWED_HOSTS = new Set([`localhost:${config.port}`, `127.0.0.1:${config.port}`]);
 const ALLOWED_ORIGINS = new Set([`http://localhost:${config.port}`, `http://127.0.0.1:${config.port}`]);
 
@@ -67,6 +86,22 @@ const server = http.createServer(async (req, res) => {
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
+
+  res.setHeader('Content-Security-Policy', CSP);
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+
+  if (REQUIRE_SESSION) {
+    const given = parsedUrl.searchParams.get('t');
+    if (given && safeEqual(given, SESSION_TOKEN)) {
+      res.writeHead(302, { 'Set-Cookie': `${SESSION_COOKIE}=${SESSION_TOKEN}; HttpOnly; SameSite=Strict; Path=/`, Location: '/' });
+      return res.end();
+    }
+    if (!safeEqual(readCookie(req, SESSION_COOKIE), SESSION_TOKEN)) {
+      res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Sessão inválida. Abra o CWU App pelo próprio aplicativo.');
+    }
+  }
 
   // Enriquecer response com utilitários tipo Express (.json e .status)
   res.status = (code) => {
@@ -165,6 +200,8 @@ server.on('error', (e) => {
     }
   }
 });
+
+module.exports = { SESSION_TOKEN };
 
 server.listen(config.port, HOST, () => {
   console.log(`\n======================================================`);

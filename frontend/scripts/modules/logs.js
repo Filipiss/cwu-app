@@ -289,10 +289,10 @@ const LogsModule = {
             Esta aba exibe exclusivamente o que foi alterado ou atualizado no seu Windows. Quando você atualizar drivers no scanner, instalar softwares ou aplicar modos do Boost Gamer, as alterações aparecerão aqui com a opção de reversão rápida.
           </p>
           <div class="o-flex o-flex--center o-flex--gap-md">
-            <button class="c-btn c-btn--primary c-btn--sm" onclick="App.switchTab('scan')">
+            <button class="c-btn c-btn--primary c-btn--sm" data-action="tab" data-arg="scan">
               <span>Scannear Drivers</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg>
             </button>
-            <button class="c-btn c-btn--secondary c-btn--sm" onclick="App.switchTab('boost')">
+            <button class="c-btn c-btn--secondary c-btn--sm" data-action="tab" data-arg="boost">
               <span>Ir para Boost Gamer</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
             </button>
           </div>

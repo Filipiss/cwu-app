@@ -213,7 +213,7 @@ const SoftsModule = {
           <p class="c-soft-empty-state__desc">
             Não encontramos nenhum software com o termo "<strong>${this.escapeHtml(this.currentQuery)}</strong>". Tente buscar por palavras alternativas ou clique no botão de limpar.
           </p>
-          <button class="c-btn c-btn--secondary c-btn--sm u-mt-md" onclick="SoftsModule.clearSearch()">
+          <button class="c-btn c-btn--secondary c-btn--sm u-mt-md" data-action="softs-clear">
             Limpar Filtros e Busca
           </button>
         </div>
@@ -240,7 +240,7 @@ const SoftsModule = {
               <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--secondary c-btn--sm" title="Visitar site oficial">
                 Portal
               </a>
-              <a href="${item.downloadUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" onclick="SoftsModule.onDownloadSoftware('${encodeURIComponent(item.name)}', '${encodeURIComponent(item.categoryLabel || item.category)}')" title="Baixar instalador oficial">
+              <a href="${item.downloadUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" data-action="soft-download" data-arg="${encodeURIComponent(item.name)}" data-arg2="${encodeURIComponent(item.categoryLabel || item.category)}" title="Baixar instalador oficial">
                 Download Oficial <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
               </a>
             </div>

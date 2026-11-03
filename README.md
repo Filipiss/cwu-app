@@ -110,7 +110,6 @@ npm test               # 55 testes (nota, parsers, eventos, winget, segurança, 
 npm run check-winget   # valida no Windows se todos os IDs do winget existem
 ```
 
-> **Docker:** um container Linux não acessa WMI, drivers nem o Visualizador de Eventos do Windows. A pasta `docker/` serve só para visualizar a interface; nesse modo, todas as leituras aparecem como "Não detectado".
 
 ---
 
