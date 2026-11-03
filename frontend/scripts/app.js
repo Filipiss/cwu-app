@@ -15,6 +15,7 @@ const App = {
     // Inicializa módulos principais
     await SpecsModule.init();
     SubTabs.init();
+    Sidebar.init();
     ElevationBanner.init();
     ScanModule.init();
     SoftsModule.init();

@@ -1,32 +1,85 @@
 // backend/src/services/versionService.js
+// Versão instalada (package.json), histórico (CHANGELOG.md) e checagem de
+// atualização pela última release publicada no GitHub.
+const fs = require('fs');
+const path = require('path');
 const config = require('../config');
 
+// O CHANGELOG.md fica na raiz do repositório; no app empacotado, em resources/
+const CHANGELOG_CANDIDATES = [
+  path.resolve(__dirname, '../../../CHANGELOG.md'),
+  path.join(process.resourcesPath || '', 'CHANGELOG.md')
+];
+
+/**
+ * Lê o formato Keep a Changelog:
+ *   ## [1.1.0] - 2026-11-03
+ *   ### Adicionado
+ *   - item
+ */
+function parseChangelog(markdown) {
+  const entries = [];
+  let entry = null;
+  let section = null;
+  for (const rawLine of String(markdown || '').split(/\r?\n/)) {
+    const line = rawLine.trim();
+    const version = line.match(/^##\s+\[?v?(\d+\.\d+\.\d+)\]?(?:\s*-\s*(\d{4}-\d{2}-\d{2}))?/);
+    if (version) {
+      entry = { version: version[1], date: version[2] || null, sections: [] };
+      entries.push(entry);
+      section = null;
+      continue;
+    }
+    if (!entry) continue;
+    const heading = line.match(/^###\s+(.+)/);
+    if (heading) {
+      section = { title: heading[1].trim(), items: [] };
+      entry.sections.push(section);
+      continue;
+    }
+    const item = line.match(/^[-*]\s+(.+)/);
+    if (item) {
+      if (!section) { section = { title: 'Mudanças', items: [] }; entry.sections.push(section); }
+      section.items.push(item[1].trim());
+    }
+  }
+  return entries;
+}
+
+// "2026-11-03" → "03/11/2026"
+const formatDate = (iso) => (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso.split('-').reverse().join('/') : null);
+
+function compareVersions(a, b) {
+  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
+  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const diff = (pa[i] || 0) - (pb[i] || 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
 class VersionService {
+  readChangelog() {
+    const file = CHANGELOG_CANDIDATES.find(p => p && fs.existsSync(p));
+    if (!file) return [];
+    try { return parseChangelog(fs.readFileSync(file, 'utf8')); } catch (e) { return []; }
+  }
+
   getVersionInfo() {
+    const changelog = this.readChangelog().map(e => ({
+      ...e,
+      dateLabel: formatDate(e.date),
+      isCurrent: e.version === config.appVersion
+    }));
+    const current = changelog.find(e => e.isCurrent);
     return {
       appName: config.appName,
       currentVersion: config.appVersion,
-      channel: 'Stable',
-      releaseDate: '19/10/2026',
-      latestVersion: null,
-      isLatest: null,
-      downloadUrl: `https://github.com/${config.githubRepo}/releases`,
-      changelog: [
-        {
-          version: '1.0.0',
-          date: '19/10/2026',
-          highlights: [
-            'Lançamento inicial do CWU App',
-            'Motor de diagnóstico System Specs com pontuação 0 a 10 e nota geral do PC',
-            'Varredura inteligente de drivers PnP com identificação de drivers genéricos da Microsoft',
-            'Atalhos diretos para páginas oficiais de download (NVIDIA, AMD, Intel, Realtek)',
-            'Analisador preditivo do Visualizador de Eventos com explicação humanizada de BSODs e Kernel-Power (Event ID 41)',
-            'Aba demonstrativa Boost Gamer com liberação de RAM e otimizações',
-            'Suporte a múltiplos temas: Futurista (Cyberpunk Neon), Clássico e Clean Light',
-            'Banco de dados 100% local e sem necessidade de conexão externa'
-          ]
-        }
-      ]
+      releaseDate: current ? current.dateLabel : null,
+      repo: config.githubRepo,
+      releasesUrl: `https://github.com/${config.githubRepo}/releases`,
+      changelog
     };
   }
 
@@ -43,7 +96,7 @@ class VersionService {
       clearTimeout(timer);
 
       if (resp.status === 404) {
-        return { ...info, checkedAt, updateAvailable: false, checkFailed: true, message: 'Nenhuma versão publicada no GitHub ainda.' };
+        return { ...info, checkedAt, status: 'no-release', updateAvailable: false, message: `Nenhuma versão publicada ainda em github.com/${config.githubRepo}.` };
       }
       if (!resp.ok) throw new Error(`GitHub respondeu ${resp.status}`);
 
@@ -53,37 +106,23 @@ class VersionService {
       return {
         ...info,
         checkedAt,
+        status: updateAvailable ? 'update-available' : 'up-to-date',
         latestVersion: latest,
-        isLatest: !updateAvailable,
         updateAvailable,
-        downloadUrl: release.html_url || info.downloadUrl,
-        releaseNotes: release.body || '',
+        downloadUrl: release.html_url || info.releasesUrl,
+        releaseName: release.name || `v${latest}`,
+        releaseDate: release.published_at ? new Date(release.published_at).toLocaleDateString('pt-BR') : null,
+        releaseNotes: String(release.body || '').slice(0, 4000),
         message: updateAvailable
-          ? `Nova versão ${latest} disponível!`
-          : 'Você já está utilizando a versão mais recente do CWU App!'
+          ? `Nova versão ${latest} disponível.`
+          : `Você está na versão mais recente (v${info.currentVersion}).`
       };
     } catch (err) {
-      return {
-        ...info,
-        checkedAt,
-        updateAvailable: false,
-        checkFailed: true,
-        message: 'Não foi possível verificar atualizações (sem internet ou GitHub indisponível).'
-      };
+      return { ...info, checkedAt, status: 'offline', updateAvailable: false, message: 'Não foi possível verificar: sem internet ou GitHub indisponível.' };
     }
   }
 }
 
-// Compara versões semânticas simples: "1.2.0" vs "1.10.0"
-function compareVersions(a, b) {
-  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
-  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const diff = (pa[i] || 0) - (pb[i] || 0);
-    if (diff !== 0) return diff;
-  }
-  return 0;
-}
-
 module.exports = new VersionService();
 module.exports.compareVersions = compareVersions;
+module.exports.parseChangelog = parseChangelog;

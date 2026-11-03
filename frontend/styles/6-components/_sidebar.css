@@ -166,3 +166,124 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
 }
+
+/* ===== Menu recolhível ===================================================== */
+.c-sidebar {
+  --sidebar-collapsed-width: 68px;
+  position: relative;
+  transition: width 240ms cubic-bezier(0.2, 0.8, 0.2, 1), padding 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: width;
+}
+
+.c-sidebar__brand-text { flex: 1; min-width: 0; overflow: hidden; }
+.c-sidebar__title,
+.c-sidebar__subtitle,
+.c-nav__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Botão de recolher/expandir */
+.c-sidebar__toggle {
+  appearance: none;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.c-sidebar__toggle:hover { background: var(--nav-hover); color: var(--color-text-primary); border-color: var(--color-border); }
+.c-sidebar__toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.c-sidebar__toggle .c-icon { width: 16px; height: 16px; stroke-width: 1.75; }
+.c-sidebar__toggle-icon { display: inline-flex; }
+.c-sidebar__toggle-icon--open { display: none; }
+
+/* Estado recolhido: faixa de ícones */
+.o-app--nav-collapsed .c-sidebar {
+  width: var(--sidebar-collapsed-width);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.o-app--nav-collapsed .c-sidebar__brand {
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 0;
+  background: transparent;
+  border-color: transparent;
+}
+.o-app--nav-collapsed .c-sidebar__brand-text { display: none; }
+.o-app--nav-collapsed .c-sidebar__toggle-icon--close { display: none; }
+.o-app--nav-collapsed .c-sidebar__toggle-icon--open { display: inline-flex; }
+
+.o-app--nav-collapsed .c-nav { overflow: visible; }
+
+.o-app--nav-collapsed .c-nav__category {
+  font-size: 0;
+  padding: 0;
+  height: 0;
+  margin: 8px 6px;
+}
+.o-app--nav-collapsed .c-nav__category:first-child { display: none; }
+
+.o-app--nav-collapsed .c-nav__item {
+  justify-content: center;
+  padding: 0;
+  height: 38px;
+  min-height: 38px;
+}
+.o-app--nav-collapsed .c-nav__label { display: none; }
+
+/* Selo vira um ponto no canto do ícone (só quando indica problema) */
+.o-app--nav-collapsed .c-nav__badge { display: none; }
+.o-app--nav-collapsed .c-nav__badge.c-badge--danger {
+  display: block;
+  position: absolute;
+  top: 6px;
+  right: 9px;
+  min-width: 0;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  font-size: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-bg-sidebar);
+  background: var(--color-danger);
+}
+
+/* Balão com o nome da aba (mouse ou teclado) */
+.o-app--nav-collapsed .c-nav__item::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translate(-4px, -50%);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-bright);
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 50;
+}
+.o-app--nav-collapsed .c-nav__item:hover::after,
+.o-app--nav-collapsed .c-nav__item:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* Abertura do app sem animação; e respeito a "reduzir movimento" */
+.o-app--no-anim .c-sidebar { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .c-sidebar, .c-nav__item::after { transition: none; }
+}

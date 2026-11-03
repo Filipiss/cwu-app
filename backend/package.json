@@ -1,6 +1,6 @@
 {
   "name": "cwu-app-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Backend local para o CWU App (Clean Windows Utility) com acesso a WMI, PowerShell e SQLite local",
   "main": "electron-main.js",
   "scripts": {
@@ -23,6 +23,10 @@
       {
         "from": "../frontend",
         "to": "frontend"
+      },
+      {
+        "from": "../CHANGELOG.md",
+        "to": "CHANGELOG.md"
       }
     ],
     "win": {

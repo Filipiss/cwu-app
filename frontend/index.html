@@ -70,64 +70,74 @@
     <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /> <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" /> <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" /></symbol>
     <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" /></symbol>
     <symbol id="i-shield-alert" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /> <path d="M12 7v5l4 2" /></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M12 20h.01" /> <path d="M8.5 16.429a5 5 0 0 1 7 0" /> <path d="M5 12.859a10 10 0 0 1 5.17-2.69" /> <path d="M19 12.859a10 10 0 0 0-2.007-1.523" /> <path d="M2 8.82a15 15 0 0 1 4.177-2.643" /> <path d="M22 8.82a15 15 0 0 0-11.288-3.764" /> <path d="m2 2 20 20" /></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14" /> <path d="M12 5v14" /></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22" /> <path d="m18 2 4 4-4 4" /> <path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2" /> <path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8" /> <path d="m18 14 4 4-4 4" /></symbol>
+    <symbol id="i-panel-left-close" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 3v18" /> <path d="m16 15-3-3 3-3" /></symbol>
+    <symbol id="i-panel-left-open" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 3v18" /> <path d="m14 9 3 3-3 3" /></symbol>
   </svg>
 
   <div class="o-app">
     <!-- 1. SIDEBAR DE NAVEGAÇÃO -->
-    <aside class="c-sidebar">
+    <aside class="c-sidebar" id="app-sidebar" aria-label="Menu principal">
       <div class="c-sidebar__brand">
         <div class="c-sidebar__logo"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg></div>
-        <div>
+        <div class="c-sidebar__brand-text">
           <div class="c-sidebar__title">
             CWU App
-            <span class="c-sidebar__version-tag">v1.0</span>
+            <span class="c-sidebar__version-tag" id="sidebar-version-tag">v1.1</span>
           </div>
           <div class="c-sidebar__subtitle">Clean Windows Utility</div>
         </div>
+        <button class="c-sidebar__toggle" id="btn-sidebar-toggle" type="button" aria-controls="app-sidebar" aria-expanded="true" aria-label="Recolher menu (Ctrl+B)">
+          <span class="c-sidebar__toggle-icon c-sidebar__toggle-icon--close"><svg class=c-icon aria-hidden=true><use href=#i-panel-left-close></use></svg></span>
+          <span class="c-sidebar__toggle-icon c-sidebar__toggle-icon--open"><svg class=c-icon aria-hidden=true><use href=#i-panel-left-open></use></svg></span>
+        </button>
       </div>
 
       <nav class="c-nav">
         <div class="c-nav__category">Principal</div>
-        <div class="c-nav__item c-nav__item--active js-nav-item" data-tab="specs">
+        <div class="c-nav__item c-nav__item--active js-nav-item" data-tab="specs" data-label="System Specs" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-cpu></use></svg></span>
-          <span>System Specs</span>
+          <span class="c-nav__label">System Specs</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="scan">
+        <div class="c-nav__item js-nav-item" data-tab="scan" data-label="Scannear Drivers" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-scan-search></use></svg></span>
-          <span>Scannear Drivers</span>
+          <span class="c-nav__label">Scannear Drivers</span>
           <span class="c-nav__badge c-badge--neutral" id="sidebar-badge-drivers">-</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="softs">
+        <div class="c-nav__item js-nav-item" data-tab="softs" data-label="Softwares Pós-Format" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg></span>
-          <span>Softwares Pós-Format</span>
+          <span class="c-nav__label">Softwares Pós-Format</span>
         </div>
 
         <div class="c-nav__category">Diagnóstico & Boost</div>
-        <div class="c-nav__item js-nav-item" data-tab="boost">
+        <div class="c-nav__item js-nav-item" data-tab="boost" data-label="Boost Gamer" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-rocket></use></svg></span>
-          <span>Boost Gamer</span>
+          <span class="c-nav__label">Boost Gamer</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="perf">
+        <div class="c-nav__item js-nav-item" data-tab="perf" data-label="Performance" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg></span>
-          <span>Performance</span>
+          <span class="c-nav__label">Performance</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="security">
+        <div class="c-nav__item js-nav-item" data-tab="security" data-label="Segurança" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-shield></use></svg></span>
-          <span>Segurança</span>
+          <span class="c-nav__label">Segurança</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="logs">
+        <div class="c-nav__item js-nav-item" data-tab="logs" data-label="Logs" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg></span>
-          <span>Logs</span>
+          <span class="c-nav__label">Logs</span>
         </div>
 
         <div class="c-nav__category">Aplicativo</div>
-        <div class="c-nav__item js-nav-item" data-tab="settings">
+        <div class="c-nav__item js-nav-item" data-tab="settings" data-label="Configurações" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg></span>
-          <span>Configurações</span>
+          <span class="c-nav__label">Configurações</span>
         </div>
-        <div class="c-nav__item js-nav-item" data-tab="versions">
+        <div class="c-nav__item js-nav-item" data-tab="versions" data-label="Novas Versões" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg></span>
-          <span>Novas Versões</span>
+          <span class="c-nav__label">Novas Versões</span>
         </div>
       </nav>
 
@@ -887,35 +897,43 @@
           <section id="tab-versions" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg> Atualizações do CWU App</h2>
-                <p class="c-section-header__desc">Verificador de novas versões do software e histórico de melhorias.</p>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg> Novas Versões</h2>
+                <p class="c-section-header__desc">Versão instalada, busca por atualizações no GitHub e histórico de mudanças.</p>
               </div>
               <button class="c-btn c-btn--primary" id="btn-check-new-version">
-                <span>Verificar Atualizações Agora</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
+                <span>Verificar atualizações</span><svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
               </button>
             </div>
 
-            <div class="c-card u-mb-lg">
-              <div class="o-flex o-flex--between">
-                <div>
-                  <span class="c-badge c-badge--success u-mb-sm">Versão Instalada</span>
-                  <h3 class="c-card__title" id="current-app-version">CWU App v1.0.0</h3>
-                  <p>Compilação de lançamento • <span id="app-release-date">19/10/2026</span></p>
-                  <div class="u-mt-md" id="update-check-result">
-                    <span class="u-text-success">Você está na versão mais atualizada.</span>
-                  </div>
+            <!-- VERSÃO INSTALADA E RESULTADO DA VERIFICAÇÃO -->
+            <div class="c-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg> <span id="current-app-version">CWU App</span></h4>
+                  <p class="c-card__desc" id="app-release-date">Carregando…</p>
                 </div>
-                <div>
-                  <a href="https://github.com/cwu-app/cwu-app/releases" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--accent" title="Baixar instalador mais novo">
-                    <span>Baixar Atualização Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
+                <div class="c-card__actions">
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm u-hidden" id="btn-download-update">
+                    <span>Baixar atualização</span><svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
                 </div>
               </div>
+              <div class="c-update-status" id="update-check-result" data-status="idle">
+                <span class="c-update-status__icon"><svg class=c-icon aria-hidden=true><use href=#i-info></use></svg></span>
+                <span class="c-update-status__text">Ainda não verificado. Clique em "Verificar atualizações".</span>
+              </div>
+              <div class="c-callout u-hidden" id="update-release-notes"></div>
             </div>
 
-            <h3 class="u-mb-md">Histórico de Versões & Mudanças (Changelog)</h3>
-            <div id="app-changelog-container">
-              <!-- Renderizado via versions.js -->
+            <!-- HISTÓRICO (gerado a partir do CHANGELOG.md) -->
+            <div class="c-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-history></use></svg> Histórico de versões</h4>
+                  <p class="c-card__desc">O que mudou em cada versão do CWU App.</p>
+                </div>
+              </div>
+              <div class="c-changelog" id="app-changelog-container"></div>
             </div>
           </section>
 
@@ -930,6 +948,7 @@
   <!-- SCRIPTS DOS MÓDULOS E APLICAÇÃO -->
   <script src="scripts/api.js"></script>
   <script src="scripts/modules/subtabs.js"></script>
+  <script src="scripts/modules/sidebar.js"></script>
   <script src="scripts/modules/elevation.js"></script>
   <script src="scripts/modules/specs.js"></script>
   <script src="scripts/modules/scan.js"></script>

@@ -106,7 +106,7 @@ npm install
 npm run app            # abre a janela Electron
 npm start              # apenas o servidor: http://127.0.0.1:4321
 npm run dist:portable  # gera o .exe portátil em /release
-npm test               # 49 testes (nota, parsers, eventos, winget, segurança, performance)
+npm test               # 55 testes (nota, parsers, eventos, winget, segurança, performance)
 npm run check-winget   # valida no Windows se todos os IDs do winget existem
 ```
 
@@ -131,6 +131,10 @@ npm run check-winget   # valida no Windows se todos os IDs do winget existem
 - [ ] Migrar a comunicação HTTP para IPC do Electron
 
 ---
+
+## 📝 Histórico
+
+Veja o [CHANGELOG.md](CHANGELOG.md). A aba Novas Versões do app lê esse mesmo arquivo.
 
 ## 📄 Licença
 
