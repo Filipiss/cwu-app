@@ -10,7 +10,7 @@ const WingetModule = {
 
   async init() {
     document.getElementById('btn-winget-install')?.addEventListener('click', () => this.install());
-    document.getElementById('btn-winget-kit')?.addEventListener('click', () => this.selectEssentialKit());
+    document.getElementById('btn-winget-kit')?.addEventListener('click', () => this.selectSuggestions());
     document.getElementById('btn-winget-clear')?.addEventListener('click', () => { this.selected.clear(); this.refreshUi(); });
     document.getElementById('btn-winget-cancel')?.addEventListener('click', () => this.cancel());
 
@@ -58,7 +58,7 @@ const WingetModule = {
     </label>`;
   },
 
-  selectEssentialKit() {
+  selectSuggestions() {
     const all = (typeof SoftsModule !== 'undefined') ? SoftsModule.allSoftwares : [];
     all.filter(s => s.mustHave && this.isSupported(s.id) && !this.isInstalled(s.id)).forEach(s => this.selected.add(s.id));
     this.refreshUi();
@@ -69,7 +69,7 @@ const WingetModule = {
       if (sel) sel.value = 'all';
       SoftsModule.filterAndRender();
     }
-    App.showToast(`${this.selected.size} programa(s) essencial(is) selecionado(s).`, 'info');
+    App.showToast(`${this.selected.size} programa(s) sugerido(s) selecionado(s). Desmarque o que não quiser.`, 'info');
   },
 
   refreshUi() {

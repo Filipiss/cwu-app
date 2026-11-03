@@ -5,7 +5,9 @@
 module.exports = {
   'vcredist-aio': ['Microsoft.VCRedist.2015+.x64', 'Microsoft.VCRedist.2015+.x86'],
   'directx-june2010': ['Microsoft.DirectX'],
-  'dotnet-8-desktop': ['Microsoft.DotNet.DesktopRuntime.8'],
+  'dotnet-desktop': ['Microsoft.DotNet.DesktopRuntime.10'],
+  'hwinfo': ['REALiX.HWiNFO'],
+  'sharex': ['ShareX.ShareX'],
   'powertoys': ['Microsoft.PowerToys'],
   'windows-terminal': ['Microsoft.WindowsTerminal'],
   'brave-browser': ['Brave.Brave'],

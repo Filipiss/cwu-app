@@ -29,8 +29,8 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Vida útil dos discos** | ✅ | Para cada SSD, NVMe e HD: % de vida útil restante, temperatura, horas ligado e erros sem correção (contadores SMART do Windows), com alerta quando é hora de fazer backup ou trocar. |
 | **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e drivers antigos pela **data real do driver instalado**. |
 | **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
-| **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 46 runtimes e programas essenciais e links oficiais. |
-| **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use o "Kit essencial") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
+| **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 48 runtimes e programas essenciais e links oficiais. |
+| **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use as "Sugestões de programas pós-formatação") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
 | **Diagnóstico de erros / BSOD** | ✅ | Analisa 30 dias do Visualizador de Eventos (Kernel-Power 41, BugCheck 1001, WHEA, disco, crashes de apps), agrupa repetições e lista minidumps. |
 | **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
 | **Competitivo (input lag e consistência)** | ✅ | Monitor na taxa máxima (EnumDisplaySettings/ChangeDisplaySettingsEx), aceleração e velocidade 1:1 do mouse, teste de polling rate no navegador (pointerrawupdate), overlays em execução, plano Desempenho Máximo, suspensão seletiva de USB, teste de ping/jitter/perda com ajustes da placa de rede, guia de latência por GPU (Reflex/Anti-Lag/XeLL + limite de FPS para VRR) e uma seção de mitos de otimização. |

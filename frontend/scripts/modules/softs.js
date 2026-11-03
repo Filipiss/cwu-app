@@ -230,7 +230,7 @@ const SoftsModule = {
               <div class="c-soft-item__title-row">
                 <span class="c-soft-item__name">${item.name}</span>
                 <span class="c-badge c-badge--info">${item.categoryLabel || item.category}</span>
-                ${item.mustHave ? '<span class="c-badge c-badge--danger"><svg class=c-icon aria-hidden=true><use href=#i-flame></use></svg> Obrigatório</span>' : ''}
+                ${item.mustHave ? '<span class="c-badge c-badge--info">Sugerido</span>' : ''}
                 <span class="c-badge c-badge--neutral">${item.size}</span>
                 ${typeof WingetModule !== 'undefined' ? WingetModule.renderItemControl(item.id) : ''}
               </div>
