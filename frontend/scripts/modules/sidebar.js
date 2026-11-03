@@ -22,6 +22,10 @@ const Sidebar = {
 
     btn.addEventListener('click', () => this.toggle());
 
+    // Janela restaurada/estreita: recolhe o menu sozinho; ao alargar, abre de novo
+    const narrow = window.matchMedia('(max-width: 1099px)');
+    narrow.addEventListener('change', (e) => this.apply(e.matches, false));
+
     document.addEventListener('keydown', (e) => {
       // Ctrl+B (ou Cmd+B) alterna o menu, exceto quando digitando num campo
       const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');

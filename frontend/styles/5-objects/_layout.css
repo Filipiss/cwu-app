@@ -111,3 +111,18 @@
 
 .o-flex--gap-xs { gap: var(--spacing-xxs); }
 .o-flex--wrap { flex-wrap: wrap; }
+
+/* ===== Responsividade pela largura real da área de conteúdo =====
+ * Media queries olham a janela inteira; aqui o que importa é o espaço que sobra
+ * ao lado do menu. Container queries ajustam as grades a esse espaço. */
+.o-container { container-type: inline-size; container-name: content; }
+
+@container content (max-width: 1100px) {
+  .o-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container content (max-width: 860px) {
+  .o-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container content (max-width: 640px) {
+  .o-grid--2, .o-grid--3, .o-grid--4 { grid-template-columns: 1fr; }
+}

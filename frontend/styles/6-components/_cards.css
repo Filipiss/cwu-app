@@ -261,3 +261,10 @@
 .c-disk__stats span { display: block; font-size: 0.72rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .c-disk__stats strong { font-size: 0.95rem; font-variant-numeric: tabular-nums; color: var(--color-text-primary); }
 .c-disk__notes { margin: 0; padding-left: 18px; font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.5; }
+
+/* Cabeçalhos de card e de seção: ações descem para a linha de baixo quando falta espaço */
+.c-card__head, .c-card__header { flex-wrap: wrap; }
+.c-card__head-text { flex: 1 1 260px; }
+.c-card__actions { flex-wrap: wrap; min-width: 0; }
+.c-card__head > .c-card__actions { flex: 0 1 auto; justify-content: flex-end; }
+.c-section-header__title-group { flex: 1 1 320px; min-width: 0; }
