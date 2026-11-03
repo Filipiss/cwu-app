@@ -1,0 +1,73 @@
+/* 6-components/_theme-frost.css — Ajustes do tema Névoa.
+ * Superfícies foscas com borda clara por cima (luz) e sombra macia por baixo. */
+
+[data-theme="frost"] body { background: var(--color-bg-main); }
+
+[data-theme="frost"] .c-card {
+  background: linear-gradient(180deg, #f6f7f8 0%, var(--color-bg-card) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: var(--glow-card), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+[data-theme="frost"] .c-card:hover { box-shadow: 0 2px 4px rgba(20, 22, 26, 0.06), 0 12px 32px rgba(20, 22, 26, 0.08), inset 0 1px 0 #fff; }
+[data-theme="frost"] .c-card .c-card { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9); border-color: var(--color-border); }
+
+/* Números grandes e finos, como no painel de referência */
+[data-theme="frost"] .c-perf-tile__value,
+[data-theme="frost"] .c-score-value { font-weight: 300; letter-spacing: -0.02em; }
+
+/* Menu lateral: bloco da marca e item ativo como "pílula" branca elevada */
+[data-theme="frost"] .c-sidebar { border-right: 1px solid var(--color-border); }
+[data-theme="frost"] .c-sidebar__brand {
+  background: var(--color-bg-surface);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.08);
+}
+[data-theme="frost"] .c-nav__item--active,
+[data-theme="frost"] .c-nav__item--active:hover {
+  background: linear-gradient(180deg, #fbfbfc, #eef0f2);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.10), 0 4px 10px rgba(20, 22, 26, 0.06);
+}
+[data-theme="frost"] .c-nav__badge { background: var(--color-bg-main); }
+
+/* Botões: primário grafite sólido; secundário claro com relevo */
+[data-theme="frost"] .c-btn--primary { background: var(--color-primary); color: #fff; border-color: var(--color-primary); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+[data-theme="frost"] .c-btn--primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+[data-theme="frost"] .c-btn--secondary {
+  background: linear-gradient(180deg, #fbfbfc, #eceef0);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.08), inset 0 1px 0 #fff;
+}
+
+/* Campos rebaixados */
+[data-theme="frost"] input,
+[data-theme="frost"] select,
+[data-theme="frost"] textarea {
+  background: #e9eaec;
+  border-color: var(--color-border);
+  box-shadow: inset 0 1px 2px rgba(20, 22, 26, 0.08);
+  color: var(--color-text-primary);
+}
+
+/* Sub-abas: sublinhado discreto */
+[data-theme="frost"] .c-subtabs { background: #e1e3e6; box-shadow: inset 0 1px 2px rgba(20, 22, 26, 0.08); }
+[data-theme="frost"] .c-subtabs__tab--active,
+[data-theme="frost"] .c-subtabs__tab--active:hover {
+  background: linear-gradient(180deg, #fbfbfc, #eef0f2);
+  color: var(--color-text-primary);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.12), 0 4px 10px rgba(20, 22, 26, 0.06);
+}
+[data-theme="frost"] .c-btn--accent { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(20, 22, 26, 0.15); }
+
+/* Balão do menu recolhido escuro, para contrastar */
+[data-theme="frost"].o-app--nav-collapsed .c-nav__item::after,
+[data-theme="frost"] .o-app--nav-collapsed .c-nav__item::after { background: #26272b; color: #f4f5f6; border-color: #26272b; }
+
+/* Card de destaque (nota geral): mesmo vidro fosco, sem faixa lateral */
+[data-theme="frost"] .c-card--highlight {
+  background: linear-gradient(135deg, #f7f8f9 0%, #e9ebee 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-left-width: 1px;
+}

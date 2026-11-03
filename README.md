@@ -42,7 +42,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Ponto de restauração** | ✅ | Criado automaticamente antes da primeira alteração de sistema da sessão, ou manualmente pela aba Logs. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
-| **Temas e preferências** | ✅ | Futurista, Grafite e Light, com menu lateral recolhível (Ctrl+B). |
+| **Temas e preferências** | ✅ | Grafite (escuro) e Névoa (claro), com menu lateral recolhível (Ctrl+B). |
 
 
 ## Arquitetura

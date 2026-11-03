@@ -132,11 +132,8 @@ const App = {
     const quickThemeBtn = document.getElementById('btn-quick-theme');
     if (quickThemeBtn) {
       quickThemeBtn.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'futuristic';
-        let nextTheme = 'futuristic';
-        if (currentTheme === 'futuristic') nextTheme = 'graphite';
-        else if (currentTheme === 'graphite') nextTheme = 'light';
-        else nextTheme = 'futuristic';
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'frost' ? 'graphite' : 'frost';
 
         SettingsModule.setTheme(nextTheme);
         SettingsModule.saveSettings();

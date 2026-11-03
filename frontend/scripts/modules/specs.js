@@ -3,6 +3,15 @@
  * Módulo de System Specs & Pontuação de Hardware
  */
 const SpecsModule = {
+  // Cor da faixa pela paleta do tema ativo (verde/acento/amarelo/vermelho)
+  tierColor(scores) {
+    const n = Number(scores.overall) || 0;
+    if (n >= 8) return 'var(--color-success)';
+    if (n >= 6.5) return 'var(--color-primary)';
+    if (n >= 5) return 'var(--color-warning)';
+    return 'var(--color-danger)';
+  },
+
   data: null,
 
   async init() {
@@ -65,9 +74,9 @@ const SpecsModule = {
     if (scoreValEl) scoreValEl.textContent = scores.overall.toFixed(1);
     if (tierBadgeEl) {
       tierBadgeEl.textContent = scores.ratingTier.label;
-      tierBadgeEl.style.backgroundColor = `${scores.ratingTier.color}25`;
-      tierBadgeEl.style.color = scores.ratingTier.color;
-      tierBadgeEl.style.border = `1px solid ${scores.ratingTier.color}60`;
+      tierBadgeEl.style.backgroundColor = `color-mix(in srgb, ${this.tierColor(scores)} 14%, transparent)`;
+      tierBadgeEl.style.color = this.tierColor(scores);
+      tierBadgeEl.style.border = `1px solid color-mix(in srgb, ${this.tierColor(scores)} 40%, transparent)`;
     }
     if (tierSummaryEl) tierSummaryEl.textContent = scores.ratingTier.summary;
 
@@ -79,7 +88,7 @@ const SpecsModule = {
       const offset = circumference - (percent * circumference);
       gaugeProgress.style.strokeDasharray = `${circumference}`;
       gaugeProgress.style.strokeDashoffset = `${offset}`;
-      gaugeProgress.style.stroke = scores.ratingTier.color;
+      gaugeProgress.style.stroke = this.tierColor(scores);
     }
 
     // 2. Renderizar Cards de Componentes

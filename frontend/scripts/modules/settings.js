@@ -4,7 +4,7 @@
  */
 const SettingsModule = {
   settings: {
-    theme: 'futuristic',
+    theme: 'graphite',
     language: 'pt-BR',
     autoScanOnStart: true,
     notifyOutdatedDrivers: true
@@ -80,10 +80,9 @@ const SettingsModule = {
   },
 
   applySettingsToUI() {
-    let savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'futuristic';
-    // O tema "Clássico" foi substituído pelo "Grafite"
-    if (savedTheme === 'classic') savedTheme = 'graphite';
-    if (!['futuristic', 'graphite', 'light'].includes(savedTheme)) savedTheme = 'futuristic';
+    let savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'graphite';
+    // Temas antigos (Futurista, Clássico, Light) caem no Grafite
+    if (!['graphite', 'frost'].includes(savedTheme)) savedTheme = 'graphite';
     this.setTheme(savedTheme);
 
     const langSelect = document.getElementById('setting-language-select');

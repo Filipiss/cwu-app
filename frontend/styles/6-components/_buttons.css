@@ -39,7 +39,7 @@
 }
 
 .c-btn--accent {
-  background: linear-gradient(135deg, var(--color-accent), #ff3399);
+  background: linear-gradient(135deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 78%, #ffffff));
   color: #ffffff;
   box-shadow: 0 0 15px rgba(var(--color-accent-rgb), 0.35);
 }

@@ -10,6 +10,6 @@ module.exports = {
   githubRepo: process.env.CWU_GITHUB_REPO || 'Filipiss/cwu-app',
   isWindows: process.platform === 'win32',
   dbPath: path.resolve(__dirname, '../../data/cwu_local.db'),
-  defaultTheme: 'futuristic',
+  defaultTheme: 'graphite',
   defaultLanguage: 'pt-BR'
 };
