@@ -3,6 +3,82 @@ const os = require('os');
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
 
+// Script de memória: mede contadores, purga a Standby List e/ou esvazia working sets
+const MEMORY_SCRIPT = (doPurge, doTrim) => `
+$ErrorActionPreference = 'SilentlyContinue'
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public static class CwuMem {
+    [DllImport("psapi.dll")] public static extern bool EmptyWorkingSet(IntPtr hProcess);
+    [DllImport("ntdll.dll")] public static extern int NtSetSystemInformation(int infoClass, ref int info, int length);
+    [DllImport("ntdll.dll")] public static extern int RtlAdjustPrivilege(int privilege, bool enable, bool currentThread, out bool wasEnabled);
+    public static int PurgeStandby() {
+        bool was;
+        RtlAdjustPrivilege(13, true, false, out was); // SeProfileSingleProcessPrivilege
+        int cmd = 4; // MemoryPurgeStandbyList
+        return NtSetSystemInformation(80, ref cmd, 4); // SystemMemoryListInformation
+    }
+    public static int TrimAll() {
+        int count = 0;
+        int self = System.Diagnostics.Process.GetCurrentProcess().Id;
+        foreach (var p in System.Diagnostics.Process.GetProcesses()) {
+            try { if (p.Id > 4 && p.Id != self && EmptyWorkingSet(p.Handle)) count++; } catch {}
+        }
+        return count;
+    }
+}
+"@
+function Get-Mem {
+  $m = Get-CimInstance Win32_PerfRawData_PerfOS_Memory
+  [PSCustomObject]@{
+    standby = [double]$m.StandbyCacheNormalPriorityBytes + [double]$m.StandbyCacheReserveBytes + [double]$m.StandbyCacheCoreBytes
+    free = [double]$m.FreeAndZeroPageListBytes
+  }
+}
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+$before = Get-Mem
+$purgeStatus = $null
+$trimmed = 0
+if (${doTrim ? '$true' : '$false'}) { $trimmed = [CwuMem]::TrimAll() }
+if (${doPurge ? '$true' : '$false'} -and $isAdmin) { $purgeStatus = [CwuMem]::PurgeStandby() }
+Start-Sleep -Milliseconds 300
+$after = Get-Mem
+[PSCustomObject]@{
+  isAdmin = $isAdmin
+  purgeStatus = $purgeStatus
+  processesTrimmed = $trimmed
+  standbyBefore = $before.standby
+  standbyAfter = $after.standby
+  freeBefore = $before.free
+  freeAfter = $after.free
+} | ConvertTo-Json -Compress
+`;
+
+// Remove valores de registro que versões antigas do CWU gravavam (sem efeito real no driver)
+const LEGACY_GPU_CLEANUP_SCRIPT = (vendor) => `
+$ErrorActionPreference = 'SilentlyContinue'
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+$names = ${vendor === 'nvidia' ? "@('LowLatencyMode','PrerenderLimit','D3D_OGL_MaxPrerenderedFrames')" : "@('AntiLag','KMD_FRTC_AntiLag','FlipQueueSize')"}
+$filter = ${vendor === 'nvidia' ? "'*NVIDIA*'" : "'*AMD*'"}
+$base = 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}'
+$found = 0; $removed = 0
+Get-ChildItem $base | Where-Object { $_.PSChildName -match '^\\d{4}$' } | ForEach-Object {
+  $p = Get-ItemProperty $_.PSPath
+  if (($p.ProviderName -like $filter) -or ($p.DriverDesc -like $filter) -or (('${vendor}' -eq 'amd') -and ($p.ProviderName -like '*Advanced Micro*'))) {
+    foreach ($n in $names) {
+      if ($null -ne $p.$n) {
+        $found++
+        if ($isAdmin) {
+          try { Remove-ItemProperty -Path $_.PSPath -Name $n -ErrorAction Stop; $removed++ } catch {}
+        }
+      }
+    }
+  }
+}
+[PSCustomObject]@{ isAdmin = $isAdmin; found = $found; removed = $removed } | ConvertTo-Json -Compress
+`;
+
 class BoostService {
   async getBoostStatus() {
     const totalMem = os.totalmem();
@@ -38,7 +114,7 @@ class BoostService {
       {
         id: 'nvidia_ultra',
         title: 'Modo de Baixa Latência NVIDIA (Ultra)',
-        description: 'Reduz a fila de pré-renderização para resposta imediata do monitor e menor input lag em jogos competitivos.<br><div style="margin-top:10px; padding:10px 12px; background: rgba(132, 204, 22, 0.1); border: 1px solid rgba(132, 204, 22, 0.3); border-radius: 6px; font-size: 0.85rem; line-height: 1.55;"><strong style="color: #84cc16;">📌 Passo a passo no Painel NVIDIA:</strong><br>1. Clique em <strong>Abrir Painel NVIDIA</strong>.<br>2. Na coluna à esquerda, selecione <strong>Gerenciar as configurações em 3D</strong>.<br>3. Na lista central, role até <strong>Modo de Baixa Latência</strong> e escolha <strong>Ultra</strong>.<br>4. Clique em <strong>Aplicar</strong> no canto inferior direito.</div>',
+        description: 'Reduz a fila de pré-renderização para menor input lag em jogos competitivos. Esta configuração fica no perfil do driver e só pode ser alterada pelo Painel NVIDIA; o CWU abre o painel e mostra o caminho.<br><div style="margin-top:10px; padding:10px 12px; background: rgba(132, 204, 22, 0.1); border: 1px solid rgba(132, 204, 22, 0.3); border-radius: 6px; font-size: 0.85rem; line-height: 1.55;"><strong style="color: #84cc16;">📌 Passo a passo no Painel NVIDIA:</strong><br>1. Clique em <strong>Abrir Painel NVIDIA</strong>.<br>2. Na coluna à esquerda, selecione <strong>Gerenciar as configurações em 3D</strong>.<br>3. Na lista central, role até <strong>Modo de Baixa Latência</strong> e escolha <strong>Ultra</strong>.<br>4. Clique em <strong>Aplicar</strong> no canto inferior direito.</div>',
         status: isNvidiaUltra ? 'active' : 'recommended',
         active: isNvidiaUltra,
         gpuType: 'nvidia',
@@ -137,117 +213,58 @@ class BoostService {
     let message = 'Otimização aplicada com sucesso!';
     let details = {};
 
-    // 1. Esvaziar Standby List (RAMMap / ISLC) e Working Sets
+    // 1. Standby List (estilo RAMMap/ISLC) e Working Sets
+    //    Medimos pelos contadores do Windows: os.freemem() já conta a Standby List
+    //    como memória "disponível", então não serve para medir o ganho.
     if (actionId === 'purge_standby' || actionId === 'ram_clean' || actionId === 'full_boost') {
-      let trimmedCount = 0;
-      let standbyPurged = false;
-
-      if (process.platform === 'win32') {
-        const psScript = `
-          Add-Type @"
-          using System;
-          using System.Runtime.InteropServices;
-          public class RamOptimizer {
-              [DllImport("psapi.dll")]
-              public static extern int EmptyWorkingSet(IntPtr hwProc);
-
-              [DllImport("ntdll.dll")]
-              public static extern UInt32 NtSetSystemInformation(int InfoClass, IntPtr Info, int Length);
-
-              [DllImport("advapi32.dll", SetLastError = true)]
-              public static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
-
-              [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-              public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out long lpLuid);
-
-              [DllImport("advapi32.dll", SetLastError = true)]
-              public static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, int BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
-
-              [StructLayout(LayoutKind.Sequential, Pack = 1)]
-              public struct TOKEN_PRIVILEGES {
-                  public int PrivilegeCount;
-                  public long Luid;
-                  public int Attributes;
-              }
-
-              public static bool EnablePrivilege(string privilege) {
-                  try {
-                      IntPtr token;
-                      if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, 0x0020 | 0x0008, out token)) return false;
-                      TOKEN_PRIVILEGES tp = new TOKEN_PRIVILEGES();
-                      tp.PrivilegeCount = 1;
-                      tp.Attributes = 0x00000002;
-                      if (!LookupPrivilegeValue(null, privilege, out tp.Luid)) return false;
-                      return AdjustTokenPrivileges(token, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-                  } catch { return false; }
-              }
-
-              public static bool PurgeStandbyList() {
-                  try {
-                      EnablePrivilege("SeProfileSingleProcessPrivilege");
-                      EnablePrivilege("SeIncreaseQuotaPrivilege");
-                      int cmd = 4;
-                      GCHandle handle = GCHandle.Alloc(cmd, GCHandleType.Pinned);
-                      UInt32 r = NtSetSystemInformation(80, handle.AddrOfPinnedObject(), 4);
-                      handle.Free();
-                      return r == 0;
-                  } catch { return false; }
-              }
-
-              public static int TrimAllProcesses() {
-                  int count = 0;
-                  var currentId = System.Diagnostics.Process.GetCurrentProcess().Id;
-                  foreach (var p in System.Diagnostics.Process.GetProcesses()) {
-                      try {
-                          if (p.Id == currentId || p.Id <= 4) continue;
-                          var name = p.ProcessName.ToLower();
-                          if (name.Contains("system") || name.Contains("idle")) continue;
-                          EmptyWorkingSet(p.Handle);
-                          count++;
-                      } catch {}
-                  }
-                  return count;
-              }
-          }
-"@ -ErrorAction SilentlyContinue
-
-          $standby = [RamOptimizer]::PurgeStandbyList()
-          $trimmed = [RamOptimizer]::TrimAllProcesses()
-
-          [PSCustomObject]@{
-              standbyPurged = $standby
-              processesTrimmed = $trimmed
-          } | ConvertTo-Json -Compress
-        `;
-
-        try {
-          const res = await runPowerShell(psScript, 12000);
-          if (res.success && res.data) {
-            details = res.data;
-            trimmedCount = res.data.processesTrimmed || 0;
-            standbyPurged = Boolean(res.data.standbyPurged);
-          }
-        } catch (err) {
-          console.warn('[BoostService] Erro ao executar limpeza de RAM:', err.message);
-        }
+      if (process.platform !== 'win32') {
+        return { success: false, actionId, message: 'Disponível apenas no Windows.', freedMemoryMb: 0 };
       }
 
-      const freeMemAfter = os.freemem();
-      const freedBytes = Math.max(0, freeMemAfter - freeMemBefore);
-      const freedMb = Math.round(freedBytes / (1024 * 1024));
+      const doPurge = actionId !== 'ram_clean';
+      const doTrim = actionId !== 'purge_standby';
+      const res = await runPowerShell(MEMORY_SCRIPT(doPurge, doTrim), 30000);
 
-      if (freedMb > 0) {
-        message = `Memória otimizada! Foram liberados ${freedMb} MB de RAM física (${trimmedCount} processos descarregados${standbyPurged ? ' e Standby List purgada' : ''}).`;
-      } else {
-        message = `Processos examinados (${trimmedCount} verificados). O cache e os processos já estavam operando com consumo otimizado.`;
+      if (!res.success || !res.data) {
+        return { success: false, actionId, message: 'Falha ao executar a otimização de memória: ' + (res.error || res.raw || 'sem resposta do PowerShell'), freedMemoryMb: 0 };
       }
+
+      const d = res.data;
+      const toMb = (b) => Math.round((Number(b) || 0) / (1024 * 1024));
+      const standbyFreedMb = Math.max(0, toMb(d.standbyBefore) - toMb(d.standbyAfter));
+      const freeGainMb = Math.max(0, toMb(d.freeAfter) - toMb(d.freeBefore));
+
+      if (doPurge && !d.isAdmin) {
+        return {
+          success: false,
+          actionId,
+          needsAdmin: true,
+          message: 'Limpar a Standby List exige privilégio de administrador. Feche o CWU App e abra-o com "Executar como administrador".',
+          freedMemoryMb: 0
+        };
+      }
+
+      if (doPurge && d.purgeStatus !== 0) {
+        return {
+          success: false,
+          actionId,
+          message: `O Windows recusou a limpeza da Standby List (NTSTATUS 0x${(d.purgeStatus >>> 0).toString(16).toUpperCase()}).`,
+          freedMemoryMb: 0,
+          details: d
+        };
+      }
+
+      const parts = [];
+      if (doPurge) parts.push(`Standby List: ${toMb(d.standbyBefore)} MB → ${toMb(d.standbyAfter)} MB (${standbyFreedMb} MB limpos)`);
+      if (doTrim) parts.push(`${d.processesTrimmed} processos descarregados`);
+      parts.push(`RAM livre: +${freeGainMb} MB`);
 
       return {
         success: true,
         actionId,
-        message,
-        freedMemoryMb: freedMb,
-        details
+        message: parts.join(' • '),
+        freedMemoryMb: doPurge ? standbyFreedMb : freeGainMb,
+        details: d
       };
     }
 
@@ -317,177 +334,60 @@ class BoostService {
       };
     }
 
-    // 4. Modo de Baixa Latência NVIDIA (Ultra / Padrão)
-    if (actionId === 'nvidia_ultra' || actionId === 'nvidia_default') {
-      const mode = actionId === 'nvidia_ultra' ? 'ultra' : 'default';
+    // 4/5. Baixa latência NVIDIA / AMD
+    //   O "Modo de baixa latência" da NVIDIA e o Anti-Lag da AMD ficam no perfil
+    //   interno do driver, que só o painel do fabricante altera. Valores gravados
+    //   na chave de classe do registro NÃO são lidos pelo driver. Por isso:
+    //   - "ativar" abre o painel oficial com o passo a passo;
+    //   - "desativar" remove ajustes de registro que versões antigas do CWU gravaram.
+    if (['nvidia_ultra', 'nvidia_default', 'amd_antilag', 'amd_default'].includes(actionId)) {
+      const vendor = actionId.startsWith('nvidia') ? 'nvidia' : 'amd';
+      const isCleanup = actionId.endsWith('_default');
 
-      if (!db.state.activeBoosts) {
-        db.state.activeBoosts = {};
+      if (process.platform !== 'win32') {
+        return { success: false, actionId, message: 'Disponível apenas no Windows.', freedMemoryMb: 0 };
       }
-      db.state.activeBoosts.nvidia_ultra = (mode === 'ultra');
+
+      if (!isCleanup) {
+        await this.runBoostOptimization(vendor === 'nvidia' ? 'open_nvidia_settings' : 'open_amd_settings');
+        return {
+          success: true,
+          actionId,
+          message: vendor === 'nvidia'
+            ? 'Painel NVIDIA aberto: vá em "Gerenciar as configurações em 3D" › "Modo de baixa latência" › Ultra › Aplicar.'
+            : 'AMD Software aberto: vá em Jogos › Gráficos e ative o Radeon Anti-Lag.',
+          freedMemoryMb: 0
+        };
+      }
+
+      const res = await runPowerShell(LEGACY_GPU_CLEANUP_SCRIPT(vendor), 15000);
+      const d = (res.success && res.data) ? res.data : null;
+
+      if (!d) {
+        return { success: false, actionId, message: 'Falha ao acessar o registro: ' + (res.error || 'sem resposta do PowerShell'), freedMemoryMb: 0 };
+      }
+      if (d.found > 0 && !d.isAdmin) {
+        return {
+          success: false,
+          actionId,
+          needsAdmin: true,
+          message: 'Remover os ajustes antigos do registro exige administrador. Abra o CWU App com "Executar como administrador".',
+          freedMemoryMb: 0
+        };
+      }
+
+      if (!db.state.activeBoosts) db.state.activeBoosts = {};
+      db.state.activeBoosts[vendor === 'nvidia' ? 'nvidia_ultra' : 'amd_antilag'] = false;
       db.save();
-
-      if (process.platform === 'win32') {
-        const psScript = `
-          $baseClass = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}"
-          $results = @{ success = $false; applied = @() }
-          try {
-            $subkeys = Get-ChildItem -Path $baseClass -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' }
-            foreach ($key in $subkeys) {
-              $props = Get-ItemProperty -Path $key.PSPath -ErrorAction SilentlyContinue
-              if ($props.ProviderName -like "*NVIDIA*" -or $props.DriverDesc -like "*NVIDIA*" -or $props.DriverDesc -like "*GeForce*") {
-                if ("${mode}" -eq "ultra") {
-                  Set-ItemProperty -Path $key.PSPath -Name "LowLatencyMode" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
-                  Set-ItemProperty -Path $key.PSPath -Name "PrerenderLimit" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                } else {
-                  Set-ItemProperty -Path $key.PSPath -Name "LowLatencyMode" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                  Set-ItemProperty -Path $key.PSPath -Name "PrerenderLimit" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                }
-                $results.applied += $key.PSChildName
-              }
-            }
-            $results.success = $true
-          } catch {}
-
-          # Abre diretamente o Painel de Controle da NVIDIA para sincronização de 3D
-          $pkg = Get-AppxPackage -Name "*NVIDIAControlPanel*" -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($pkg) {
-            Start-Process "shell:AppsFolder\\$($pkg.PackageFamilyName)!NVIDIACorp.NVIDIAControlPanel" -ErrorAction SilentlyContinue
-          } else {
-            $paths = @(
-              "C:\\Program Files\\NVIDIA Corporation\\Control Panel Client\\nvcplui.exe",
-              "C:\\Windows\\System32\\nvcplui.exe",
-              "C:\\Program Files\\NVIDIA Corporation\\NVIDIA App\\CEF\\NVIDIA App.exe"
-            )
-            $found = $false
-            foreach ($p in $paths) {
-              if (Test-Path $p) {
-                Start-Process $p -ErrorAction SilentlyContinue
-                $found = $true
-                break
-              }
-            }
-            if (-not $found) {
-              Start-Process "shell:AppsFolder\\NVIDIACorp.NVIDIAControlPanel_56jybvy8sckqj!NVIDIACorp.NVIDIAControlPanel" -ErrorAction SilentlyContinue
-            }
-          }
-
-          $results | ConvertTo-Json -Compress
-        `;
-
-        try {
-          const res = await runPowerShell(psScript, 8000);
-          if (res.success && res.data) {
-            details = res.data;
-          }
-        } catch (e) {
-          console.warn('[BoostService] Erro ao aplicar NVIDIA latency:', e.message);
-        }
-      }
-
-      if (mode === 'ultra') {
-        db.addUpdateLog({
-          type: 'boost',
-          title: 'Modo de Baixa Latência NVIDIA (Ultra)',
-          category: 'GPU NVIDIA',
-          details: 'Modo Ultra configurado. Painel NVIDIA aberto para sincronização em Gerenciar as configurações em 3D.',
-          actionId: 'nvidia_ultra',
-          revertAction: 'nvidia_default'
-        });
-      }
-
-      message = mode === 'ultra'
-        ? 'Painel NVIDIA aberto! Em "Gerenciar as configurações em 3D", confirme "Modo de Baixa Latência" como Ultra e clique em Aplicar.'
-        : 'Modo de Latência NVIDIA restaurado para o padrão no CWU App.';
 
       return {
         success: true,
         actionId,
-        message,
+        message: d.removed > 0
+          ? `${d.removed} ajuste(s) antigo(s) removido(s) do registro. Para mudar a latência de fato, use o painel ${vendor === 'nvidia' ? 'NVIDIA' : 'AMD'}.`
+          : `Nenhum ajuste antigo do CWU no registro. A configuração real fica no painel ${vendor === 'nvidia' ? 'NVIDIA' : 'AMD'}.`,
         freedMemoryMb: 0,
-        details
-      };
-    }
-
-    // 5. Modo de Baixa Latência AMD Radeon (Anti-Lag / Padrão)
-    if (actionId === 'amd_antilag' || actionId === 'amd_default') {
-      const mode = actionId === 'amd_antilag' ? 'ultra' : 'default';
-
-      if (!db.state.activeBoosts) {
-        db.state.activeBoosts = {};
-      }
-      db.state.activeBoosts.amd_antilag = (mode === 'ultra');
-      db.save();
-
-      if (process.platform === 'win32') {
-        const psScript = `
-          $baseClass = "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}"
-          $results = @{ success = $false; applied = @() }
-          try {
-            $subkeys = Get-ChildItem -Path $baseClass -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -match '^\\d{4}$' }
-            foreach ($key in $subkeys) {
-              $props = Get-ItemProperty -Path $key.PSPath -ErrorAction SilentlyContinue
-              if ($props.ProviderName -like "*AMD*" -or $props.ProviderName -like "*Advanced Micro*" -or $props.DriverDesc -like "*Radeon*" -or $props.DriverDesc -like "*AMD*") {
-                if ("${mode}" -eq "ultra") {
-                  Set-ItemProperty -Path $key.PSPath -Name "AntiLag" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                  Set-ItemProperty -Path $key.PSPath -Name "FlipQueueSize" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                } else {
-                  Set-ItemProperty -Path $key.PSPath -Name "AntiLag" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                  Set-ItemProperty -Path $key.PSPath -Name "FlipQueueSize" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
-                }
-                $results.applied += $key.PSChildName
-              }
-            }
-            $results.success = $true
-          } catch {}
-
-          # Abre AMD Software Adrenalin
-          $amdPaths = @(
-            "C:\\Program Files\\AMD\\CNext\\CNext\\RadeonSoftware.exe",
-            "C:\\Program Files\\AMD\\CNext\\CNext\\AMDSoftware.exe",
-            "C:\\Program Files\\AMD\\CNext\\CNext\\cncmd.exe"
-          )
-          foreach ($p in $amdPaths) {
-            if (Test-Path $p) {
-              Start-Process $p -ArgumentList "-open Gaming/Graphics" -ErrorAction SilentlyContinue
-              break
-            }
-          }
-
-          $results | ConvertTo-Json -Compress
-        `;
-
-        try {
-          const res = await runPowerShell(psScript, 8000);
-          if (res.success && res.data) {
-            details = res.data;
-          }
-        } catch (e) {
-          console.warn('[BoostService] Erro ao aplicar AMD latency:', e.message);
-        }
-      }
-
-      if (mode === 'ultra') {
-        db.addUpdateLog({
-          type: 'boost',
-          title: 'Modo de Baixa Latência AMD Radeon (Anti-Lag)',
-          category: 'GPU AMD',
-          details: 'Recurso Radeon Anti-Lag ativado no driver AMD para sincronização CPU-GPU.',
-          actionId: 'amd_antilag',
-          revertAction: 'amd_default'
-        });
-      }
-
-      message = mode === 'ultra'
-        ? 'Radeon Anti-Lag ativado no CWU App e AMD Software aberto!'
-        : 'Radeon Anti-Lag restaurado para o padrão.';
-
-      return {
-        success: true,
-        actionId,
-        message,
-        freedMemoryMb: 0,
-        details
+        details: d
       };
     }
 

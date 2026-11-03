@@ -77,8 +77,8 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <div class="o-flex o-flex--gap-sm">
-                <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="nvidia_default" title="Clique para desativar o modo Ultra e redefinir no CWU">
-                  <span>Desativar Ultra</span> ↩️
+                <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="nvidia_default" title="Remove do registro os valores gravados por versões antigas do CWU (o driver NVIDIA não os utiliza)">
+                  <span>Remover ajuste antigo</span> ↩️
                 </button>
                 <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Reabrir Painel NVIDIA para verificar ou aplicar configurações">
                   <span>Reabrir Painel</span> ⚡
@@ -93,7 +93,7 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Ativa o modo no CWU e abre o Painel de Controle NVIDIA">
-                <span>Ativar Modo Ultra</span> ⚡
+                <span>Configurar no Painel NVIDIA</span> ⚡
               </button>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="nvidia" title="Abre o Painel de Controle NVIDIA diretamente na sua tela">
                 <span>Abrir Painel NVIDIA</span> ↗
@@ -108,7 +108,7 @@ const BoostModule = {
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <div class="o-flex o-flex--gap-sm">
                 <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="amd_default" title="Clique para desativar Anti-Lag">
-                  <span>Desativar Anti-Lag</span> ↩️
+                  <span>Remover ajuste antigo</span> ↩️
                 </button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
                   <span>Reabrir AMD</span> ⚡
@@ -123,7 +123,7 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
-                <span>Ativar Radeon Anti-Lag</span> ⚡
+                <span>Configurar no AMD Software</span> ⚡
               </button>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="amd" title="Abre o AMD Software Adrenalin diretamente na aba de Gráficos / Jogos">
                 <span>Abrir AMD Software</span> ↗
@@ -182,11 +182,10 @@ const BoostModule = {
 
         try {
           const res = await API.runBoost(id);
-          if (res.success) {
-            App.showToast(res.data.message || 'Otimização executada com sucesso!', 'success');
-            // Atualiza status real na interface
-            await this.loadStatus();
-          }
+          const ok = res.success && res.data && res.data.success !== false;
+          App.showToast((res.data && res.data.message) || (ok ? 'Otimização executada.' : 'A otimização falhou.'), ok ? 'success' : (res.data && res.data.needsAdmin ? 'warning' : 'danger'), res.data && res.data.needsAdmin ? 9000 : null);
+          // Atualiza status real na interface
+          await this.loadStatus();
         } catch (err) {
           App.showToast('Erro ao executar otimização', 'danger');
           btn.disabled = false;
@@ -234,7 +233,9 @@ const BoostModule = {
       btn.innerHTML = '<span>🚀 Boost Gamer & Standby Limpos</span>';
 
       await this.loadStatus();
-      App.showToast(res.data.message || 'Memória em cache e processos otimizados com sucesso!', 'success');
+      const ok = res.data && res.data.success !== false;
+      if (!ok) btn.innerHTML = '<span>Ativar Boost Gamer</span> ⚡';
+      App.showToast((res.data && res.data.message) || 'Otimização concluída.', ok ? 'success' : 'warning', ok ? null : 9000);
     } catch (err) {
       btn.disabled = false;
       btn.innerHTML = '<span>Ativar Boost Gamer</span> ⚡';
