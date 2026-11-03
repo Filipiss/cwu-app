@@ -1,0 +1,50 @@
+{
+  "name": "cwu-app-backend",
+  "version": "1.0.0",
+  "description": "Backend local para o CWU App (Clean Windows Utility) com acesso a WMI, PowerShell e SQLite local",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "electron": "electron electron-main.js",
+    "app": "electron .",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.cwuapp.utility",
+    "productName": "CWU App",
+    "directories": {
+      "output": "../release"
+    },
+    "extraResources": [
+      {
+        "from": "../frontend",
+        "to": "frontend"
+      }
+    ],
+    "win": {
+      "target": ["portable"]
+    },
+    "portable": {
+      "artifactName": "CWU-App-Portable-${version}.${ext}"
+    }
+  },
+  "keywords": [
+    "cwu",
+    "drivers",
+    "post-format",
+    "windows-specs",
+    "bsod-analyzer"
+  ],
+  "author": "CWU Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0"
+  }
+}

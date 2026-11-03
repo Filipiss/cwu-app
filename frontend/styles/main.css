@@ -1,0 +1,36 @@
+/* frontend/styles/main.css */
+/* ==========================================================================
+   CWU App - Clean Windows Utility
+   Metodologia: BEMIT (Inverted Triangle CSS + BEM)
+   ========================================================================== */
+
+/* 1. Settings */
+@import url('./1-settings/_variables.css');
+@import url('./1-settings/_themes.css');
+
+/* 2. Tools */
+@import url('./2-tools/_animations.css');
+
+/* 3. Generic */
+@import url('./3-generic/_reset.css');
+
+/* 4. Elements */
+@import url('./4-elements/_base.css');
+
+/* 5. Objects */
+@import url('./5-objects/_layout.css');
+
+/* 6. Components */
+@import url('./6-components/_sidebar.css');
+@import url('./6-components/_header.css');
+@import url('./6-components/_cards.css');
+@import url('./6-components/_gauge.css');
+@import url('./6-components/_tables.css');
+@import url('./6-components/_buttons.css');
+@import url('./6-components/_badge.css');
+@import url('./6-components/_tabs.css');
+@import url('./6-components/_toast.css');
+@import url('./6-components/_soft-list.css');
+
+/* 7. Utilities */
+@import url('./7-utilities/_utilities.css');

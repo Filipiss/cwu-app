@@ -1,0 +1,50 @@
+/* frontend/styles/6-components/_badge.css */
+/* Components: Badges de Status e Tags */
+
+.c-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+}
+
+.c-badge--success {
+  background-color: rgba(var(--color-success-rgb), 0.12);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--color-success-rgb), 0.3);
+}
+
+.c-badge--warning {
+  background-color: rgba(var(--color-warning-rgb), 0.12);
+  color: var(--color-warning);
+  border: 1px solid rgba(var(--color-warning-rgb), 0.3);
+}
+
+.c-badge--danger {
+  background-color: rgba(var(--color-danger-rgb), 0.15);
+  color: var(--color-danger);
+  border: 1px solid rgba(var(--color-danger-rgb), 0.3);
+}
+
+.c-badge--info {
+  background-color: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+}
+
+.c-badge--neutral {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.c-badge--score {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  padding: 4px 10px;
+}

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  cwu-app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: cwu-app
+    ports:
+      - "4321:4321"
+    restart: unless-stopped

@@ -1,0 +1,96 @@
+/* frontend/styles/6-components/_buttons.css */
+/* Components: Botões BEMIT */
+
+.c-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.c-btn:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.c-btn:active {
+  transform: translateY(0);
+}
+
+.c-btn--primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: #060911;
+  box-shadow: var(--glow-primary);
+  border-color: var(--color-primary);
+}
+
+.c-btn--primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 20px rgba(var(--color-primary-rgb), 0.5);
+}
+
+.c-btn--accent {
+  background: linear-gradient(135deg, var(--color-accent), #ff3399);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(var(--color-accent-rgb), 0.35);
+}
+
+.c-btn--secondary {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.c-btn--secondary:hover {
+  background-color: var(--color-bg-card-hover);
+  border-color: var(--color-text-muted);
+}
+
+.c-btn--outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: rgba(var(--color-primary-rgb), 0.4);
+}
+
+.c-btn--outline:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-color: var(--color-primary);
+}
+
+.c-btn--xs {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  border-radius: var(--radius-sm);
+  gap: 4px;
+}
+
+.c-btn--sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+}
+
+.c-btn--lg {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-md);
+}
+
+.c-btn:disabled,
+.c-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.c-btn__icon {
+  font-size: 1rem;
+}

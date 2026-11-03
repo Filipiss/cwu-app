@@ -1,0 +1,85 @@
+/* frontend/styles/5-objects/_layout.css */
+/* Objects: Estruturas de Layout Reutilizáveis (OOCSS) */
+
+.o-app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--color-bg-main);
+}
+
+.o-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-bg-main);
+  position: relative;
+}
+
+.o-content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.o-container {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.o-grid {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.o-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.o-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.o-grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.o-grid--auto {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.o-flex {
+  display: flex;
+  align-items: center;
+}
+
+.o-flex--between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.o-flex--column {
+  display: flex;
+  flex-direction: column;
+}
+
+.o-flex--gap-sm { gap: var(--spacing-xs); }
+.o-flex--gap-md { gap: var(--spacing-md); }
+.o-flex--gap-lg { gap: var(--spacing-lg); }
+
+@media (max-width: 1024px) {
+  .o-grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .o-grid--2, .o-grid--3, .o-grid--4 {
+    grid-template-columns: 1fr;
+  }
+}

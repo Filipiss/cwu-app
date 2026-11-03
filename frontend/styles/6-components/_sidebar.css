@@ -1,0 +1,143 @@
+/* frontend/styles/6-components/_sidebar.css */
+/* Components: Sidebar de Navegação do CWU App */
+
+.c-sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--color-bg-sidebar);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.c-sidebar__brand {
+  padding: var(--spacing-lg) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.c-sidebar__logo {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--glow-primary);
+  color: #060911;
+  font-weight: 800;
+  font-size: var(--font-size-md);
+}
+
+.c-sidebar__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.c-sidebar__version-tag {
+  font-size: var(--font-size-xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+}
+
+.c-sidebar__subtitle {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.c-nav {
+  flex: 1;
+  padding: var(--spacing-md) var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  overflow-y: auto;
+}
+
+.c-nav__category {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 1px;
+  font-weight: 700;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xxs);
+}
+
+.c-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.c-nav__item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-primary);
+}
+
+.c-nav__item--active {
+  background-color: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary);
+  border-color: rgba(var(--color-primary-rgb), 0.25);
+  font-weight: 600;
+}
+
+.c-nav__item--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background-color: var(--color-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  box-shadow: var(--glow-primary);
+}
+
+.c-nav__icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.c-nav__badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.c-sidebar__footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

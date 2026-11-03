@@ -1,0 +1,283 @@
+/* frontend/styles/6-components/_soft-list.css */
+/* Components: Barra de Pesquisa, Sugestões e Lista Alfabética de Softwares */
+
+/* 1. Barra de Busca */
+.c-search-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+}
+
+.c-search-input {
+  width: 100%;
+  padding: 14px 48px 14px 44px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.c-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--glow-primary);
+  background-color: var(--color-bg-card-hover);
+}
+
+.c-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.c-search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  display: none;
+  font-size: 1rem;
+}
+
+.c-search-clear:hover {
+  color: var(--color-danger);
+}
+
+/* 2. Sugestões de Busca ao Digitar */
+.c-suggestions-box {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  min-height: 28px;
+}
+
+.c-suggestions-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.c-suggestion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.25);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.c-suggestion-pill:hover {
+  background-color: var(--color-primary);
+  color: #060911;
+  transform: translateY(-1px);
+}
+
+/* 2. Barra Unificada (Busca + Dropdown) */
+.c-soft-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  width: 100%;
+}
+
+.c-soft-toolbar .c-search-box {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* 3. Dropdown de Categorias */
+.c-select-wrapper {
+  position: relative;
+  min-width: 260px;
+  flex-shrink: 0;
+}
+
+.c-select {
+  width: 100%;
+  padding: 14px 44px 14px 18px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.c-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--glow-primary);
+  background-color: var(--color-bg-card-hover);
+}
+
+.c-select option {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  padding: 10px;
+}
+
+.c-select-arrow {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  transition: transform var(--transition-fast);
+}
+
+@media (max-width: 768px) {
+  .c-soft-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .c-select-wrapper {
+    min-width: 100%;
+  }
+}
+
+.c-filter-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.c-filter-pill--active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: #060911 !important;
+  border-color: var(--color-primary);
+  box-shadow: var(--glow-primary);
+}
+
+/* 4. Lista Alfabética de Softwares */
+.c-soft-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.c-soft-item {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.c-soft-item:hover {
+  background-color: var(--color-bg-card-hover);
+  border-color: rgba(var(--color-primary-rgb), 0.35);
+  transform: translateX(4px);
+}
+
+.c-soft-item--highlight {
+  border-left: 4px solid var(--color-accent);
+}
+
+.c-soft-item__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.c-soft-item__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.c-soft-item__name {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.c-soft-item__desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  max-width: 800px;
+}
+
+.c-soft-item__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+/* Estado Vazio / Inicial */
+.c-soft-empty-state {
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  text-align: center;
+  background-color: var(--color-bg-card);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-md);
+}
+
+.c-soft-empty-state__icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+.c-soft-empty-state__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
+}
+
+.c-soft-empty-state__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .c-soft-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .c-soft-item__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--spacing-sm);
+  }
+}

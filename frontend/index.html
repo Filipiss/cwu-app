@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="futuristic">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CWU App - Clean Windows Utility (Pós-Formatação)</title>
+  <meta name="description" content="Assistente pós-formatação para atualização de drivers, pontuação de hardware, diagnóstico de telas azuis e otimização do Windows.">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+  <div class="o-app">
+    <!-- 1. SIDEBAR DE NAVEGAÇÃO -->
+    <aside class="c-sidebar">
+      <div class="c-sidebar__brand">
+        <div class="c-sidebar__logo">⚡</div>
+        <div>
+          <div class="c-sidebar__title">
+            CWU App
+            <span class="c-sidebar__version-tag">v1.0</span>
+          </div>
+          <div class="c-sidebar__subtitle">Clean Windows Utility</div>
+        </div>
+      </div>
+
+      <nav class="c-nav">
+        <div class="c-nav__category">Principal</div>
+        <div class="c-nav__item c-nav__item--active js-nav-item" data-tab="specs">
+          <span class="c-nav__icon">📊</span>
+          <span>System Specs</span>
+        </div>
+        <div class="c-nav__item js-nav-item" data-tab="scan">
+          <span class="c-nav__icon">🔍</span>
+          <span>Scannear Drivers</span>
+          <span class="c-nav__badge c-badge--neutral" id="sidebar-badge-drivers">-</span>
+        </div>
+        <div class="c-nav__item js-nav-item" data-tab="softs">
+          <span class="c-nav__icon">📦</span>
+          <span>Softwares Pós-Format</span>
+        </div>
+
+        <div class="c-nav__category">Diagnóstico & Boost</div>
+        <div class="c-nav__item js-nav-item" data-tab="boost">
+          <span class="c-nav__icon">🚀</span>
+          <span>Boost Gamer (Demo)</span>
+        </div>
+        <div class="c-nav__item js-nav-item" data-tab="logs">
+          <span class="c-nav__icon">📋</span>
+          <span>Logs de Atualizações</span>
+        </div>
+
+        <div class="c-nav__category">Aplicativo</div>
+        <div class="c-nav__item js-nav-item" data-tab="settings">
+          <span class="c-nav__icon">⚙️</span>
+          <span>Configurações</span>
+        </div>
+        <div class="c-nav__item js-nav-item" data-tab="versions">
+          <span class="c-nav__icon">✨</span>
+          <span>Novas Versões</span>
+        </div>
+      </nav>
+
+      <div class="c-sidebar__footer">
+        <div class="o-flex o-flex--gap-sm">
+          <div class="c-header__dot"></div>
+          <span style="font-size: 0.75rem; color: var(--color-text-secondary);">Sistema Conectado</span>
+        </div>
+        <span style="font-size: 0.7rem; color: var(--color-text-muted);">100% Local</span>
+      </div>
+    </aside>
+
+    <!-- 2. ÁREA PRINCIPAL -->
+    <main class="o-main">
+      <!-- HEADER SUPERIOR -->
+      <header class="c-header">
+        <div class="c-header__info">
+          <h1 class="c-header__title" id="page-header-title">
+            <span>Clean Windows Utility</span>
+          </h1>
+          <span class="c-header__subtitle">Assistente Pós-Formatação e Otimização Direta do Windows</span>
+        </div>
+
+        <div class="c-header__actions">
+          <div class="c-header__status-indicator">
+            <span class="c-header__dot"></span>
+            <span>WMI / PowerShell Ativo</span>
+          </div>
+          <button class="c-btn c-btn--secondary c-btn--sm" id="btn-quick-theme" title="Alternar entre temas Futurista, Clássico e Claro">
+            <span>🎨 Tema</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTEÚDO SCROLLÁVEL COM TODAS AS ABAS -->
+      <div class="o-content-scroll">
+        <div class="o-container">
+
+          <!-- ABA 1: SYSTEM SPECS -->
+          <section id="tab-specs" class="c-tab-panel c-tab-panel--active">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">📊 Especificações do Sistema</h2>
+                <p class="c-section-header__desc">Diagnóstico detalhado de hardware com pontuação técnica para cada componente.</p>
+              </div>
+              <button class="c-btn c-btn--outline c-btn--sm" id="btn-refresh-specs">
+                <span>Atualizar Leitura</span> 🔄
+              </button>
+            </div>
+
+            <!-- CARD DE PONTUAÇÃO GERAL (OVERALL SCORE) -->
+            <div class="c-overall-score">
+              <div class="c-score-gauge">
+                <svg class="c-score-gauge__svg" viewBox="0 0 100 100">
+                  <circle class="c-score-gauge__bg" cx="50" cy="50" r="44"></circle>
+                  <circle class="c-score-gauge__progress" id="score-gauge-progress" cx="50" cy="50" r="44" style="stroke-dasharray: 276.46; stroke-dashoffset: 276.46;"></circle>
+                </svg>
+                <div class="c-score-gauge__value">
+                  <span class="c-score-gauge__number" id="overall-score-val">--</span>
+                  <span class="c-score-gauge__max">DE 10.0</span>
+                </div>
+              </div>
+
+              <div class="c-overall-score__info">
+                <span class="c-overall-score__badge" id="overall-score-tier">Calculando pontuação...</span>
+                <h3 class="c-overall-score__title">Índice Geral de Desempenho</h3>
+                <p class="c-overall-score__desc" id="overall-score-summary">
+                  Avaliando harmonia de hardware entre CPU, Placa de Vídeo, Memória RAM e Velocidade de Armazenamento.
+                </p>
+              </div>
+            </div>
+
+            <!-- CARDS DE COMPONENTES DE HARDWARE -->
+            <div class="o-grid o-grid--2 u-mb-lg">
+              <!-- CPU -->
+              <div class="c-spec-card">
+                <div class="c-spec-card__top">
+                  <div>
+                    <span class="c-spec-card__category">Processador</span>
+                    <h3 class="c-spec-card__name" id="spec-cpu-name">Detectando...</h3>
+                    <p class="c-spec-card__details" id="spec-cpu-details">-</p>
+                  </div>
+                  <div class="c-spec-card__icon">⚡</div>
+                </div>
+                <div class="c-spec-card__bottom">
+                  <span class="c-spec-card__rating-label">Nota do Componente</span>
+                  <span class="c-badge c-badge--score" id="spec-cpu-score">--</span>
+                </div>
+                <div class="c-progress-bar">
+                  <div class="c-progress-bar__fill" id="spec-cpu-progress" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- GPU -->
+              <div class="c-spec-card">
+                <div class="c-spec-card__top">
+                  <div>
+                    <span class="c-spec-card__category">Placa de Vídeo</span>
+                    <h3 class="c-spec-card__name" id="spec-gpu-name">Detectando...</h3>
+                    <p class="c-spec-card__details" id="spec-gpu-details">-</p>
+                  </div>
+                  <div class="c-spec-card__icon">🎮</div>
+                </div>
+                <div class="c-spec-card__bottom">
+                  <span class="c-spec-card__rating-label">Nota do Componente</span>
+                  <span class="c-badge c-badge--score" id="spec-gpu-score">--</span>
+                </div>
+                <div class="c-progress-bar">
+                  <div class="c-progress-bar__fill" id="spec-gpu-progress" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- RAM -->
+              <div class="c-spec-card">
+                <div class="c-spec-card__top">
+                  <div>
+                    <span class="c-spec-card__category">Memória RAM</span>
+                    <h3 class="c-spec-card__name" id="spec-ram-name">Detectando...</h3>
+                    <p class="c-spec-card__details" id="spec-ram-details">-</p>
+                  </div>
+                  <div class="c-spec-card__icon">🧠</div>
+                </div>
+                <div class="c-spec-card__bottom">
+                  <span class="c-spec-card__rating-label">Nota do Componente</span>
+                  <span class="c-badge c-badge--score" id="spec-ram-score">--</span>
+                </div>
+                <div class="c-progress-bar">
+                  <div class="c-progress-bar__fill" id="spec-ram-progress" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- STORAGE -->
+              <div class="c-spec-card">
+                <div class="c-spec-card__top">
+                  <div>
+                    <span class="c-spec-card__category">Armazenamento</span>
+                    <h3 class="c-spec-card__name" id="spec-storage-name">Detectando...</h3>
+                    <p class="c-spec-card__details" id="spec-storage-details">-</p>
+                  </div>
+                  <div class="c-spec-card__icon">💾</div>
+                </div>
+                <div class="c-spec-card__bottom">
+                  <span class="c-spec-card__rating-label">Nota do Componente</span>
+                  <span class="c-badge c-badge--score" id="spec-storage-score">--</span>
+                </div>
+                <div class="c-progress-bar">
+                  <div class="c-progress-bar__fill" id="spec-storage-progress" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DETALHES DE PLACA-MÃE E WINDOWS -->
+            <div class="c-card">
+              <div class="c-card__header">
+                <h4 class="c-card__title">Plataforma & Sistema Operacional</h4>
+                <span class="c-badge c-badge--neutral">Ambiente Windows</span>
+              </div>
+              <div class="o-grid o-grid--2">
+                <div>
+                  <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Placa-Mãe (Motherboard)</span>
+                  <p class="u-font-bold u-mt-sm" id="spec-motherboard">Carregando...</p>
+                </div>
+                <div>
+                  <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Edição do Windows</span>
+                  <p class="u-font-bold u-mt-sm" id="spec-os">Carregando...</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ABA 2: SCAN DE DRIVERS -->
+          <section id="tab-scan" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">🔍 Scannear Drivers</h2>
+                <p class="c-section-header__desc">Varre dispositivos Plug-and-Play (PnP) e detecta drivers genéricos ou desatualizados.</p>
+              </div>
+              <button class="c-btn c-btn--primary" id="btn-start-scan">
+                <span>Scannear Drivers</span> 🔍
+              </button>
+            </div>
+
+            <!-- BANNER DE RESUMO DO SCAN -->
+            <div class="c-card u-mb-lg">
+              <div class="o-flex o-flex--between">
+                <div>
+                  <h4 class="c-card__title">Status do Escaneamento</h4>
+                  <p id="scan-status-summary">Pressione "Scannear Drivers" para examinar os drivers da máquina.</p>
+                </div>
+                <div id="scan-radar-sweep" class="u-hidden">
+                  <span class="c-badge c-badge--warning u-spin">🔄 Escaneando PnP...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TABELA DE RESULTADOS -->
+            <div class="c-table-wrapper">
+              <table class="c-table">
+                <thead class="c-table__head">
+                  <tr>
+                    <th class="c-table__th">Dispositivo</th>
+                    <th class="c-table__th">Fabricante</th>
+                    <th class="c-table__th">Versão Instalada</th>
+                    <th class="c-table__th">Situação</th>
+                    <th class="c-table__th u-text-right" style="min-width: 220px;">Atualização & Ação</th>
+                  </tr>
+                </thead>
+                <tbody id="scan-drivers-tbody">
+                  <tr>
+                    <td colspan="5" class="c-table__td u-text-center u-text-muted">
+                      Aguardando início do escaneamento.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ABA 4: SOFTWARES PÓS-FORMATAÇÃO (BUSCA + FILTROS + LISTA ALFABÉTICA) -->
+          <section id="tab-softs" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">📦 Catálogo de Softwares Pós-Formatação</h2>
+                <p class="c-section-header__desc">Encontre e baixe rapidamente instaladores oficiais sem anúncios para seu Windows recém-formatado.</p>
+              </div>
+              <div id="soft-results-counter" class="c-badge c-badge--info u-hidden">
+                0 softwares encontrados
+              </div>
+            </div>
+
+            <!-- 1. BARRA UNIFICADA (BUSCA + DROPDOWN DE CATEGORIAS) -->
+            <div class="c-soft-toolbar">
+              <div class="c-search-box">
+                <span class="c-search-icon">🔍</span>
+                <input type="text" id="soft-search-input" class="c-search-input" placeholder="Digite o nome do software (ex: Steam, Visual C++, Chrome, Discord, Afterburner)..." autocomplete="off" spellcheck="false">
+                <button id="soft-search-clear" class="c-search-clear" title="Limpar busca">✕</button>
+              </div>
+
+              <div class="c-select-wrapper">
+                <select id="soft-category-select" class="c-select">
+                  <option value="">📂 Filtrar por Categoria...</option>
+                  <option value="all">🌟 Todas as Categorias (A-Z)</option>
+                  <option value="windows">⚡ Windows & Runtimes</option>
+                  <option value="games">🎮 Games & Launchers</option>
+                  <option value="navegadores">🌐 Navegadores Web</option>
+                  <option value="utilitarios">🛠️ Utilitários & Sistema</option>
+                  <option value="hardware">📊 Hardware & Diagnóstico</option>
+                  <option value="comunicacao">💬 Comunicação & Chat</option>
+                  <option value="midia">🎬 Mídia & Streaming</option>
+                  <option value="dev">💻 Desenvolvimento & Código</option>
+                  <option value="seguranca">🔒 Segurança & Rede</option>
+                </select>
+                <span class="c-select-arrow">▼</span>
+              </div>
+            </div>
+
+            <!-- 2. SUGESTÕES DE BUSCA AO DIGITAR -->
+            <div class="c-suggestions-box" id="soft-suggestions-container">
+              <!-- Pílulas de sugestão renderizadas dinamicamente via softs.js -->
+            </div>
+
+            <!-- 4. LISTA DE SOFTWARES (COMEÇA EM BRANCO COM ESTADO INICIAL) -->
+            <div id="soft-results-container">
+              <div class="c-soft-empty-state" id="soft-initial-empty-state">
+                <div class="c-soft-empty-state__icon">🔍</div>
+                <h3 class="c-soft-empty-state__title">Pesquise ou Escolha uma Categoria</h3>
+                <p class="c-soft-empty-state__desc">
+                  Digite qualquer letra no campo de busca ou clique em uma das categorias acima para listar os programas disponíveis em ordem alfabética.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ABA 5: BOOST GAMER (DEMO) -->
+          <section id="tab-boost" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">🚀 Boost Gamer (Modo Otimizador)</h2>
+                <p class="c-section-header__desc">Aba demonstrativa para liberação de memória RAM e suspensão de processos supérfluos.</p>
+              </div>
+              <button class="c-btn c-btn--accent c-btn--lg" id="btn-main-boost">
+                <span>Ativar Boost Gamer</span> ⚡
+              </button>
+            </div>
+
+            <!-- PAINEL DE MEMÓRIA RAM ATUAL -->
+            <div class="c-card u-mb-lg">
+              <div class="c-card__header">
+                <div>
+                  <h3 class="c-card__title">Utilização da Memória RAM em Tempo Real</h3>
+                  <span class="c-card__subtitle" id="boost-ram-details">Lendo status de memória...</span>
+                </div>
+                <span class="c-badge c-badge--score c-badge--info" id="boost-ram-percent">--%</span>
+              </div>
+              <div class="c-progress-bar" style="height: 10px;">
+                <div class="c-progress-bar__fill" id="boost-ram-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- CARDS DE OTIMIZAÇÃO INDIVIDUAIS -->
+            <div class="o-grid o-grid--2" id="boost-optimizations-grid">
+              <!-- Renderizado dinamicamente via boost.js -->
+            </div>
+          </section>
+
+          <!-- ABA 6: LOGS DE ATUALIZAÇÕES & MODIFICAÇÕES -->
+          <section id="tab-logs" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">📋 Logs de Atualizações & Modificações</h2>
+                <p class="c-section-header__desc">Histórico exclusivo do que foi atualizado e configurado na máquina, com suporte a reversão rápida.</p>
+              </div>
+              <div class="o-flex o-flex--gap-sm">
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
+                  <span>Limpar Histórico</span> 🗑️
+                </button>
+                <button class="c-btn c-btn--primary c-btn--sm" id="btn-refresh-logs">
+                  <span>Atualizar Lista</span> 🔄
+                </button>
+              </div>
+            </div>
+
+            <!-- RESUMO DE MODIFICAÇÕES -->
+            <div class="c-card u-mb-lg">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">Status das Modificações Realizadas</h4>
+                  <p id="logs-summary-text" class="u-text-muted">Acompanhe apenas as alterações aplicadas nesta máquina.</p>
+                </div>
+                <div class="o-flex o-flex--gap-md" id="logs-stats-container">
+                  <div class="u-text-center">
+                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Total Registrado</span>
+                    <p class="u-font-bold u-mt-xs" id="log-stat-total" style="font-size: 1.25rem;">0</p>
+                  </div>
+                  <div class="u-text-center">
+                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Ativos</span>
+                    <p class="u-font-bold u-mt-xs u-text-success" id="log-stat-active" style="font-size: 1.25rem;">0</p>
+                  </div>
+                  <div class="u-text-center">
+                    <span class="u-text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Revertidos</span>
+                    <p class="u-font-bold u-mt-xs u-text-warning" id="log-stat-reverted" style="font-size: 1.25rem;">0</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FILTROS POR CATEGORIA -->
+              <div class="o-flex o-flex--gap-sm u-mt-md" style="border-top: 1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); padding-top: 14px;">
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter c-btn--active" data-filter="all">Todas as Modificações</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="driver">Drivers Atualizados</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="boost">Boost Gamer</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="software">Softwares</button>
+              </div>
+            </div>
+
+            <!-- CONTAINER DE RESULTADOS DOS LOGS -->
+            <div id="logs-results-container">
+              <!-- Renderizado dinamicamente via logs.js -->
+            </div>
+          </section>
+
+          <!-- ABA 7: CONFIGURAÇÕES -->
+          <section id="tab-settings" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">⚙️ Configurações do Aplicativo</h2>
+                <p class="c-section-header__desc">Personalize os temas visuais, idioma e preferências do CWU App.</p>
+              </div>
+            </div>
+
+            <!-- SELETOR DE TEMAS -->
+            <div class="c-card u-mb-lg">
+              <div class="c-card__header">
+                <h3 class="c-card__title">Temas Visuais</h3>
+                <span class="c-badge c-badge--info">Visual BEMIT</span>
+              </div>
+              <div class="o-grid o-grid--3">
+                <!-- Tema 1: Futurista -->
+                <div class="c-card js-theme-option" data-theme="futuristic" style="cursor: pointer;">
+                  <div class="c-card__header">
+                    <h4 class="c-card__title">⚡ Futurista</h4>
+                    <span class="c-badge c-badge--success">Ativo</span>
+                  </div>
+                  <p class="u-mb-md">Cyberpunk Neon com destaques em ciano elétrico, magenta e modo escuro profundo.</p>
+                </div>
+
+                <!-- Tema 2: Clássico -->
+                <div class="c-card js-theme-option" data-theme="classic" style="cursor: pointer;">
+                  <div class="c-card__header">
+                    <h4 class="c-card__title">💼 Clássico</h4>
+                    <span class="c-badge c-badge--neutral">Selecionar</span>
+                  </div>
+                  <p class="u-mb-md">Visual sóbrio Dark Slate com azul tech profissional e estética elegante.</p>
+                </div>
+
+                <!-- Tema 3: Clean Light -->
+                <div class="c-card js-theme-option" data-theme="light" style="cursor: pointer;">
+                  <div class="c-card__header">
+                    <h4 class="c-card__title">☀️ Clean Light</h4>
+                    <span class="c-badge c-badge--neutral">Selecionar</span>
+                  </div>
+                  <p class="u-mb-md">Tema claro de alto contraste e bordas limpas para ambientes iluminados.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- PREFERÊNCIAS GERAIS -->
+            <div class="c-card">
+              <div class="c-card__header">
+                <h3 class="c-card__title">Preferências & Idioma</h3>
+              </div>
+              <div class="o-grid o-grid--2">
+                <div>
+                  <label style="display: block; font-weight: 600; margin-bottom: 8px;">Idioma do Utilitário</label>
+                  <select id="setting-language-select" style="width: 100%; padding: 8px 12px; background: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-primary);">
+                    <option value="pt-BR">Português (Brasil)</option>
+                    <option value="en-US">English (US)</option>
+                  </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding-top: 24px;">
+                  <input type="checkbox" id="setting-auto-scan" style="width: 18px; height: 18px; cursor: pointer;">
+                  <label for="setting-auto-scan" style="cursor: pointer; font-size: 0.9rem;">
+                    Executar escaneamento automático de drivers ao abrir o CWU App
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ABA 8: NOVAS VERSÕES -->
+          <section id="tab-versions" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">✨ Atualizações do CWU App</h2>
+                <p class="c-section-header__desc">Verificador de novas versões do software e histórico de melhorias.</p>
+              </div>
+              <button class="c-btn c-btn--primary" id="btn-check-new-version">
+                <span>Verificar Atualizações Agora</span> 🔄
+              </button>
+            </div>
+
+            <div class="c-card u-mb-lg">
+              <div class="o-flex o-flex--between">
+                <div>
+                  <span class="c-badge c-badge--success u-mb-sm">Versão Instalada</span>
+                  <h3 class="c-card__title" id="current-app-version">CWU App v1.0.0</h3>
+                  <p>Compilação de lançamento • <span id="app-release-date">19/10/2026</span></p>
+                  <div class="u-mt-md" id="update-check-result">
+                    <span class="u-text-success">Você está na versão mais atualizada.</span>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://github.com/cwu-app/cwu-app/releases" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--accent" title="Baixar instalador mais novo">
+                    <span>Baixar Atualização Oficial</span> ⬇
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="u-mb-md">Histórico de Versões & Mudanças (Changelog)</h3>
+            <div id="app-changelog-container">
+              <!-- Renderizado via versions.js -->
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- CONTAINER DE TOASTS FLUTUANTES -->
+  <div id="toast-container" class="c-toast-container"></div>
+
+  <!-- SCRIPTS DOS MÓDULOS E APLICAÇÃO -->
+  <script src="scripts/api.js"></script>
+  <script src="scripts/modules/specs.js"></script>
+  <script src="scripts/modules/scan.js"></script>
+  <script src="scripts/modules/softs.js"></script>
+  <script src="scripts/modules/boost.js"></script>
+  <script src="scripts/modules/logs.js"></script>
+  <script src="scripts/modules/settings.js"></script>
+  <script src="scripts/modules/versions.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
