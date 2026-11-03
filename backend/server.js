@@ -26,17 +26,44 @@ const MIME_TYPES = {
   '.woff': 'font/woff'
 };
 
+const HOST = '127.0.0.1';
+const MAX_BODY_BYTES = 1024 * 1024;
+const ALLOWED_HOSTS = new Set([`localhost:${config.port}`, `127.0.0.1:${config.port}`]);
+const ALLOWED_ORIGINS = new Set([`http://localhost:${config.port}`, `http://127.0.0.1:${config.port}`]);
+
+async function runHandler(route, req, res) {
+  try {
+    await route.handler(req, res);
+  } catch (err) {
+    console.error('[HTTP ERROR]', err);
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.json({ success: false, error: 'Erro interno no servidor' });
+    }
+  }
+}
+
 // Cria o servidor HTTP nativo
 const server = http.createServer(async (req, res) => {
-  // Configuração de CORS para qualquer requisição
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
+  // Segurança: o servidor só atende a própria interface do CWU App.
+  // Sem CORS liberado, sites externos abertos no navegador não conseguem
+  // disparar ações (ex.: encerrar processos) na API local.
+  const host = (req.headers.host || '').toLowerCase();
+  if (!ALLOWED_HOSTS.has(host)) {
+    res.writeHead(403);
+    return res.end('Host não permitido');
+  }
+  const origin = req.headers.origin;
+  if (origin && !ALLOWED_ORIGINS.has(origin.toLowerCase())) {
+    res.writeHead(403);
+    return res.end('Origem não permitida');
+  }
   if (req.method === 'OPTIONS') {
-    res.writeHead(204);
+    res.writeHead(405);
     return res.end();
   }
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
@@ -59,22 +86,35 @@ const server = http.createServer(async (req, res) => {
 
     if (route) {
       if (req.method === 'POST' || req.method === 'PUT') {
+        // Exige JSON: força preflight CORS em requisições de outros sites (que é recusado)
+        if (!String(req.headers['content-type'] || '').includes('application/json')) {
+          res.statusCode = 415;
+          return res.json({ success: false, error: 'Content-Type deve ser application/json' });
+        }
         let body = '';
-        req.on('data', chunk => { body += chunk; });
+        let tooLarge = false;
+        req.on('data', chunk => {
+          body += chunk;
+          if (body.length > MAX_BODY_BYTES) {
+            tooLarge = true;
+            req.destroy();
+          }
+        });
         req.on('end', () => {
+          if (tooLarge) return;
           try {
             req.body = body ? JSON.parse(body) : {};
           } catch (e) {
-            req.body = {};
+            res.statusCode = 400;
+            return res.json({ success: false, error: 'JSON inválido' });
           }
-          console.log(`[HTTP BODY]`, req.body);
-          route.handler(req, res);
+          runHandler(route, req, res);
         });
         return;
       }
 
       req.query = Object.fromEntries(parsedUrl.searchParams.entries());
-      return route.handler(req, res);
+      return runHandler(route, req, res);
     }
 
     res.statusCode = 404;
@@ -86,7 +126,7 @@ const server = http.createServer(async (req, res) => {
   let filePath = path.join(FRONTEND_DIR, relativeFilePath);
 
   // Prevenção de Path Traversal
-  if (!filePath.startsWith(FRONTEND_DIR)) {
+  if (!filePath.startsWith(FRONTEND_DIR + path.sep) && filePath !== FRONTEND_DIR) {
     res.statusCode = 403;
     return res.end('Acesso negado');
   }
@@ -126,7 +166,7 @@ server.on('error', (e) => {
   }
 });
 
-server.listen(config.port, () => {
+server.listen(config.port, HOST, () => {
   console.log(`\n======================================================`);
   console.log(`🚀 ${config.appName} v${config.appVersion} iniciado com sucesso!`);
   console.log(`💻 Painel Web: http://localhost:${config.port}`);

@@ -8,9 +8,9 @@ class VersionService {
       currentVersion: config.appVersion,
       channel: 'Stable',
       releaseDate: '19/10/2026',
-      latestVersion: '1.0.0',
-      isLatest: true,
-      downloadUrl: 'https://github.com/cwu-app/cwu-app/releases',
+      latestVersion: null,
+      isLatest: null,
+      downloadUrl: `https://github.com/${config.githubRepo}/releases`,
       changelog: [
         {
           version: '1.0.0',
@@ -31,15 +31,58 @@ class VersionService {
   }
 
   async checkOnlineUpdate() {
-    // Retorna status atualizado
     const info = this.getVersionInfo();
-    return {
-      ...info,
-      checkedAt: new Date().toISOString(),
-      updateAvailable: false,
-      message: 'Você já está utilizando a versão mais recente do CWU App!'
-    };
+    const checkedAt = new Date().toISOString();
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      const resp = await fetch(`https://api.github.com/repos/${config.githubRepo}/releases/latest`, {
+        headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'CWU-App' },
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+
+      if (resp.status === 404) {
+        return { ...info, checkedAt, updateAvailable: false, checkFailed: true, message: 'Nenhuma versão publicada no GitHub ainda.' };
+      }
+      if (!resp.ok) throw new Error(`GitHub respondeu ${resp.status}`);
+
+      const release = await resp.json();
+      const latest = String(release.tag_name || '').replace(/^v/i, '');
+      const updateAvailable = compareVersions(latest, info.currentVersion) > 0;
+      return {
+        ...info,
+        checkedAt,
+        latestVersion: latest,
+        isLatest: !updateAvailable,
+        updateAvailable,
+        downloadUrl: release.html_url || info.downloadUrl,
+        releaseNotes: release.body || '',
+        message: updateAvailable
+          ? `Nova versão ${latest} disponível!`
+          : 'Você já está utilizando a versão mais recente do CWU App!'
+      };
+    } catch (err) {
+      return {
+        ...info,
+        checkedAt,
+        updateAvailable: false,
+        checkFailed: true,
+        message: 'Não foi possível verificar atualizações (sem internet ou GitHub indisponível).'
+      };
+    }
   }
+}
+
+// Compara versões semânticas simples: "1.2.0" vs "1.10.0"
+function compareVersions(a, b) {
+  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
+  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const diff = (pa[i] || 0) - (pb[i] || 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
 }
 
 module.exports = new VersionService();

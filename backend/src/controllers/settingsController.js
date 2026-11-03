@@ -13,7 +13,15 @@ class SettingsController {
 
   updateSettings(req, res) {
     try {
-      const newSettings = req.body || {};
+      // Aceita apenas pares chave/valor simples (evita gravar objetos arbitrários no banco local)
+      const input = (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) ? req.body : {};
+      const newSettings = {};
+      for (const [key, value] of Object.entries(input).slice(0, 40)) {
+        if (!/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/.test(key)) continue;
+        if (['string', 'boolean', 'number'].includes(typeof value)) {
+          newSettings[key] = typeof value === 'string' ? value.slice(0, 200) : value;
+        }
+      }
       const updated = db.updateSettings(newSettings);
       res.json({ success: true, data: updated });
     } catch (err) {

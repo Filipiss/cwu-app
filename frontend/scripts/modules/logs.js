@@ -12,7 +12,87 @@ const LogsModule = {
     this.fetchLogs();
   },
 
+  async analyzeErrors() {
+    const btn = document.getElementById('btn-analyze-errors');
+    const summary = document.getElementById('errors-summary-text');
+    const container = document.getElementById('errors-results-container');
+    if (!container) return;
+
+    if (btn) btn.disabled = true;
+    if (summary) summary.textContent = 'Lendo o Visualizador de Eventos… isso pode levar alguns segundos.';
+    container.innerHTML = '';
+
+    try {
+      const res = await API.getLogs();
+      const d = res.data || {};
+      if (!d.readAvailable) {
+        if (summary) summary.textContent = d.message || 'Leitura indisponível.';
+        return;
+      }
+
+      if (summary) {
+        summary.textContent = `Últimos ${d.periodDays} dias: ${d.bsodCount} tela(s) azul(is), ${d.unexpectedShutdowns} desligamento(s) inesperado(s), ${d.minidumps.length} minidump(s) encontrado(s).`;
+      }
+
+      if (!d.events.length) {
+        const p = document.createElement('p');
+        p.className = 'u-text-success';
+        p.textContent = '✓ ' + (d.message || 'Nenhum erro relevante encontrado.');
+        container.appendChild(p);
+        return;
+      }
+
+      const badgeBySeverity = { 'Crítica': 'danger', 'Alta': 'danger', 'Média': 'warning', 'Baixa': 'success' };
+      d.events.forEach(ev => {
+        const item = document.createElement('details');
+        item.className = 'c-card u-mt-sm';
+        item.style.padding = '12px 14px';
+
+        const head = document.createElement('summary');
+        head.style.cursor = 'pointer';
+        const badge = document.createElement('span');
+        badge.className = `c-badge c-badge--${badgeBySeverity[ev.severity] || 'warning'}`;
+        badge.textContent = ev.severity;
+        const title = document.createElement('strong');
+        title.style.marginLeft = '8px';
+        title.textContent = ev.title + (ev.occurrences > 1 ? ` (×${ev.occurrences})` : '');
+        const date = document.createElement('span');
+        date.className = 'u-text-muted';
+        date.style.marginLeft = '8px';
+        date.textContent = '· último: ' + ev.date;
+        head.append(badge, title, date);
+
+        const body = document.createElement('div');
+        body.className = 'u-mt-sm';
+        const diag = document.createElement('p');
+        diag.textContent = ev.diagnosis;
+        const rec = document.createElement('p');
+        rec.className = 'u-mt-xs';
+        rec.style.whiteSpace = 'pre-line';
+        rec.textContent = '💡 ' + ev.recommendation;
+        const raw = document.createElement('p');
+        raw.className = 'u-text-muted u-mt-xs';
+        raw.style.fontSize = '0.8rem';
+        raw.textContent = `Evento ${ev.id} · ${ev.provider} — ${ev.originalSnippet}`;
+        body.append(diag, rec, raw);
+
+        item.append(head, body);
+        container.appendChild(item);
+      });
+    } catch (err) {
+      console.error('Erro ao analisar eventos:', err);
+      if (summary) summary.textContent = 'Erro ao consultar o Visualizador de Eventos.';
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  },
+
   bindEvents() {
+    const analyzeBtn = document.getElementById('btn-analyze-errors');
+    if (analyzeBtn) {
+      analyzeBtn.addEventListener('click', () => this.analyzeErrors());
+    }
+
     const refreshBtn = document.getElementById('btn-refresh-logs');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {

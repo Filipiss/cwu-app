@@ -103,8 +103,8 @@ const SpecsModule = {
 
     this.renderComponentCard('ram', {
       category: 'Memória RAM',
-      name: `${specs.ram.totalGb} GB DDR`,
-      details: `${specs.ram.freeGb} GB livres de ${specs.ram.totalGb} GB totais`,
+      name: `${specs.ram.totalGb} GB ${specs.ram.type || "RAM"}${specs.ram.speedMhz ? " @ " + specs.ram.speedMhz + " MHz" : ""}`,
+      details: `${specs.ram.freeGb} GB livres de ${specs.ram.usableGb || specs.ram.totalGb} GB utilizáveis${specs.ram.singleChannel ? " • ⚠️ 1 pente (canal simples)" : ""}`,
       score: scores.components.ram.score,
       status: scores.components.ram.status,
       icon: '🧠'
@@ -113,7 +113,7 @@ const SpecsModule = {
     this.renderComponentCard('storage', {
       category: 'Armazenamento Principal',
       name: specs.storage.driveType,
-      details: `${specs.storage.model} • ${specs.storage.sizeGb} GB`,
+      details: `${specs.storage.model} • ${specs.storage.sizeGb} GB${specs.storage.health ? " • Saúde: " + specs.storage.health : ""}${(specs.disks || []).length > 1 ? " • +" + (specs.disks.length - 1) + " disco(s)" : ""}`,
       score: scores.components.storage.score,
       status: scores.components.storage.status,
       icon: '💾'

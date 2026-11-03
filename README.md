@@ -1,206 +1,121 @@
-# CWU App (Clean Windows Utility) 🚀
+# CWU App — Clean Windows Utility
 
-> **Assistente Pós-Formatação & Gerenciador Inteligente de Drivers e Diagnóstico**
+> Assistente pós-formatação para Windows: diagnóstico de hardware, verificação de drivers, análise de telas azuis e otimizações reversíveis. Sem anúncios, sem telemetria, só links oficiais.
 
-O **CWU App** é uma ferramenta desktop gratuita, leve e sem bloatware, desenvolvida especificamente para facilitar e acelerar a configuração de computadores recém-formatados. Inspirado em utilitários como o Driver Booster, porém com foco em transparência, privacidade, links oficiais diretos e zero anúncios.
-
----
-
-## 📋 Sumário
-
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades Principais](#-funcionalidades-principais)
-- [Lista de Softwares & Runtimes Pós-Formatação](#-lista-de-softwares--runtimes-pós-formatação)
-- [Arquitetura do Projeto](#-arquitetura-do-projeto)
-- [Metodologia de Frontend (BEMIT)](#-metodologia-de-frontend-bemit)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Instalação e Execução](#-instalação-e-execução)
-- [Roadmap](#-roadmap)
-- [Licença](#-licença)
+O CWU App junta num único executável portátil as tarefas que todo mundo faz depois de formatar um PC: descobrir o hardware, achar os drivers certos, instalar runtimes e entender por que o computador desligou sozinho.
 
 ---
 
-## 🎯 Visão Geral
+## ✨ Funcionalidades
 
-Após formatar o Windows, os usuários frequentemente enfrentam dificuldades para localizar drivers corretos, runtimes essenciais para jogos e programas (DirectX, Visual C++ Redistributable), além de monitorar a saúde do hardware ou diagnosticar telas azuis (BSOD).
-
-O **CWU App** resolve isso reunindo diagnóstico de hardware com pontuação (benchmark simplificado), verificação e redirecionamento para drivers oficiais, análise preditiva de logs do Windows e otimização para jogos.
-
----
-
-## ✨ Funcionalidades Principais
-
-| Módulo | Descrição |
-| :--- | :--- |
-| **System Specs** | Varredura de hardware (Processador, Placa de Vídeo, Memória RAM, Armazenamento, Placa-Mãe e Versão do Windows). Atribui uma nota de 0 a 10 para cada componente e gera uma pontuação geral do sistema. |
-| **Driver Scan** | Inspeção dos dispositivos do computador via WMI/PowerShell, identificando componentes com drivers genéricos, desatualizados ou com erro de dispositivo. |
-| **Driver Update** | Exibição de drivers desatualizados com atalhos diretos e confiáveis para as páginas oficiais dos fabricantes (Intel, AMD, NVIDIA, Realtek, etc.). |
-| **Boost (Modo Gamer)** | Otimizador de desempenho em demonstração, permitindo simular encerramento de processos em segundo plano, liberação de memória RAM e suspensão de telemetria desnecessária. |
-| **Logs de Erros (BSOD & Eventos)** | Consulta automática ao Visualizador de Eventos do Windows (`Get-WinEvent` / Kernel-Power ID 41, BugCheck, Application Hang/Crash) com explicações humanas sobre a causa provável de desligamentos ou telas azuis. |
-| **Settings (Configurações)** | Gerenciamento de temas visuais (Dark Mode, Cyberpunk/Neon, Minimal Light), idioma (Português/Inglês) e preferências de notificações. |
-| **New Versions** | Verificador de atualizações do próprio CWU App para manter a ferramenta sempre em sua versão mais recente. |
+| Módulo | Status | O que faz |
+| :--- | :---: | :--- |
+| **System Specs** | ✅ | Lê CPU, GPUs (VRAM real via registro), RAM (tipo, frequência, nº de pentes), todos os discos (NVMe/SSD/HDD + saúde), placa-mãe, BIOS e Windows. Dá uma nota de 0 a 10 por componente. |
+| **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e drivers antigos pela **data real do driver instalado**. |
+| **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
+| **Softwares pós-formatação** | ✅ | Catálogo pesquisável de runtimes e programas essenciais com links oficiais. |
+| **Diagnóstico de erros / BSOD** | ✅ | Analisa 30 dias do Visualizador de Eventos (Kernel-Power 41, BugCheck 1001, WHEA, disco, crashes de apps), agrupa repetições e lista minidumps. |
+| **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
+| **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
+| **Temas e preferências** | ✅ | Futurista, Clássico e Light. |
 
 ---
 
-## 📦 Lista de Softwares & Runtimes Pós-Formatação
-
-Runtimes e utilitários indispensáveis recomendados logo após uma formatação:
-
-### 1. Runtimes & Bibliotecas de Execução (Obrigatórios para jogos e programas)
-- **Visual C++ Redistributable All-in-One**: Pacotes de 2005 a 2022 (x86 e x64) necessários para que 90% dos jogos e instaladores não apresentem erros de `.dll` ausente.
-- **DirectX End-User Runtimes (June 2010)**: Bibliotecas legadas do DirectX 9/10/11 necessárias para jogos clássicos e modernos.
-- **.NET Desktop Runtime**: Versões 6.0, 7.0 e 8.0 para suporte a softwares modernos desenvolvidos em C#/.NET.
-- **Java Runtime Environment (JRE) / OpenJDK**: Para softwares legados e emuladores específicos.
-
-### 2. Drivers de Sistema Críticos
-- **Driver de Chipset da Placa-Mãe** (AMD Chipset Drivers / Intel INF Update Utility).
-- **Driver de Placa de Vídeo Dedicada / Integrada** (NVIDIA Game Ready / AMD Software: Adrenalin Edition / Intel Arc Graphics).
-- **Driver de Rede e Wi-Fi** (Realtek PCIe GbE, Intel Wi-Fi / Killer, MediaTek).
-- **Driver de Áudio de Alta Definição** (Realtek HD Audio Driver).
-
-### 3. Utilitários Essenciais de Uso Diário
-- **Compactadores de Arquivo**: 7-Zip ou WinRAR.
-- **Navegador Web**: Brave, Chrome, Firefox ou Edge.
-- **Leitor de Documentos**: SumatraPDF ou Adobe Acrobat Reader.
-- **Comunicação & Mídia**: Discord, VLC Media Player, Spotify.
-- **Plataformas de Jogos**: Steam, Epic Games Launcher, GOG Galaxy.
-
----
-
-## 🏛 Arquitetura do Projeto
-
-O CWU App é projetado para operar como uma aplicação desktop nativa.
+## 🏛 Arquitetura
 
 ```
-+-------------------------------------------------------------------+
-|                        CWU App (Frontend)                         |
-|   HTML5 + Vanilla CSS (Metodologia BEMIT) + JavaScript Moderno    |
-|   Temas Dinâmicos (CSS Custom Properties) + Micro-interações       |
-+---------------------------------+---------------------------------+
-                                  | (REST / IPC)
-+---------------------------------v---------------------------------+
-|                        CWU Core (Backend)                         |
-|   Node.js Desktop Runtime / Express Core                          |
-|   - Hardware Scanner Service (WMI / PowerShell CIM)               |
-|   - Driver Detector Service (PnP Devices & DriverQuery)           |
-|   - Event Viewer Log Analyzer (BugCheck / Kernel-Power Parser)    |
-|   - Scoring Engine (Cálculo de Notas de Hardware)                 |
-+---------------------------------+---------------------------------+
-                                  |
-+---------------------------------v---------------------------------+
-|                       Local Database (SQLite)                     |
-|   - Histórico de Scans e Logs                                     |
-|   - Banco local de fabricantes e links oficiais                   |
-|   - Configurações e preferências do usuário                       |
-+-------------------------------------------------------------------+
+┌──────────────────────────────────────────────┐
+│  Electron (janela nativa, executável portátil)│
+│  └─ Frontend: HTML + JS puro + CSS em BEMIT   │
+└───────────────┬──────────────────────────────┘
+                │ HTTP local (127.0.0.1:4321)
+┌───────────────▼──────────────────────────────┐
+│  Backend Node.js (módulo http nativo)         │
+│  routes → controllers → services              │
+│  ├─ specsService   (CIM/WMI + registro)       │
+│  ├─ driverService  (Win32_PnPSignedDriver)    │
+│  ├─ logsService    (Get-WinEvent + minidumps) │
+│  ├─ boostService   (powercfg, registro, Win32)│
+│  └─ scoreCalculator                           │
+└───────────────┬──────────────────────────────┘
+                │ PowerShell via stdin (JSON)
+┌───────────────▼──────────────────────────────┐
+│  Windows: WMI/CIM, Registro, Event Log        │
+│  Persistência: JSON em %APPDATA%\CWU-App      │
+└──────────────────────────────────────────────┘
 ```
 
-> **Nota sobre Docker:** Como o aplicativo tem a finalidade precípua de consultar hardware local, drivers PnP e o Visualizador de Eventos do Windows da máquina física recém-formatada, a execução padrão é feita **diretamente no sistema operacional** (Node.js nativo / empacotamento desktop). Para ambientes de desenvolvimento ou demonstração web, inclui-se suporte opcional via `Dockerfile` e `docker-compose.yml`.
+**Decisões de projeto**
+
+- **Zero dependências em runtime.** O servidor usa o módulo `http` nativo do Node; só Electron e electron-builder são dependências de desenvolvimento.
+- **Uma chamada de PowerShell por tela.** Cada `powershell.exe` custa ~0,5 s, então cada serviço coleta tudo num único script que devolve JSON.
+- **Dados honestos.** Se uma leitura falha, a interface mostra "Não detectado" e o componente sai da média da nota. Nada é inventado.
+
+### Segurança da API local
+
+Um servidor em `localhost` pode ser chamado por qualquer site aberto no navegador. Para impedir que uma página externa dispare ações como encerrar processos:
+
+- o servidor escuta somente em `127.0.0.1`;
+- os cabeçalhos `Host` e `Origin` são validados (o que também protege contra DNS rebinding);
+- não há CORS liberado e as requisições POST exigem `application/json` (força um preflight, que é recusado);
+- as ações do Boost são validadas por lista de permissão, o corpo tem limite de 1 MB e as configurações aceitam só valores simples;
+- arquivos estáticos têm proteção contra path traversal.
+
+### Como a nota é calculada
+
+| Componente | Peso | Critério |
+| :--- | :---: | :--- |
+| GPU | 35% | Faixa de desempenho por modelo (GTX 10 → RTX 50, RX 500 → RX 9000, Arc); VRAM como desempate |
+| CPU | 30% | Núcleos/threads, família (i3…i9, Ryzen 3…9, Core Ultra) e geração |
+| RAM | 20% | Capacidade, com penalidade para canal simples (1 pente) |
+| Armazenamento | 15% | NVMe > SATA SSD > HDD; disco com falhas limita a nota |
+
+É uma heurística para orientar o usuário, não um benchmark.
 
 ---
 
-## 🎨 Metodologia de Frontend (BEMIT)
+## 🎨 CSS em BEMIT
 
-A camada de apresentação utiliza a metodologia **BEMIT** (fusão de BEM - *Block Element Modifier* com a hierarquia arquitetural do *ITCSS*), garantindo código CSS limpo, escalável e previsível:
-
-1. **Settings (`s-` / Sass/CSS variables)**: Paletas de cores HSL, variáveis de tipografia, espaçamentos e tokens.
-2. **Tools**: Mixins, funções auxiliares de layout e media queries.
-3. **Generic**: Normalização e Box-sizing.
-4. **Elements**: Estilizações puras de tags base (`h1`, `p`, `button`, `input`).
-5. **Objects (`o-` / OOCSS)**: Estruturas de layout agnósticas a design (ex: `o-grid`, `o-container`, `o-card`).
-6. **Components (`c-` / BEM)**: Componentes com estilos visuais específicos (ex: `c-sidebar`, `c-specs-card`, `c-score-badge`).
-7. **Utilities (`u-` / Classes utilitárias)**: Auxiliares de alta especificidade (ex: `u-text-center`, `u-hidden`).
+O frontend segue BEMIT (BEM + camadas do ITCSS): `1-settings` (tokens e temas) → `2-tools` → `3-generic` → `4-elements` → `5-objects` (`o-`) → `6-components` (`c-`) → `7-utilities` (`u-`).
 
 ---
 
-## 📁 Estrutura de Pastas
+## 🚀 Como usar
 
-```text
-cwu-app/
-├── backend/
-│   ├── src/
-│   │   ├── config/             # Configurações do ambiente e constantes
-│   │   ├── controllers/        # Controladores que recebem requisições da UI
-│   │   ├── database/           # Conexão SQLite local, migrações e seed inicial
-│   │   ├── models/             # Schemas/Entidades locais
-│   │   ├── routes/             # Definição dos endpoints da API local
-│   │   ├── services/           # Lógica de negócio (WMI, Drivers, Logs, Specs)
-│   │   └── utils/              # Funções utilitárias (parsers, pontuações)
-│   ├── package.json
-│   └── server.js               # Ponto de entrada do backend
-├── frontend/
-│   ├── assets/                 # Ícones, imagens e recursos visuais
-│   ├── scripts/                # Controladores do frontend e interações
-│   │   ├── api.js              # Comunicação com o backend local
-│   │   ├── app.js              # Inicialização e roteamento de abas
-│   │   └── modules/            # Módulos por tela (specs, scan, update, logs)
-│   ├── styles/                 # Arquitetura BEMIT
-│   │   ├── 1-settings/         # Variáveis e temas (Dark, Light, Cyber)
-│   │   ├── 2-tools/            # Helpers
-│   │   ├── 3-generic/          # Reset e Box-sizing
-│   │   ├── 4-elements/         # Elementos HTML base
-│   │   ├── 5-objects/          # Objetos de layout (grid, wrappers)
-│   │   ├── 6-components/       # Blocos BEM (sidebar, cards, tables, badges)
-│   │   ├── 7-utilities/        # Classes utilitárias
-│   │   └── main.css            # Arquivo principal agregador
-│   └── index.html              # Interface do aplicativo
-├── docker/
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── .gitignore
-└── README.md
-```
+### Usuário final
+Baixe o `CWU-App-Portable-x.y.z.exe` na página de Releases e execute. Algumas funções (minidumps, plano de energia, latência da GPU, telemetria) precisam que o app seja **executado como administrador**.
 
----
+### Desenvolvimento
+Requisitos: Windows 10/11 64-bit e Node.js 18+.
 
-## 🛠 Tecnologias Utilizadas
-
-- **Frontend**: HTML5 Semântico, Vanilla JavaScript (ES6+), Vanilla CSS estruturado em BEMIT.
-- **Backend**: Node.js, Express.js.
-- **Acesso ao Sistema Operacional**: PowerShell CIM / WMI Scripts nativos (`Get-CimInstance`, `Get-PnpDevice`, `Get-WinEvent`).
-- **Banco de Dados Local**: SQLite3 com inicialização automática (`better-sqlite3` ou `sqlite3`).
-- **Containerização**: Docker & Docker Compose (para ambientes de homologação/demonstração).
-
----
-
-## 🚀 Instalação e Execução
-
-### Pré-requisitos
-- Windows 10 ou 11 (64-bit).
-- [Node.js](https://nodejs.org/) versão 18+ instalada.
-
-### Modo Local (Recomendado para leitura completa do Windows)
 ```bash
-# 1. Clone ou acesse a pasta do repositório
-cd "CWU app"
-
-# 2. Instale as dependências do backend
 cd backend
 npm install
-
-# 3. Inicie o servidor local do CWU App
-npm start
-
-# 4. Abra a interface no navegador ou empacote via Electron
-# Acesse: http://localhost:4321
+npm run app            # abre a janela Electron
+npm start              # apenas o servidor: http://127.0.0.1:4321
+npm run dist:portable  # gera o .exe portátil em /release
 ```
+
+> **Docker:** um container Linux não acessa WMI, drivers nem o Visualizador de Eventos do Windows. A pasta `docker/` serve só para visualizar a interface; nesse modo, todas as leituras aparecem como "Não detectado".
 
 ---
 
 ## 🗺 Roadmap
 
-- [x] Planejamento e definição dos módulos essenciais pós-formatação
-- [x] Estruturação da arquitetura BEMIT e backend modular
-- [ ] Implementação do serviço de varredura de hardware e pontuação (Specs Engine)
-- [ ] Implementação da varredura de drivers e tabela de fabricantes oficiais
-- [ ] Módulo leitor e tradutor de erros do Visualizador de Eventos (BSOD / Kernel-Power)
-- [ ] Interface gráfica com seletor de temas (Dark / Cyber / Light)
-- [ ] Módulo Boost para encerramento de processos não críticos
-- [x] Empacotamento em executável desktop com Electron (janela nativa e modo portátil `.exe`)
+- [x] Specs com VRAM real, todos os discos e saúde SMART básica
+- [x] Varredura de drivers por data, código de erro e Hardware ID
+- [x] Diagnóstico de BSOD e eventos com agrupamento
+- [x] Boost com registro e reversão
+- [x] API local protegida
+- [ ] Instalação em lote de softwares via `winget`
+- [ ] Ponto de restauração automático antes de otimizações
+- [ ] Leitura do código de parada dentro dos minidumps
+- [ ] Relatório exportável (HTML/PDF)
+- [ ] Testes automatizados dos parsers e da nota
+- [ ] Migrar a comunicação HTTP para IPC do Electron
 
 ---
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Livre para uso pessoal e modificações.
+MIT.

@@ -70,34 +70,68 @@ class LogsService {
   async getSystemErrorLogs() {
     const encyclopedia = db.getBsodEncyclopedia();
     let events = [];
+    let minidumps = [];
+    let readOk = false;
 
     if (process.platform === 'win32') {
       try {
         // Busca eventos críticos e de erro nos logs de Sistema
+        // Últimos 30 dias: erros/críticos do Sistema + travamentos de aplicativos + lista de minidumps
         const psCommand = `
-          $events = Get-WinEvent -FilterHashtable @{LogName='System'; Level=1,2} -MaxEvents 15 -ErrorAction SilentlyContinue |
-          Select-Object -Property TimeCreated, Id, ProviderName, LevelDisplayName, Message |
-          ConvertTo-Json -Compress
-          Write-Output $events
+          $ErrorActionPreference = 'SilentlyContinue'
+          $since = (Get-Date).AddDays(-30)
+          $system = @(Get-WinEvent -FilterHashtable @{LogName='System'; Level=1,2; StartTime=$since} -MaxEvents 60)
+          $apps = @(Get-WinEvent -FilterHashtable @{LogName='Application'; Id=1000,1002; StartTime=$since} -MaxEvents 20)
+          $dumps = @(Get-ChildItem "$env:SystemRoot\\Minidump\\*.dmp" | Sort-Object LastWriteTime -Descending | Select-Object -First 10 Name, Length, LastWriteTime)
+          [PSCustomObject]@{
+            events = @(($system + $apps) | Sort-Object TimeCreated -Descending | Select-Object TimeCreated, Id, ProviderName, LevelDisplayName, Message)
+            minidumps = $dumps
+          } | ConvertTo-Json -Depth 3 -Compress
         `;
 
-        const res = await runPowerShell(psCommand, 12000);
+        const res = await runPowerShell(psCommand, 25000);
         if (res.success && res.data) {
-          const list = Array.isArray(res.data) ? res.data : [res.data];
+          const list = Array.isArray(res.data.events) ? res.data.events : (res.data.events ? [res.data.events] : []);
           events = list.map(ev => this.analyzeEvent(ev, encyclopedia));
+          const dumps = Array.isArray(res.data.minidumps) ? res.data.minidumps : (res.data.minidumps ? [res.data.minidumps] : []);
+          minidumps = dumps.map(d => ({
+            name: d.Name,
+            sizeKb: Math.round((d.Length || 0) / 1024),
+            date: this.formatDate(d.LastWriteTime)
+          }));
+          readOk = true;
         }
       } catch (err) {
         console.warn('[LogsService] Erro ao consultar Get-WinEvent:', err.message);
       }
     }
 
-    if (events.length === 0) {
-      events = this.getFallbackEventLogs(encyclopedia);
+    // Agrupa eventos repetidos (mesmo ID e fonte) para não poluir a lista
+    const grouped = [];
+    const byKey = new Map();
+    for (const ev of events) {
+      const key = ev.id + '|' + ev.provider;
+      if (byKey.has(key)) {
+        byKey.get(key).occurrences += 1;
+      } else {
+        const item = { ...ev, occurrences: 1 };
+        byKey.set(key, item);
+        grouped.push(item);
+      }
     }
+    const severityOrder = { 'Crítica': 0, 'Alta': 1, 'Média': 2, 'Baixa': 3 };
+    grouped.sort((a, b) => (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9));
 
     return {
       timestamp: new Date().toISOString(),
+      readAvailable: readOk,
+      message: readOk ? (grouped.length ? null : 'Nenhum erro relevante nos últimos 30 dias.') : 'Não foi possível ler o Visualizador de Eventos (requer Windows).',
+      periodDays: 30,
+      minidumps,
+      bsodCount: events.filter(e => e.id === '1001' && e.isBsodOrKernelPower).length,
+      unexpectedShutdowns: events.filter(e => e.id === '41').length,
       totalEvents: events.length,
+      events: grouped,
       hasCritical: events.some(e => e.severity === 'Crítica' || e.severity === 'Alta'),
       events
     };
@@ -107,16 +141,7 @@ class LogsService {
     const id = String(raw.Id || '');
     const provider = (raw.ProviderName || 'Windows System').trim();
     const rawMessage = (raw.Message || '').trim();
-    let dateStr = 'Recente';
-
-    if (raw.TimeCreated) {
-      if (typeof raw.TimeCreated === 'string' && raw.TimeCreated.includes('/Date(')) {
-        const timestamp = parseInt(raw.TimeCreated.replace(/[^0-9]/g, ''), 10);
-        dateStr = new Date(timestamp).toLocaleString('pt-BR');
-      } else {
-        dateStr = new Date(raw.TimeCreated).toLocaleString('pt-BR');
-      }
-    }
+    const dateStr = this.formatDate(raw.TimeCreated);
 
     let title = `Evento ID ${id} (${provider})`;
     let diagnosis = 'Registro de instabilidade ou advertência do sistema operacional.';
@@ -150,6 +175,31 @@ class LogsService {
         severity = 'Crítica';
       }
     }
+    // Travamento / encerramento de aplicativo (log Application)
+    else if (id === '1000' || id === '1002') {
+      const appMatch = rawMessage.match(/^[^:\n]*:\s*([^\s,]+\.exe)/i) || rawMessage.match(/([\w.-]+\.exe)/i);
+      const appName = appMatch ? appMatch[1] : 'aplicativo';
+      title = id === '1000' ? `Falha de aplicativo: ${appName}` : `Aplicativo parou de responder: ${appName}`;
+      diagnosis = id === '1000'
+        ? 'O programa fechou sozinho por um erro interno (crash). Pode ser bug do próprio programa, runtime ausente ou driver de vídeo.'
+        : 'O programa travou e o Windows o encerrou (Application Hang).';
+      recommendation = 'Atualize o programa, instale os Visual C++ Redistributable e o driver de vídeo mais recente. Se acontecer só em jogos, teste sem overclock.';
+      severity = 'Média';
+    }
+    // Disco com setores defeituosos / falhas de E/S
+    else if (/^(7|51|153|129)$/.test(id) && /disk|stor|nvme/i.test(provider)) {
+      title = 'Erro de leitura/escrita no disco';
+      diagnosis = 'O Windows registrou falha de comunicação com uma unidade de armazenamento. Pode indicar cabo SATA ruim, setores defeituosos ou SSD com problema.';
+      recommendation = 'Faça backup dos seus arquivos, verifique a saúde do disco (aba Specs) e rode "chkdsk /f" no Prompt como administrador.';
+      severity = 'Alta';
+    }
+    // WHEA — erro de hardware reportado pelo processador
+    else if (provider.toLowerCase().includes('whea')) {
+      title = 'Erro de hardware (WHEA)';
+      diagnosis = 'O processador ou o barramento PCIe reportou um erro de hardware. Comum com overclock/undervolt instável, XMP agressivo ou fonte insuficiente.';
+      recommendation = 'Desative overclock/XMP para testar, atualize a BIOS e verifique temperaturas.';
+      severity = 'Alta';
+    }
     // Erros de Hardware HAL (ACPI / Relógio / Barramento)
     else if (provider.toLowerCase().includes('hal') || id === '21') {
       title = 'Alerta de Sincronização de Hardware (HAL ACPI)';
@@ -178,42 +228,12 @@ class LogsService {
     };
   }
 
-  getFallbackEventLogs(encyclopedia) {
-    return [
-      {
-        id: '41',
-        date: 'Hoje, ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        provider: 'Microsoft-Windows-Kernel-Power',
-        title: 'Kernel-Power (Desligamento Inesperado)',
-        diagnosis: 'O sistema foi reiniciado sem desligar completamente primeiro. Pode ter ocorrido após interrupção brusca de energia.',
-        recommendation: 'Verifique se os cabos de alimentação da fonte e da tomada estão firmes. Desative a Inicialização Rápida nas Opções de Energia.',
-        severity: 'Alta',
-        isBsodOrKernelPower: true,
-        originalSnippet: 'O sistema foi reiniciado sem desligar completamente primeiro. Esse erro pode ser causado quando o sistema pára de responder...'
-      },
-      {
-        id: '1001',
-        date: 'Ontem às 18:42',
-        provider: 'Microsoft-Windows-BugCheck',
-        title: 'Tela Azul: DRIVER_POWER_STATE_FAILURE (0x0000009F)',
-        diagnosis: encyclopedia[0].cause,
-        recommendation: encyclopedia[0].recommendation,
-        severity: 'Alta',
-        isBsodOrKernelPower: true,
-        originalSnippet: 'O computador foi reinicializado após uma verificação de erro. Código: 0x0000009f. Um despejo foi salvo em C:\\Windows\\Minidump\\...'
-      },
-      {
-        id: '21',
-        date: 'Esta semana',
-        provider: 'Microsoft-Windows-HAL',
-        title: 'Alerta de Sincronização ACPI (Hardware)',
-        diagnosis: 'Falha de leitura no relógio de hardware da placa-mãe durante retorno do estado de suspensão.',
-        recommendation: 'Considere trocar a bateria CMOS CR2032 da placa-mãe caso as horas do Windows desconfigurem.',
-        severity: 'Média',
-        isBsodOrKernelPower: false,
-        originalSnippet: 'O relógio em tempo real do hardware não foi definido porque houve falha na avaliação do método ACPI.'
-      }
-    ];
+  formatDate(value) {
+    if (!value) return 'Data desconhecida';
+    if (typeof value === 'object') value = value.value || value.DateTime;
+    const m = String(value).match(/\/Date\((-?\d+)/);
+    const d = m ? new Date(Number(m[1])) : new Date(value);
+    return isNaN(d.getTime()) ? 'Data desconhecida' : d.toLocaleString('pt-BR');
   }
 }
 

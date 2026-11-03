@@ -253,15 +253,34 @@ class BoostService {
 
     // 2. Limpeza de Temporários
     if (actionId === 'temp_cleanup') {
+      let freedMb = 0;
+      let skipped = 0;
+      let ran = false;
       if (process.platform === 'win32') {
-        try {
-          await runPowerShell(`Remove-Item -Path "$env:TEMP\\*" -Recurse -Force -ErrorAction SilentlyContinue`, 5000);
-        } catch (e) {}
+        // Mede o tamanho antes/depois; arquivos em uso são ignorados (e contados)
+        const res = await runPowerShell(`
+          $ErrorActionPreference = 'SilentlyContinue'
+          $before = (Get-ChildItem -Path $env:TEMP -Recurse -Force -File | Measure-Object Length -Sum).Sum
+          $failed = 0
+          Get-ChildItem -Path $env:TEMP -Force | ForEach-Object {
+            try { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction Stop } catch { $failed++ }
+          }
+          $after = (Get-ChildItem -Path $env:TEMP -Recurse -Force -File | Measure-Object Length -Sum).Sum
+          [PSCustomObject]@{ before = [double]$before; after = [double]$after; failed = $failed } | ConvertTo-Json -Compress
+        `, 60000);
+        if (res.success && res.data) {
+          ran = true;
+          freedMb = Math.max(0, Math.round(((res.data.before || 0) - (res.data.after || 0)) / (1024 * 1024)));
+          skipped = res.data.failed || 0;
+        }
       }
       return {
-        success: true,
+        success: ran,
         actionId,
-        message: 'Arquivos temporários do Windows limpos com sucesso!',
+        message: ran
+          ? `Limpeza concluída: ${freedMb} MB liberados em disco.${skipped ? ` ${skipped} itens em uso foram mantidos.` : ''}`
+          : 'Não foi possível limpar a pasta temporária neste sistema.',
+        freedDiskMb: freedMb,
         freedMemoryMb: 0
       };
     }

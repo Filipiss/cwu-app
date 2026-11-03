@@ -2,6 +2,43 @@
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
 
+// Idade (em anos) a partir da qual sugerimos procurar um driver mais novo.
+// Vídeo muda rápido; chipset/sistema raramente precisam de atualização.
+const OUTDATED_YEARS = {
+  'Placa de Vídeo': 1,
+  'Rede / Wi-Fi': 3,
+  'Áudio & Som': 4,
+  'Controlador de Armazenamento': 4,
+  'Dispositivo de Sistema': 5,
+  'Dispositivo Não Reconhecido': 99
+};
+
+// Códigos do Gerenciador de Dispositivos (ConfigManagerErrorCode) mais comuns
+const DEVICE_ERROR_CODES = {
+  1: 'Dispositivo não configurado corretamente',
+  3: 'Driver corrompido ou sem memória',
+  10: 'Dispositivo não pode ser iniciado',
+  12: 'Recursos insuficientes (conflito)',
+  18: 'Reinstale o driver',
+  19: 'Registro do driver corrompido',
+  22: 'Dispositivo desativado',
+  24: 'Dispositivo ausente ou desconectado',
+  28: 'Driver não instalado',
+  31: 'Windows não conseguiu carregar o driver',
+  39: 'Driver ausente ou corrompido',
+  43: 'Windows parou o dispositivo após falha',
+  45: 'Dispositivo não está conectado',
+  52: 'Assinatura digital do driver inválida'
+};
+
+function parseWmiDate(value) {
+  if (!value) return null;
+  if (typeof value === 'object') return parseWmiDate(value.value || value.DateTime);
+  const m = String(value).match(/\/Date\((-?\d+)/);
+  const d = m ? new Date(Number(m[1])) : new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 class DriverService {
   async scanDrivers() {
     const catalog = db.getDriverCatalog();
@@ -24,11 +61,11 @@ class DriverService {
             gpus = @(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | Select-Object -Property Name, DriverVersion, Status)
             board = (Get-CimInstance Win32_BaseBoard -ErrorAction SilentlyContinue | Select-Object -Property Manufacturer, Product)
             problemDevices = @(Get-CimInstance Win32_PnPEntity -ErrorAction SilentlyContinue | Where-Object { $_.ConfigManagerErrorCode -ne 0 -and $_.Name -ne $null } | Select-Object -Property Name, Manufacturer, DeviceID, ConfigManagerErrorCode -First 10)
-            displayDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'DISPLAY' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DeviceClass)
-            netDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'NET' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DeviceClass -First 6)
-            mediaDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'MEDIA' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DeviceClass -First 6)
-            scsiDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'SCSIADAPTER' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DeviceClass -First 4)
-            systemDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'SYSTEM' -and $_.DeviceName -ne $null -and ($_.DeviceName -like '*Chipset*' -or $_.DeviceName -like '*Motherboard*' -or $_.DeviceName -like '*Power Engine*' -or $_.DeviceName -like '*Management Engine*' -or $_.DeviceName -like '*Thermal*') } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DeviceClass -First 8)
+            displayDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'DISPLAY' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DriverDate, DeviceClass, DeviceID)
+            netDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'NET' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DriverDate, DeviceClass, DeviceID -First 6)
+            mediaDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'MEDIA' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DriverDate, DeviceClass, DeviceID -First 6)
+            scsiDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'SCSIADAPTER' -and $_.DeviceName -ne $null } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DriverDate, DeviceClass, DeviceID -First 4)
+            systemDrivers = @(Get-CimInstance Win32_PnPSignedDriver -ErrorAction SilentlyContinue | Where-Object { $_.DeviceClass -eq 'SYSTEM' -and $_.DeviceName -ne $null -and ($_.DeviceName -like '*Chipset*' -or $_.DeviceName -like '*Motherboard*' -or $_.DeviceName -like '*Power Engine*' -or $_.DeviceName -like '*Management Engine*' -or $_.DeviceName -like '*Thermal*') } | Select-Object -Property DeviceName, Manufacturer, DriverVersion, DriverDate, DeviceClass, DeviceID -First 8)
           } | ConvertTo-Json -Depth 4 -Compress
         `;
 
@@ -66,7 +103,8 @@ class DriverService {
               DriverVersion: 'Não instalado',
               DeviceClass: 'UNKNOWN',
               isProblem: true,
-              errorCode: p.ConfigManagerErrorCode
+              errorCode: p.ConfigManagerErrorCode,
+              DeviceID: p.DeviceID
             });
           });
 
@@ -108,10 +146,8 @@ class DriverService {
       }
     }
 
-    // Se nenhum driver for retornado (ex: fallback ou simulador), gere itens realistas a partir do catálogo
-    if (detectedDrivers.length === 0) {
-      detectedDrivers = this.getFallbackDriverScan(catalog);
-    }
+    // Sem leitura real não inventamos resultados: a interface mostra o aviso
+    const scanAvailable = process.platform === 'win32' && detectedDrivers.length > 0;
 
     const outdated = detectedDrivers.filter(d => d.status === 'outdated' || d.status === 'generic');
     const updated = detectedDrivers.filter(d => d.status === 'updated');
@@ -122,10 +158,12 @@ class DriverService {
       outdatedCount: outdated.length,
       updatedCount: updated.length,
       items: detectedDrivers,
+      scanAvailable,
+      message: scanAvailable ? null : 'Não foi possível ler os drivers deste computador (a varredura exige Windows).',
       systemContext
     };
 
-    db.addScanRecord({
+    if (scanAvailable) db.addScanRecord({
       total: detectedDrivers.length,
       outdated: outdated.length,
       updated: updated.length
@@ -138,7 +176,9 @@ class DriverService {
     const name = (raw.DeviceName || 'Dispositivo de Hardware').trim();
     const lowerName = name.toLowerCase();
     const manufacturer = (raw.Manufacturer || 'Fabricante Padrão').trim();
-    const version = raw.DriverVersion || '1.0.0.0';
+    const version = raw.DriverVersion || 'Desconhecida';
+    const driverDate = parseWmiDate(raw.DriverDate);
+    const ageYears = driverDate ? (Date.now() - driverDate.getTime()) / (365.25 * 24 * 3600 * 1000) : null;
 
     // Determina categoria legível
     let category = 'Dispositivo de Sistema';
@@ -197,17 +237,19 @@ class DriverService {
       status = 'generic';
       statusText = 'Driver Genérico da Microsoft (Instale o Oficial)';
       statusBadge = 'danger';
-    } else if (matchedCatalog) {
-      // Se for placa de vídeo dedicada oficial instalada
-      if (category === 'Placa de Vídeo' && (manufacturer.includes('NVIDIA') || manufacturer.includes('AMD') || manufacturer.includes('Intel'))) {
-        status = 'updated';
-        statusText = 'Atualizado (Driver Oficial Instalado)';
-        statusBadge = 'success';
-      } else {
-        status = 'updated';
-        statusText = 'Operando Normalmente';
-        statusBadge = 'success';
-      }
+    } else if (ageYears !== null && ageYears > OUTDATED_YEARS[category] && !/microsoft/i.test(manufacturer)) {
+      // Critério objetivo: data do driver instalado mais antiga que o limite da categoria
+      status = 'outdated';
+      statusText = `Driver de ${driverDate.getFullYear()} (há ${Math.floor(ageYears)} anos) — verifique atualização`;
+      statusBadge = 'warning';
+    } else {
+      status = 'updated';
+      statusText = matchedCatalog && category === 'Placa de Vídeo' ? 'Driver oficial instalado' : 'Operando normalmente';
+      statusBadge = 'success';
+    }
+
+    if (isProblemDevice && raw.errorCode) {
+      statusText += ` — ${DEVICE_ERROR_CODES[raw.errorCode] || 'Código de erro ' + raw.errorCode}`;
     }
 
     const explanation = this.generateExplanation(name, category, manufacturer, matchedCatalog);
@@ -218,6 +260,8 @@ class DriverService {
       category,
       manufacturer,
       currentVersion: version,
+      driverDate: driverDate ? driverDate.toISOString() : null,
+      hardwareId: raw.DeviceID || null,
       status,
       statusText,
       statusBadge,
@@ -313,28 +357,6 @@ class DriverService {
       importance: 'Importante para a integridade dos periféricos.',
       impact: 'Trabalha em segundo plano para que o Windows reconheça corretamente todos os recursos de hardware instalados.'
     };
-  }
-
-  getFallbackDriverScan(catalog) {
-    return catalog.map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      category: cat.category,
-      manufacturer: cat.manufacturer,
-      currentVersion: 'Versão de Fábrica',
-      status: 'outdated',
-      statusText: 'Atualização Recomendada',
-      statusBadge: 'warning',
-      officialUrl: cat.officialUrl,
-      directDownload: cat.directDownload,
-      autoDetectUrl: cat.autoDetectUrl,
-      description: cat.description,
-      details: {
-        role: cat.description,
-        importance: 'Driver crítico pós-formatação.',
-        impact: 'Instalação necessária para pleno funcionamento do hardware.'
-      }
-    }));
   }
 
   async getOutdatedDrivers() {

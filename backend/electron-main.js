@@ -30,7 +30,7 @@ function createWindow() {
   });
 
   const loadUrlWithRetry = () => {
-    mainWindow.loadURL('http://localhost:4321').catch(() => {
+    mainWindow.loadURL('http://127.0.0.1:4321').catch(() => {
       setTimeout(loadUrlWithRetry, 300);
     });
   };
@@ -43,7 +43,7 @@ function createWindow() {
 
   // Redireciona links externos (downloads de drivers, sites de fabricantes) para o navegador padrão
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http://localhost:4321')) {
+    if (url.startsWith('http://127.0.0.1:4321')) {
       return { action: 'allow' };
     }
     shell.openExternal(url);
@@ -51,7 +51,7 @@ function createWindow() {
   });
 
   mainWindow.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith('http://localhost:4321')) {
+    if (!url.startsWith('http://127.0.0.1:4321')) {
       event.preventDefault();
       shell.openExternal(url);
     }

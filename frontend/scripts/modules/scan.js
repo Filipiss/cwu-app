@@ -63,6 +63,15 @@ const ScanModule = {
           outdatedBadge.className = `c-nav__badge ${res.data.outdatedCount > 0 ? 'c-badge--danger' : 'c-badge--success'}`;
         }
 
+        if (res.data.scanAvailable === false) {
+          if (statusMsg) statusMsg.textContent = res.data.message;
+          const tb = document.getElementById('scan-drivers-tbody');
+          if (tb) tb.innerHTML = '<tr><td colspan="5" class="u-text-center u-text-muted"></td></tr>';
+          if (tb) tb.querySelector('td').textContent = res.data.message;
+          App.showToast('Varredura indisponível neste sistema', 'warning');
+          return;
+        }
+
         if (statusMsg) {
           statusMsg.innerHTML = `Escaneamento concluído: <strong>${res.data.totalScanned}</strong> dispositivos examinados. <span class="u-text-danger">${res.data.outdatedCount} pendentes de atenção</span>. <span class="u-text-muted" style="margin-left: 8px;">(Dica: clique em qualquer dispositivo para entender o que ele faz)</span>`;
         }

@@ -74,9 +74,22 @@ const VersionsModule = {
       const res = await API.checkUpdate();
       if (res.success) {
         if (msgEl) {
-          msgEl.innerHTML = `<span class="u-text-success u-font-bold">✓ ${res.data.message}</span>`;
+          const d = res.data;
+          const cls = d.updateAvailable ? 'u-text-warning' : (d.checkFailed ? 'u-text-muted' : 'u-text-success');
+          msgEl.innerHTML = '';
+          const span = document.createElement('span');
+          span.className = cls + ' u-font-bold';
+          span.textContent = (d.updateAvailable ? '⬆ ' : (d.checkFailed ? '' : '✓ ')) + d.message;
+          msgEl.appendChild(span);
+          if (d.updateAvailable && d.downloadUrl) {
+            const link = document.createElement('a');
+            link.href = d.downloadUrl;
+            link.target = '_blank';
+            link.textContent = ' Baixar agora';
+            msgEl.appendChild(link);
+          }
         }
-        App.showToast('CWU App está em sua versão mais recente!', 'success');
+        App.showToast(res.data.message, res.data.updateAvailable ? 'warning' : 'info');
       }
     } catch (err) {
       if (msgEl) {

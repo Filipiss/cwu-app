@@ -379,6 +379,20 @@
               </div>
             </div>
 
+            <!-- DIAGNÓSTICO DE ERROS DO WINDOWS (Event Viewer + Minidumps) -->
+            <div class="c-card u-mb-lg">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">Diagnóstico de Erros e Telas Azuis</h4>
+                  <p id="errors-summary-text" class="u-text-muted">Analisa os últimos 30 dias do Visualizador de Eventos e os arquivos de minidump.</p>
+                </div>
+                <button class="c-btn c-btn--primary c-btn--sm" id="btn-analyze-errors">
+                  <span>Analisar Erros</span> 🩺
+                </button>
+              </div>
+              <div id="errors-results-container" class="u-mt-md"></div>
+            </div>
+
             <!-- RESUMO DE MODIFICAÇÕES -->
             <div class="c-card u-mb-lg">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
