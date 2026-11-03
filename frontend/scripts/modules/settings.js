@@ -80,7 +80,10 @@ const SettingsModule = {
   },
 
   applySettingsToUI() {
-    const savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'futuristic';
+    let savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'futuristic';
+    // O tema "Clássico" foi substituído pelo "Grafite"
+    if (savedTheme === 'classic') savedTheme = 'graphite';
+    if (!['futuristic', 'graphite', 'light'].includes(savedTheme)) savedTheme = 'futuristic';
     this.setTheme(savedTheme);
 
     const langSelect = document.getElementById('setting-language-select');

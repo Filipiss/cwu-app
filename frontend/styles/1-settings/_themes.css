@@ -1,5 +1,5 @@
 /* frontend/styles/1-settings/_themes.css */
-/* Settings: Temas Visuais (Futurista, Clássico, Light) */
+/* Settings: Temas Visuais (Futurista, Grafite, Light) */
 
 /* 1. Tema Futurista (Cyberpunk / Dark Sci-Fi) - Padrão */
 :root,
@@ -36,38 +36,50 @@
   --glow-card: 0 4px 20px rgba(0, 240, 255, 0.08);
 }
 
-/* 2. Tema Clássico (Dark Slate Tech / Corporativo) */
-[data-theme="classic"] {
-  --color-bg-main: #0f172a;
-  --color-bg-surface: #1e293b;
-  --color-bg-card: #1e293b;
-  --color-bg-card-hover: #293548;
-  --color-bg-sidebar: #0b1120;
-  --color-border: #334155;
-  --color-border-bright: #3b82f6;
+/* 2. Tema Grafite (painel técnico: preto neutro, um único acento laranja, números em mono) */
+[data-theme="graphite"] {
+  --color-bg-main: #0b0b0c;
+  --color-bg-surface: #1c1c1e;
+  --color-bg-card: #141415;
+  --color-bg-card-hover: #19191b;
+  --color-bg-sidebar: #0e0e0f;
+  --color-border: #262628;
+  --color-border-bright: #3a3a3d;
 
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
+  --color-text-primary: #ededed;
+  --color-text-secondary: #a3a3a6;
+  --color-text-muted: #6e6e73;
 
-  --color-primary: #3b82f6;
-  --color-primary-rgb: 59, 130, 246;
-  --color-primary-hover: #60a5fa;
+  /* Acento único: laranja só para destaque (nunca como alerta) */
+  --color-primary: #ff7a1a;
+  --color-primary-rgb: 255, 122, 26;
+  --color-primary-hover: #ff9142;
 
-  --color-accent: #6366f1;
-  --color-accent-rgb: 99, 102, 241;
+  --color-accent: #ff7a1a;
+  --color-accent-rgb: 255, 122, 26;
 
-  --color-success: #10b981;
-  --color-success-rgb: 16, 185, 129;
+  /* Status com matizes distintos do acento */
+  --color-success: #5fd38d;
+  --color-success-rgb: 95, 211, 141;
 
-  --color-warning: #f59e0b;
-  --color-warning-rgb: 245, 158, 11;
+  --color-warning: #e9c84a;
+  --color-warning-rgb: 233, 200, 74;
 
-  --color-danger: #ef4444;
-  --color-danger-rgb: 239, 68, 68;
+  --color-danger: #f25c5c;
+  --color-danger-rgb: 242, 92, 92;
 
-  --glow-primary: 0 0 10px rgba(59, 130, 246, 0.25);
-  --glow-card: 0 4px 12px rgba(0, 0, 0, 0.25);
+  /* Sem brilho: profundidade vem só das bordas */
+  --glow-primary: none;
+  --glow-card: none;
+  --shadow-glow: none;
+
+  /* Fontes que vêm no Windows (o app funciona offline) */
+  --font-family-base: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-family-mono: 'Cascadia Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 /* 3. Tema Clean Light (Claro Minimalista) */

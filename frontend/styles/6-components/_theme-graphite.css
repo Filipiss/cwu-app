@@ -1,0 +1,164 @@
+/* 6-components/_theme-graphite.css
+ * Variações de componentes exclusivas do tema Grafite. Tudo fica sob
+ * [data-theme="graphite"], então os outros temas não são afetados.
+ */
+
+/* ---------- Base: sem brilho, bordas finas ---------- */
+[data-theme="graphite"] *,
+[data-theme="graphite"] *::before,
+[data-theme="graphite"] *::after {
+  text-shadow: none !important;
+}
+
+[data-theme="graphite"] .c-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+[data-theme="graphite"] .c-card--highlight {
+  border-color: var(--color-border-bright);
+  background: var(--color-bg-card);
+}
+
+/* ---------- Números: monoespaçados e alinhados ---------- */
+[data-theme="graphite"] .c-perf-tile__value,
+[data-theme="graphite"] .c-score-value,
+[data-theme="graphite"] [id^="log-stat-"],
+[data-theme="graphite"] .u-font-mono,
+[data-theme="graphite"] .c-badge,
+[data-theme="graphite"] .c-nav__badge,
+[data-theme="graphite"] td.c-table__td.u-font-mono {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme="graphite"] .c-perf-tile__value {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Rótulos pequenos e discretos */
+[data-theme="graphite"] .c-perf-tile__label,
+[data-theme="graphite"] .c-nav__category {
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Botões: chapados, sem brilho, pílula nos pequenos ---------- */
+[data-theme="graphite"] .c-btn {
+  box-shadow: none !important;
+}
+
+[data-theme="graphite"] .c-btn--sm {
+  border-radius: var(--radius-full);
+}
+
+[data-theme="graphite"] .c-btn--primary {
+  background: var(--color-primary);
+  color: #0b0b0c;
+  border-color: var(--color-primary);
+}
+
+[data-theme="graphite"] .c-btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: none;
+}
+
+[data-theme="graphite"] .c-btn--outline,
+[data-theme="graphite"] .c-btn--secondary {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-bright);
+}
+
+[data-theme="graphite"] .c-btn--outline:hover:not(:disabled),
+[data-theme="graphite"] .c-btn--secondary:hover:not(:disabled) {
+  border-color: var(--color-text-muted);
+  background: var(--color-bg-card-hover);
+}
+
+/* ---------- Badges: chapados com borda sutil ---------- */
+[data-theme="graphite"] .c-badge {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-bright);
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+}
+
+[data-theme="graphite"] .c-badge--success { color: var(--color-success); border-color: rgba(var(--color-success-rgb), 0.35); }
+[data-theme="graphite"] .c-badge--warning { color: var(--color-warning); border-color: rgba(var(--color-warning-rgb), 0.35); }
+[data-theme="graphite"] .c-badge--danger { color: var(--color-danger); border-color: rgba(var(--color-danger-rgb), 0.35); }
+[data-theme="graphite"] .c-badge--info { color: var(--color-primary); border-color: rgba(var(--color-primary-rgb), 0.35); }
+
+/* ---------- Sidebar: item ativo com barra lateral laranja ---------- */
+[data-theme="graphite"] .c-nav__item--active {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  box-shadow: inset 3px 0 0 var(--color-primary) !important;
+  border-color: transparent;
+}
+
+[data-theme="graphite"] .c-nav__item--active .c-nav__icon {
+  filter: none;
+}
+
+[data-theme="graphite"] .c-header__dot {
+  box-shadow: none;
+}
+
+/* ---------- Medidor segmentado (▮▮▮▮▯) ----------
+ * A barra vira blocos de 6px com 2px de respiro; o trilho vazio
+ * fica hachurado em diagonal, como uma faixa de referência. */
+[data-theme="graphite"] .c-perf-bar {
+  height: 10px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(135deg, #2a2a2d 0 2px, transparent 2px 5px);
+}
+
+[data-theme="graphite"] .c-perf-bar__fill {
+  border-radius: 2px;
+  background: transparent;
+  background-image: repeating-linear-gradient(90deg, var(--color-primary) 0 6px, transparent 6px 8px);
+}
+
+/* ---------- Gráfico do monitor: linha laranja, área hachurada ---------- */
+[data-theme="graphite"] .c-perf-tile__chart .c-perf-area {
+  fill: var(--color-primary);
+  opacity: 0.08;
+}
+
+[data-theme="graphite"] .c-perf-tile__chart .c-perf-grid {
+  stroke: var(--color-border-bright);
+}
+
+[data-theme="graphite"] .c-perf-tile__chart {
+  border-top: 1px dashed var(--color-border);
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 6px);
+  border-radius: 4px;
+}
+
+/* ---------- Campos de busca e selects ---------- */
+[data-theme="graphite"] .c-search-input,
+[data-theme="graphite"] .c-select {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-bright);
+  box-shadow: none;
+}
+
+[data-theme="graphite"] .c-search-input:focus,
+[data-theme="graphite"] .c-select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+[data-theme="graphite"] .c-select-arrow {
+  color: var(--color-text-muted);
+}
+
+/* ---------- Toasts ---------- */
+[data-theme="graphite"] .c-toast {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-bright);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}

@@ -120,8 +120,8 @@ const App = {
       quickThemeBtn.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'futuristic';
         let nextTheme = 'futuristic';
-        if (currentTheme === 'futuristic') nextTheme = 'classic';
-        else if (currentTheme === 'classic') nextTheme = 'light';
+        if (currentTheme === 'futuristic') nextTheme = 'graphite';
+        else if (currentTheme === 'graphite') nextTheme = 'light';
         else nextTheme = 'futuristic';
 
         SettingsModule.setTheme(nextTheme);
