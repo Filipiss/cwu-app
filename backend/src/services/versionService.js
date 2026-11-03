@@ -86,3 +86,4 @@ function compareVersions(a, b) {
 }
 
 module.exports = new VersionService();
+module.exports.compareVersions = compareVersions;

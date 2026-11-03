@@ -11,7 +11,7 @@
     "dist": "electron-builder --win",
     "dist:portable": "electron-builder --win portable",
     "check-winget": "node scripts/check-winget.js",
-    "test": "node --test tests/"
+    "test": "node --test tests/*.test.js"
   },
   "build": {
     "appId": "com.cwuapp.utility",

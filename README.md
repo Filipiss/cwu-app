@@ -13,9 +13,12 @@ O CWU App junta num único executável portátil as tarefas que todo mundo faz d
 | **System Specs** | ✅ | Lê CPU, GPUs (VRAM real via registro), RAM (tipo, frequência, nº de pentes), todos os discos (NVMe/SSD/HDD + saúde), placa-mãe, BIOS e Windows. Dá uma nota de 0 a 10 por componente. |
 | **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e drivers antigos pela **data real do driver instalado**. |
 | **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
-| **Softwares pós-formatação** | ✅ | Catálogo pesquisável de runtimes e programas essenciais com links oficiais. |
+| **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 46 runtimes e programas essenciais e links oficiais. |
+| **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use o "Kit essencial") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
 | **Diagnóstico de erros / BSOD** | ✅ | Analisa 30 dias do Visualizador de Eventos (Kernel-Power 41, BugCheck 1001, WHEA, disco, crashes de apps), agrupa repetições e lista minidumps. |
 | **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
+| **Ponto de restauração** | ✅ | Criado automaticamente antes da primeira alteração de sistema da sessão, ou manualmente pela aba Logs. |
+| **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
 | **Temas e preferências** | ✅ | Futurista, Clássico e Light. |
 
@@ -36,6 +39,8 @@ O CWU App junta num único executável portátil as tarefas que todo mundo faz d
 │  ├─ driverService  (Win32_PnPSignedDriver)    │
 │  ├─ logsService    (Get-WinEvent + minidumps) │
 │  ├─ boostService   (powercfg, registro, Win32)│
+│  ├─ wingetService  (fila de instalação)       │
+│  ├─ restorePointService / reportService       │
 │  └─ scoreCalculator                           │
 └───────────────┬──────────────────────────────┘
                 │ PowerShell via stdin (JSON)
@@ -94,6 +99,8 @@ npm install
 npm run app            # abre a janela Electron
 npm start              # apenas o servidor: http://127.0.0.1:4321
 npm run dist:portable  # gera o .exe portátil em /release
+npm test               # 20 testes (nota, parsers de hardware, eventos, winget)
+npm run check-winget   # valida no Windows se todos os IDs do winget existem
 ```
 
 > **Docker:** um container Linux não acessa WMI, drivers nem o Visualizador de Eventos do Windows. A pasta `docker/` serve só para visualizar a interface; nesse modo, todas as leituras aparecem como "Não detectado".
@@ -107,11 +114,12 @@ npm run dist:portable  # gera o .exe portátil em /release
 - [x] Diagnóstico de BSOD e eventos com agrupamento
 - [x] Boost com registro e reversão
 - [x] API local protegida
-- [ ] Instalação em lote de softwares via `winget`
-- [ ] Ponto de restauração automático antes de otimizações
+- [x] Instalação em lote de softwares via `winget`
+- [x] Ponto de restauração automático antes de otimizações
 - [ ] Leitura do código de parada dentro dos minidumps
-- [ ] Relatório exportável (HTML/PDF)
-- [ ] Testes automatizados dos parsers e da nota
+- [x] Relatório exportável (HTML)
+- [x] Testes automatizados (node:test) e CI no GitHub Actions
+- [ ] Alterar a baixa latência da NVIDIA direto pela NVAPI
 - [ ] Migrar a comunicação HTTP para IPC do Electron
 
 ---
