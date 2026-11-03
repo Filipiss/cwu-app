@@ -61,3 +61,31 @@ test('programa assinado em pasta de usuário (ex.: Discord) não passa de risco 
   const [p] = analyzeProcesses([{ pid: 1, ppid: 0, name: 'Discord.exe', path: 'C:\\Users\\f\\AppData\\Local\\Discord\\app-1.0\\Discord.exe', signature: { status: 'Valid', signer: 'Discord Inc.' }, connections: 5 }], env);
   assert.ok(['ok', 'low'].includes(p.level));
 });
+
+const { detectMinerSignals } = require('../src/services/securityService');
+const WALLET = '4A' + '1'.repeat(93);
+
+test('minerador: nome conhecido e pool/carteira na linha de comando são sinais fortes', () => {
+  assert.ok(detectMinerSignals({ name: 'xmrig.exe' }, false).some(s => s.strong));
+  const cmd = detectMinerSignals({ name: 'svc.exe', commandLine: `svc.exe -o stratum+tcp://pool.example:4444 -u ${WALLET}` }, false);
+  assert.ok(cmd.some(s => /pool de mineração/.test(s.text)));
+  assert.ok(cmd.some(s => /carteira/.test(s.text)));
+});
+
+test('minerador injetado em processo assinado do Windows ainda é detectado pela linha de comando', () => {
+  const [p] = analyzeProcesses([{ pid: 1, ppid: 0, name: 'explorer.exe', path: 'C:\\Windows\\explorer.exe', signature: ms, commandLine: 'explorer.exe --algo=rx --url stratum+ssl://x.y:14433' }], env);
+  assert.equal(p.isMinerSuspect, true);
+  assert.equal(p.level, 'high');
+});
+
+test('porta de pool + GPU alta sem janela marcam minerador de GPU', () => {
+  const [p] = analyzeProcesses([{ pid: 1, ppid: 0, name: 'host.exe', path: 'C:\\Users\\f\\AppData\\Roaming\\host.exe', signature: { status: 'NotSigned' }, remotePorts: [3333, 443], gpu: 85, hasWindow: false }], env);
+  assert.equal(p.isMinerSuspect, true);
+  assert.ok(p.behaviors.some(b => /placa de vídeo/.test(b)));
+});
+
+test('jogo com janela usando muita GPU não é confundido com minerador', () => {
+  const [p] = analyzeProcesses([{ pid: 1, ppid: 0, name: 'cs2.exe', path: 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\cs2\\cs2.exe', signature: { status: 'Valid', signer: 'Valve' }, gpu: 98, cpu: 40, hasWindow: true, remotePorts: [27015] }], env);
+  assert.equal(p.isMinerSuspect, false);
+  assert.equal(p.level, 'ok');
+});

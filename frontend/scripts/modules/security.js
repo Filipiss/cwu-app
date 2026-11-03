@@ -16,7 +16,7 @@ const SecurityModule = {
 
     btn.disabled = true;
     btn.innerHTML = '<span>Escaneando…</span> <span class="u-spin">⏳</span>';
-    summary.textContent = 'Lendo processos, assinaturas digitais e conexões de rede… isso pode levar até 40 segundos.';
+    summary.textContent = 'Medindo CPU e GPU de cada processo por 5 segundos e lendo assinaturas, linhas de comando e conexões… isso pode levar até 45 segundos.';
     box.innerHTML = '';
 
     try {
@@ -25,7 +25,7 @@ const SecurityModule = {
 
       const flagged = d.processes.filter(p => p.level === 'high' || p.level === 'medium');
       summary.textContent = flagged.length
-        ? `${d.total} processos analisados: ${d.summary.high} com risco alto e ${d.summary.medium} com risco médio.${d.isAdmin ? '' : ' Execute como administrador para analisar também os processos protegidos.'}`
+        ? `${d.total} processos analisados: ${d.summary.high} com risco alto e ${d.summary.medium} com risco médio${d.summary.miners ? ` (${d.summary.miners} com sinais de mineração de criptomoedas)` : ''}.${d.isAdmin ? '' : ' Execute como administrador para analisar também os processos protegidos.'}`
         : `✅ ${d.total} processos analisados e nenhum apresentou sinais relevantes de comportamento malicioso.${d.isAdmin ? '' : ' Execute como administrador para uma análise mais completa.'}`;
 
       flagged.forEach(p => box.appendChild(this.renderProcess(p)));
@@ -62,7 +62,7 @@ const SecurityModule = {
     head.style.cssText = 'align-items:center; flex-wrap:wrap;';
     const badge = document.createElement('span');
     badge.className = `c-badge c-badge--${p.level === 'high' ? 'danger' : 'warning'}`;
-    badge.textContent = p.level === 'high' ? '⚠️ Risco alto' : '⚠ Risco médio';
+    badge.textContent = (p.level === 'high' ? '⚠️ Risco alto' : '⚠ Risco médio') + (p.isMinerSuspect ? ' · ⛏️ Minerador' : '');
     const title = document.createElement('strong');
     title.textContent = `${p.name} (PID ${p.pid})`;
     head.append(badge, title);
@@ -70,7 +70,9 @@ const SecurityModule = {
     // Mensagem principal no formato pedido
     const msg = document.createElement('p');
     msg.className = 'u-mt-sm';
-    msg.textContent = `O processo ${p.name} pode ser um processo malicioso.`;
+    msg.textContent = p.isMinerSuspect
+      ? `O processo ${p.name} pode ser um minerador de criptomoedas escondido no seu PC.`
+      : `O processo ${p.name} pode ser um processo malicioso.`;
 
     const why = document.createElement('p');
     why.className = 'u-mt-sm u-font-bold';
@@ -98,6 +100,8 @@ const SecurityModule = {
       p.company ? `Empresa: ${p.company}` : null,
       p.signer ? `Assinado por: ${p.signer}` : 'Sem assinatura digital',
       `${p.memoryMb} MB de RAM`,
+      p.cpu ? `CPU ${Math.round(p.cpu)}%` : null,
+      p.gpu ? `GPU ${Math.round(p.gpu)}%` : null,
       p.connections ? `${p.connections} conexão(ões) de rede` : null
     ].filter(Boolean).join(' • ');
 
