@@ -53,7 +53,8 @@ function evaluateDisk(raw) {
   if (lifeRemaining !== null && lifeRemaining <= 10) { status = 'bad'; notes.push('Vida útil quase no fim: planeje a troca.'); }
   else if (lifeRemaining !== null && lifeRemaining <= 30 && status === 'good') { status = 'warn'; notes.push('Mais de 70% da vida útil já foi usada.'); }
   if (errors > 0) { if (status === 'good') status = 'warn'; notes.push(`${errors} erro(s) de leitura/escrita sem correção registrados.`); }
-  if (temperature !== null && temperature >= (type === 'HD' ? 55 : 70)) // HD: acima de ~50 °C; SSD/NVMe: limite de trabalho ~70 °C { if (status === 'good') status = 'warn'; notes.push(`Temperatura alta (${temperature} °C): verifique a ventilação.`); }
+  // HD esquenta acima de ~50 °C; SSD/NVMe trabalham bem até ~70 °C
+  if (temperature !== null && temperature >= (type === 'HD' ? 55 : 70)) { if (status === 'good') status = 'warn'; notes.push(`Temperatura alta (${temperature} °C): verifique a ventilação.`); }
 
   return {
     model: raw.model || 'Disco sem nome',
