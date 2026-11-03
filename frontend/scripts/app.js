@@ -17,6 +17,9 @@ const App = {
     ScanModule.init();
     SoftsModule.init();
     WingetModule.init();
+    document.getElementById('btn-export-report')?.addEventListener('click', () => {
+      App.showToast('Gerando relatório… o download começa em alguns segundos.', 'info', 6000);
+    });
     BoostModule.init();
     LogsModule.init();
     VersionsModule.init();

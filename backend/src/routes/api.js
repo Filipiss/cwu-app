@@ -7,6 +7,7 @@ const settingsController = require('../controllers/settingsController');
 const versionController = require('../controllers/versionController');
 const wingetController = require('../controllers/wingetController');
 const restorePointService = require('../services/restorePointService');
+const reportService = require('../services/reportService');
 
 /**
  * Tabela de rotas da API
@@ -44,6 +45,17 @@ const routes = [
 
   // Ponto de restauração manual
   { method: 'POST', path: '/api/system/restore-point', handler: async (req, res) => res.json({ success: true, data: await restorePointService.create('ponto manual') }) },
+
+  // Relatório HTML para download
+  { method: 'GET', path: '/api/report', handler: async (req, res) => {
+    const html = await reportService.buildHtml();
+    const stamp = new Date().toISOString().slice(0, 10);
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Disposition': `attachment; filename="relatorio-cwu-${stamp}.html"`
+    });
+    res.end(html);
+  } },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },
