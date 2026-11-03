@@ -4,12 +4,12 @@
 
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
-[![Testes](https://github.com/SEU-USUARIO/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/SEU-USUARIO/cwu-app/actions/workflows/tests.yml)
+[![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
 ![Versão](https://img.shields.io/badge/versão-1.1.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
-[**⬇️ Baixar para Windows**](https://github.com/SEU-USUARIO/cwu-app/releases/latest)
+[**⬇️ Baixar para Windows**](https://github.com/Filipiss/cwu-app/releases/latest)
 
 <img src="docs/media/demo.gif" alt="CWU App em funcionamento" width="860">
 
@@ -91,7 +91,7 @@ O app roda como administrador, então a API local foi tratada como superfície d
 
 ## Como usar
 
-**Usuário:** baixe o `.exe` em [Releases](https://github.com/SEU-USUARIO/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
+**Usuário:** baixe o `.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
 
 **Desenvolvimento:**
 
