@@ -6,9 +6,9 @@ const DRIVER_CATALOG = [
     category: 'Placa de Vídeo',
     manufacturer: 'NVIDIA',
     name: 'NVIDIA GeForce Game Ready Driver',
-    officialUrl: 'https://www.nvidia.com/Download/index.aspx',
-    autoDetectUrl: 'https://www.nvidia.com/en-us/geforce/geforce-experience/',
-    directDownload: 'https://www.nvidia.com/Download/driverResults.aspx/224154/en-us/',
+    officialUrl: 'https://www.nvidia.com/pt-br/drivers/',
+    autoDetectUrl: 'https://www.nvidia.com/pt-br/software/nvidia-app/',
+    directDownload: 'https://www.nvidia.com/pt-br/drivers/',
     description: 'Driver essencial para placas GeForce RTX/GTX. Garante estabilidade, DLSS, reflex e desempenho em jogos recém-lançados.',
     matchKeywords: ['nvidia', 'geforce', 'rtx', 'gtx']
   },
@@ -18,7 +18,7 @@ const DRIVER_CATALOG = [
     manufacturer: 'AMD',
     name: 'AMD Software: Adrenalin Edition',
     officialUrl: 'https://www.amd.com/pt/support/download/drivers.html',
-    autoDetectUrl: 'https://drivers.amd.com/drivers/installer/23.40/beta/amd-software-adrenalin-edition-23.40.02.01-minimalsetup-240124_web.exe',
+    autoDetectUrl: 'https://www.amd.com/pt/support/download/drivers.html',
     directDownload: 'https://www.amd.com/pt/support/download/drivers.html',
     description: 'Driver oficial para placas Radeon RX (7000, 6000, 5000) e gráficos integrados Ryzen APU.',
     matchKeywords: ['radeon', 'rx 7', 'rx 6', 'rx 5', 'rx 4', 'vega', 'amd graphics', 'radeon rx']
@@ -102,7 +102,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['c++', 'vcredist', 'dll', 'runtime', 'visual studio', 'msvcp140'],
     officialUrl: 'https://github.com/abbodi1406/vcredist/releases/latest',
-    downloadUrl: 'https://github.com/abbodi1406/vcredist/releases/download/v0.82.0/VisualCppRedist_AIO_x86_x64.zip',
+    downloadUrl: 'https://github.com/abbodi1406/vcredist/releases/latest',
     description: 'Instala de uma só vez todas as bibliotecas Visual C++ x86/x64 (2005 até 2022). Evita erros de .dll ausente em jogos e instaladores.'
   },
   {
@@ -212,7 +212,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['tor', 'privacidade', 'onion', 'anonimato', 'darkweb', 'criptografia'],
     officialUrl: 'https://www.torproject.org/',
-    downloadUrl: 'https://www.torproject.org/dist/torbrowser/14.0.1/tor-browser-windows-x86_64-portable-14.0.1.exe',
+    downloadUrl: 'https://www.torproject.org/download/',
     description: 'Navegador projetado para anonimato máximo e navegação através da rede criptografada Tor.'
   },
 
@@ -250,7 +250,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['gog', 'cd projekt', 'drm-free', 'witcher', 'cyberpunk', 'integrador'],
     officialUrl: 'https://www.gog.com/galaxy',
-    downloadUrl: 'https://cdn.gog.com/open/galaxy/client/2.0.73.27/setup_galaxy_2.0.73.27.exe',
+    downloadUrl: 'https://www.gog.com/galaxy',
     description: 'Plataforma para jogos livres de DRM que permite unificar bibliotecas de outras plataformas (Steam, Epic, Xbox).'
   },
   {
@@ -298,7 +298,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['ubisoft', 'uplay', 'assassins creed', 'rainbow six', 'far cry'],
     officialUrl: 'https://ubisoftconnect.com/',
-    downloadUrl: 'https://ubi.li/4vxt9',
+    downloadUrl: 'https://ubisoftconnect.com/',
     description: 'Plataforma oficial da Ubisoft para gerenciamento de jogos como Rainbow Six Siege, Assassin\'s Creed e Far Cry.'
   },
 
@@ -312,7 +312,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['7zip', 'zip', 'rar', 'descompactador', 'compactador', 'arquivo', '7z'],
     officialUrl: 'https://www.7-zip.org/',
-    downloadUrl: 'https://www.7-zip.org/a/7z2408-x64.exe',
+    downloadUrl: 'https://www.7-zip.org/download.html',
     description: 'O descompactador mais leve, seguro e sem propagandas do mundo. Suporta 7z, RAR, ZIP, TAR, GZ e ISO.'
   },
   {
@@ -324,7 +324,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['winrar', 'rar', 'zip', 'descompactador', 'rarlab'],
     officialUrl: 'https://www.win-rar.com/',
-    downloadUrl: 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701br.exe',
+    downloadUrl: 'https://www.win-rar.com/download.html',
     description: 'Famoso compactador e descompactador de arquivos com alta taxa de compressão e recuperação de arquivos corrompidos.'
   },
   {
@@ -336,7 +336,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['rufus', 'pendrive', 'boot', 'iso', 'formatar', 'windows', 'linux', 'uefi'],
     officialUrl: 'https://rufus.ie/',
-    downloadUrl: 'https://github.com/pbatard/rufus/releases/download/v4.6/rufus-4.6.exe',
+    downloadUrl: 'https://rufus.ie/',
     description: 'Ferramenta indispensável para criar pendrives inicializáveis do Windows 10/11 ou Linux sem limitações de TPM/Secure Boot.'
   },
   {
@@ -360,7 +360,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['everything', 'busca', 'pesquisa', 'arquivos', 'rapido', 'localizar'],
     officialUrl: 'https://www.voidtools.com/',
-    downloadUrl: 'https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe',
+    downloadUrl: 'https://www.voidtools.com/downloads/',
     description: 'Motor de busca local instantâneo que localiza qualquer arquivo no seu computador em milissegundos.'
   },
   {
@@ -372,7 +372,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['bleachbit', 'limpeza', 'privacidade', 'cache', 'temporarios', 'open source'],
     officialUrl: 'https://www.bleachbit.org/',
-    downloadUrl: 'https://download.bleachbit.org/BleachBit-4.6.0-setup.exe',
+    downloadUrl: 'https://www.bleachbit.org/download/windows',
     description: 'Limpador de sistema de código aberto que apaga rastros de navegação, caches ocultos e libera gigabytes de espaço em disco.'
   },
 
@@ -386,7 +386,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['msi', 'afterburner', 'fps', 'temperatura', 'overclock', 'rivatuner', 'rtss', 'gpu'],
     officialUrl: 'https://www.msi.com/Landing/afterburner/graphics-cards',
-    downloadUrl: 'https://download.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip',
+    downloadUrl: 'https://www.msi.com/Landing/afterburner/graphics-cards',
     description: 'O utilitário definitivo para monitorar FPS, temperatura e uso de CPU/GPU na tela durante jogos, além de controle de ventoinhas.'
   },
   {
@@ -398,7 +398,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['cpuz', 'cpu-z', 'processador', 'memoria', 'clock', 'placa-mae', 'ram'],
     officialUrl: 'https://www.cpuid.com/softwares/cpu-z.html',
-    downloadUrl: 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.exe',
+    downloadUrl: 'https://www.cpuid.com/softwares/cpu-z.html',
     description: 'Informa com máxima precisão o modelo exato da CPU, frequência em tempo real, timings de memória RAM e modelo da placa-mãe.'
   },
   {
@@ -422,7 +422,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['hwmonitor', 'temperaturas', 'voltagens', 'fans', 'sensores', 'consumo'],
     officialUrl: 'https://www.cpuid.com/softwares/hwmonitor.html',
-    downloadUrl: 'https://download.cpuid.com/hwmonitor/hwmonitor_1.55.exe',
+    downloadUrl: 'https://www.cpuid.com/softwares/hwmonitor.html',
     description: 'Monitora em tempo real as voltagens da fonte, rotação das ventoinhas e temperaturas de todos os núcleos de CPU e GPU.'
   },
   {
@@ -434,7 +434,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['crystaldisk', 'ssd', 'nvme', 'hd', 'saude', 'smart', 'temperatura disco'],
     officialUrl: 'https://crystalmark.info/en/software/crystaldiskinfo/',
-    downloadUrl: 'https://osdn.net/frs/redir.php?m=constant&f=crystaldiskinfo%2F79327%2FCrystalDiskInfo9_4_4.exe',
+    downloadUrl: 'https://crystalmark.info/en/software/crystaldiskinfo/',
     description: 'Monitor de saúde S.M.A.R.T. para SSDs e HDDs. Alerta sobre setores defeituosos, temperatura e porcentagem de vida útil restante.'
   },
   {
@@ -446,7 +446,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['furmark', 'benchmark', 'stress test', 'estabilidade', 'gpu', 'aquecimento'],
     officialUrl: 'https://geeks3d.com/furmark/',
-    downloadUrl: 'https://www.geeks3d.com/dl/get/732',
+    downloadUrl: 'https://geeks3d.com/furmark/',
     description: 'Teste de estresse térmico para verificar a estabilidade da placa de vídeo e diagnosticar possíveis desligamentos sob carga máxima.'
   },
 
@@ -496,7 +496,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['teamspeak', 'ts3', 'voz', 'baixa latencia', 'jogos antigos', 'rpg'],
     officialUrl: 'https://www.teamspeak.com/',
-    downloadUrl: 'https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe',
+    downloadUrl: 'https://www.teamspeak.com/en/downloads/',
     description: 'Cliente de comunicação por voz de latência ultrabaixa com controle de permissões avançado por servidores privados.'
   },
 
@@ -522,7 +522,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['obs', 'gravar', 'stream', 'twitch', 'youtube', 'live', 'captura de tela'],
     officialUrl: 'https://obsproject.com/',
-    downloadUrl: 'https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Full-Installer-x64.exe',
+    downloadUrl: 'https://obsproject.com/download',
     description: 'Software profissional e gratuito para gravação de tela e transmissões ao vivo (Twitch, YouTube, Kick).'
   },
   {
@@ -546,7 +546,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['klite', 'codecs', 'media player classic', 'mpc', 'audio', 'video'],
     officialUrl: 'https://codecguide.com/download_k-lite_codec_pack_mega.htm',
-    downloadUrl: 'https://files2.codecguide.com/K-Lite_Codec_Pack_1855_Mega.exe',
+    downloadUrl: 'https://codecguide.com/download_k-lite_codec_pack_mega.htm',
     description: 'Coleção completa de filtros DirectShow e codecs VFW/ACM para reprodução e edição de qualquer arquivo de áudio e vídeo.'
   },
   {
@@ -558,7 +558,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: false,
     tags: ['handbrake', 'conversor', 'video', 'comprimir', 'mp4', 'mkv', 'h264', 'hevc', 'av1'],
     officialUrl: 'https://handbrake.fr/',
-    downloadUrl: 'https://github.com/HandBrake/HandBrake/releases/download/1.8.2/HandBrake-1.8.2-x86_64-Win_GUI.exe',
+    downloadUrl: 'https://handbrake.fr/downloads.php',
     description: 'Conversor de vídeo gratuito de código aberto com aceleração NVENC/AMF para compactar arquivos pesados sem perder qualidade.'
   },
 
@@ -596,7 +596,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['notepad', 'notepad++', 'editor', 'texto', 'notas', 'rapido', 'substituir'],
     officialUrl: 'https://notepad-plus-plus.org/',
-    downloadUrl: 'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.9/npp.8.6.9.Installer.x64.exe',
+    downloadUrl: 'https://notepad-plus-plus.org/downloads/',
     description: 'Editor de texto e notas ultraleve que substitui com folga o Bloco de Notas padrão, com suporte a realce de sintaxe.'
   },
   {
@@ -622,7 +622,7 @@ const ESSENTIAL_SOFTWARES = [
     mustHave: true,
     tags: ['torrent', 'qbittorrent', 'download', 'p2p', 'sem anuncios', 'magnet'],
     officialUrl: 'https://www.qbittorrent.org/',
-    downloadUrl: 'https://www.fosshub.com/qBittorrent.html',
+    downloadUrl: 'https://www.qbittorrent.org/download',
     description: 'O melhor cliente de torrent da atualidade: código aberto, sem anúncios, sem mineradores ocultos e extremamente veloz.'
   },
   {
