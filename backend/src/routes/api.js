@@ -13,6 +13,7 @@ const monitorService = require('../services/monitorService');
 const startupService = require('../services/startupService');
 const tweaksService = require('../services/tweaksService');
 const securityService = require('../services/securityService');
+const competitiveService = require('../services/competitiveService');
 
 /**
  * Tabela de rotas da API
@@ -77,6 +78,17 @@ const routes = [
 
   // Segurança: triagem de processos suspeitos
   { method: 'GET', path: '/api/security/scan', handler: async (req, res) => res.json({ success: true, data: await securityService.scanProcesses() }) },
+
+  // Competitivo: latência, mira e conexão
+  { method: 'GET', path: '/api/competitive', handler: async (req, res) => res.json({ success: true, data: await competitiveService.getStatus() }) },
+  { method: 'GET', path: '/api/competitive/network', handler: async (req, res) => res.json({ success: true, data: await competitiveService.networkTest() }) },
+  { method: 'POST', path: '/api/competitive/display', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setRefreshRate(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/mouse-accel', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setMouseAcceleration(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/mouse-speed', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setMouseSpeed(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/gamebar', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setGameBarOverlay(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/ultimate', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUltimatePlan(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/usb-suspend', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUsbSelectiveSuspend(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/adapter', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setAdapterPowerSaving(req.body || {}) }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

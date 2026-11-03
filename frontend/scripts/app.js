@@ -19,6 +19,7 @@ const App = {
     SoftsModule.init();
     WingetModule.init();
     ProcessesModule.init();
+    CompetitiveModule.init();
     PerfModule.init();
     SecurityModule.init();
     document.getElementById('btn-export-report')?.addEventListener('click', () => {

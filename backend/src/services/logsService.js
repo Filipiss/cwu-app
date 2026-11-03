@@ -35,6 +35,10 @@ class LogsService {
         const { spawn } = require('child_process');
         spawn('explorer.exe', ['devmgmt.msc'], { detached: true, stdio: 'ignore' }).unref();
       }
+    } else if (item.type === 'competitive' && item.competitive) {
+      const competitiveService = require('./competitiveService');
+      const r = await competitiveService.revert(item);
+      if (!r.success) return { success: false, message: r.message };
     } else if (item.type === 'tweak' && item.tweakId) {
       const tweaksService = require('./tweaksService');
       // Volta ao estado anterior; se era 'padrão desconhecido' (null), desfaz o que foi aplicado

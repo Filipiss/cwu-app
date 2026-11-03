@@ -1,0 +1,97 @@
+/* 6-components/_competitive.css — Sub-aba Competitivo */
+
+/* Área do teste de polling rate */
+.c-polling {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 160px;
+  border: 1px dashed var(--color-border-bright);
+  border-radius: var(--radius-md);
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-text-primary) 3%, transparent) 0 2px, transparent 2px 8px);
+  cursor: crosshair;
+  user-select: none;
+  touch-action: none;
+  transition: border-color var(--transition-fast);
+}
+.c-polling:hover,
+.c-polling:focus-visible { border-color: var(--color-primary); outline: none; }
+.c-polling--measuring { border-style: solid; border-color: var(--color-primary); }
+
+.c-polling__value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+.c-polling__hint { font-size: 0.85rem; color: var(--color-text-muted); text-align: center; max-width: 520px; }
+
+/* Linha de ajuste: texto à esquerda, estado/ação à direita (mesmo padrão das outras abas) */
+.c-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+.c-setting-row:first-child { border-top: none; padding-top: 0; }
+.c-setting-row__text { flex: 1; min-width: 0; }
+.c-setting-row__title { font-size: 0.9rem; font-weight: 600; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.c-setting-row__desc { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 2px; line-height: 1.45; }
+.c-setting-row__action { display: flex; gap: var(--spacing-xs); flex-shrink: 0; align-items: center; }
+
+/* Resultado do teste de rede */
+.c-net-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-sm);
+}
+.c-net-stat {
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-text-primary) 2%, transparent);
+}
+.c-net-stat__label { font-size: 0.72rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.c-net-stat__value { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.c-net-stat__sub { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px; }
+
+/* Guia de latência: passos numerados */
+.c-steps { counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
+.c-steps__item { display: flex; gap: 12px; align-items: flex-start; font-size: 0.88rem; line-height: 1.5; color: var(--color-text-secondary); }
+.c-steps__item::before {
+  counter-increment: step;
+  content: counter(step);
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700;
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  color: var(--color-primary);
+}
+.c-steps__item strong { color: var(--color-text-primary); }
+
+/* Mitos: lista expansível */
+.c-myths { display: flex; flex-direction: column; }
+.c-myth { border-top: 1px solid var(--color-border); }
+.c-myth:first-child { border-top: none; }
+.c-myth summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.c-myth summary::-webkit-details-marker { display: none; }
+.c-myth summary::before { content: '✕'; color: var(--color-danger); font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+.c-myth p { font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.55; padding: 0 0 12px 22px; }
+.c-myth code { font-family: var(--font-family-mono); font-size: 0.82em; padding: 1px 5px; border-radius: 4px; background: var(--color-bg-surface); }
