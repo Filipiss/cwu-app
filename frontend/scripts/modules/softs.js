@@ -179,7 +179,9 @@ const SoftsModule = {
     let results = [...this.allSoftwares];
 
     // 1. Filtrar por Categoria
-    if (this.currentCategory && this.currentCategory !== 'all') {
+    if (this.currentCategory === 'suggested') {
+      results = results.filter(sw => sw.mustHave);
+    } else if (this.currentCategory && this.currentCategory !== 'all') {
       results = results.filter(sw => sw.category === this.currentCategory);
     }
 
