@@ -21,3 +21,9 @@ test('Disco marcado pelo Windows como com falhas fica crítico', () => {
   const d = evaluateDisk({ mediaType: 'SSD', busType: 'SATA', health: 'Unhealthy', wear: 50 });
   assert.equal(d.status, 'bad');
 });
+
+test('SSD a 53 °C é normal, mesmo se o Windows o informar como HDD', () => {
+  const d = evaluateDisk({ mediaType: 'HDD', busType: 'SATA', health: 'Healthy', wear: 5, temperature: 53 });
+  assert.equal(d.type, 'SSD');
+  assert.equal(d.status, 'good');
+});

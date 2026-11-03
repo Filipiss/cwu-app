@@ -30,6 +30,8 @@ const num = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Nu
 function diskType(d) {
   if (/nvme/i.test(d.busType)) return 'NVMe';
   if (/ssd/i.test(d.mediaType)) return 'SSD';
+  // Só SSD informa desgaste: se veio "Wear", não é HD, mesmo que o Windows erre o tipo
+  if (num(d.wear) !== null) return 'SSD';
   if (/hdd/i.test(d.mediaType)) return 'HD';
   return 'Disco';
 }
@@ -51,7 +53,7 @@ function evaluateDisk(raw) {
   if (lifeRemaining !== null && lifeRemaining <= 10) { status = 'bad'; notes.push('Vida útil quase no fim: planeje a troca.'); }
   else if (lifeRemaining !== null && lifeRemaining <= 30 && status === 'good') { status = 'warn'; notes.push('Mais de 70% da vida útil já foi usada.'); }
   if (errors > 0) { if (status === 'good') status = 'warn'; notes.push(`${errors} erro(s) de leitura/escrita sem correção registrados.`); }
-  if (temperature !== null && temperature >= (type === 'HD' ? 55 : 70)) { if (status === 'good') status = 'warn'; notes.push(`Temperatura alta (${temperature} °C): verifique a ventilação.`); }
+  if (temperature !== null && temperature >= (type === 'HD' ? 55 : 70)) // HD: acima de ~50 °C; SSD/NVMe: limite de trabalho ~70 °C { if (status === 'good') status = 'warn'; notes.push(`Temperatura alta (${temperature} °C): verifique a ventilação.`); }
 
   return {
     model: raw.model || 'Disco sem nome',
