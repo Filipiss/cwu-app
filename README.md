@@ -133,3 +133,5 @@ npm run check-winget   # valida no Windows se todos os IDs do winget existem
 ## 📄 Licença
 
 MIT.
+
+Ícones: [Lucide](https://lucide.dev) (licença ISC), embutidos como sprite SVG no `index.html` para o app funcionar offline.
