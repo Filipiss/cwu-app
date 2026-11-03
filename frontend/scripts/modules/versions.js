@@ -68,7 +68,7 @@ const VersionsModule = {
     try {
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span>Checando Servidores...</span> <span class="u-spin">🔄</span>';
+        btn.innerHTML = '<span>Checando Servidores...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></span>';
       }
 
       const res = await API.checkUpdate();
@@ -79,7 +79,7 @@ const VersionsModule = {
           msgEl.innerHTML = '';
           const span = document.createElement('span');
           span.className = cls + ' u-font-bold';
-          span.textContent = (d.updateAvailable ? '⬆ ' : (d.checkFailed ? '' : '✓ ')) + d.message;
+          span.textContent = '' + d.message;
           msgEl.appendChild(span);
           if (d.updateAvailable && d.downloadUrl) {
             const link = document.createElement('a');
@@ -98,7 +98,7 @@ const VersionsModule = {
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<span>Verificar Atualizações Agora</span> <span>🔍</span>';
+        btn.innerHTML = '<span>Verificar Atualizações Agora</span> <span><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></span>';
       }
     }
   }

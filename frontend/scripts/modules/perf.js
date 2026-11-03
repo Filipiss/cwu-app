@@ -64,13 +64,13 @@ const PerfModule = {
         return;
       }
       if (d.error && status) {
-        status.textContent = '⚠ Sensores com problema';
+        status.textContent = 'Sensores com problema';
         status.className = 'c-badge c-badge--warning';
         status.title = d.error;
         if (!this.errorShown) { this.errorShown = true; App.showToast('Monitor: ' + d.error, 'warning', 10000); }
       } else if (status) {
         status.title = '';
-        status.textContent = d.warmingUp ? `Iniciando sensores… ${d.secondsWaiting || 0}s` : '● Ao vivo';
+        status.textContent = d.warmingUp ? `Iniciando sensores… ${d.secondsWaiting || 0}s` : 'Ao vivo';
         status.className = `c-badge ${d.warmingUp ? 'c-badge--neutral' : 'c-badge--success'}`;
       }
       if (d.latest) this.render(d.latest, d.history || []);
@@ -266,7 +266,7 @@ const PerfModule = {
     btn.disabled = true;
     try {
       const d = (await API.setTweak(id, enabled)).data || {};
-      if (d.restorePoint && !d.restorePoint.reused) App.showToast('🛟 ' + d.restorePoint.message, d.restorePoint.ok ? 'info' : 'warning', 8000);
+      if (d.restorePoint && !d.restorePoint.reused) App.showToast('' + d.restorePoint.message, d.restorePoint.ok ? 'info' : 'warning', 8000);
       App.showToast(d.message, d.success ? 'success' : (d.needsAdmin ? 'warning' : 'danger'), 7000);
       if (d.success) await this.loadTweaks();
     } finally {
@@ -284,7 +284,7 @@ const PerfModule = {
       if (!d.available) { box.textContent = d.message; return; }
       box.innerHTML = '';
 
-      const icon = { ok: '✅', info: 'ℹ️', warning: '⚠️' };
+      const icon = { ok: '', info: '', warning: '' };
       d.issues.forEach(i => {
         const p = document.createElement('p');
         p.className = 'u-mt-xs';

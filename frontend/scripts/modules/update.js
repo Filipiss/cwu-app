@@ -59,7 +59,7 @@ const UpdateModule = {
     if (!items || items.length === 0) {
       container.innerHTML = `
         <div class="c-card u-text-center">
-          <p class="u-text-success u-font-bold">✓ Nenhum driver pendente nesta categoria.</p>
+          <p class="u-text-success u-font-bold"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Nenhum driver pendente nesta categoria.</p>
         </div>
       `;
       return;
@@ -80,15 +80,15 @@ const UpdateModule = {
               <p class="u-mb-md">${item.description}</p>
               <div class="o-flex o-flex--between o-flex--gap-sm">
                 <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Página oficial do fornecedor">
-                  <span>Portal Oficial</span> ↗
+                  <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
                 </a>
                 ${item.autoDetectUrl ? `
                   <a href="${item.autoDetectUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" title="Instalador com auto-detecção">
-                    <span>Instalador Auto-Detect</span> ⚡
+                    <span>Instalador Auto-Detect</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
                   </a>
                 ` : `
                   <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm">
-                    <span>Baixar</span> ⬇
+                    <span>Baixar</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
                 `}
               </div>

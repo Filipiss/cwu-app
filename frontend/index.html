@@ -8,12 +8,59 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+  <!-- Ícones: Lucide (https://lucide.dev), licença ISC. Embutidos para o app funcionar offline. -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+    <symbol id="i-app-window" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" /> <path d="M10 4v4" /> <path d="M2 8h20" /> <path d="M6 4v4" /></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10" /> <path d="M7 17 17 7" /></symbol>
+    <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></symbol>
+    <symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></symbol>
+    <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m15 9-6 6" /> <path d="m9 9 6 6" /></symbol>
+    <symbol id="i-clipboard-list" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></symbol>
+    <symbol id="i-corner-down-left" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20" /> <path d="M20 4v7a4 4 0 0 1-4 4H4" /></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2" /> <rect width="6" height="6" x="9" y="9" rx="1" /> <path d="M15 2v2" /> <path d="M15 20v2" /> <path d="M2 15h2" /> <path d="M2 9h2" /> <path d="M20 15h2" /> <path d="M20 9h2" /> <path d="M9 2v2" /> <path d="M9 20v2" /></symbol>
+    <symbol id="i-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <line x1="22" x2="18" y1="12" y2="12" /> <line x1="6" x2="2" y1="12" y2="12" /> <line x1="12" x2="12" y1="6" y2="2" /> <line x1="12" x2="12" y1="22" y2="18" /></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <polyline points="7 10 12 15 17 10" /> <line x1="12" x2="12" y1="15" y2="3" /></symbol>
+    <symbol id="i-file-down" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M12 18v-6" /> <path d="m9 15 3 3 3-3" /></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></symbol>
+    <symbol id="i-gamepad-2" viewBox="0 0 24 24"><line x1="6" x2="10" y1="11" y2="11" /> <line x1="8" x2="8" y1="9" y2="13" /> <line x1="15" x2="15.01" y1="12" y2="12" /> <line x1="18" x2="18.01" y1="10" y2="10" /> <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" /></symbol>
+    <symbol id="i-hard-drive" viewBox="0 0 24 24"><line x1="22" x2="2" y1="12" y2="12" /> <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /> <line x1="6" x2="6.01" y1="16" y2="16" /> <line x1="10" x2="10.01" y1="16" y2="16" /></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" /></symbol>
+    <symbol id="i-life-buoy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m4.93 4.93 4.24 4.24" /> <path d="m14.83 9.17 4.24-4.24" /> <path d="m14.83 14.83 4.24 4.24" /> <path d="m9.17 14.83-4.24 4.24" /> <circle cx="12" cy="12" r="4" /></symbol>
+    <symbol id="i-loader-circle" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></symbol>
+    <symbol id="i-memory-stick" viewBox="0 0 24 24"><path d="M6 19v-3" /> <path d="M10 19v-3" /> <path d="M14 19v-3" /> <path d="M18 19v-3" /> <path d="M8 11V9" /> <path d="M16 11V9" /> <path d="M12 11V9" /> <path d="M2 15h20" /> <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z" /></symbol>
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /> <path d="M12 22V12" /> <path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" /> <path d="m7.5 4.27 9 5.15" /></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></symbol>
+    <symbol id="i-refresh-cw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" /> <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" /> <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /> <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></symbol>
+    <symbol id="i-scan-search" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <circle cx="12" cy="12" r="3" /> <path d="m16 16-1.9-1.9" /></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /> <path d="M20 3v4" /> <path d="M22 5h-4" /> <path d="M4 17v2" /> <path d="M5 18H3" /></symbol>
+    <symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /></symbol>
+    <symbol id="i-stethoscope" viewBox="0 0 24 24"><path d="M11 2v2" /> <path d="M5 2v2" /> <path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" /> <path d="M8 15a6 6 0 0 0 12 0v-3" /> <circle cx="20" cy="10" r="2" /></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="m4.93 4.93 1.41 1.41" /> <path d="m17.66 17.66 1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="m6.34 17.66-1.41 1.41" /> <path d="m19.07 4.93-1.41 1.41" /></symbol>
+    <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" /></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2" /> <line x1="12" x2="15" y1="14" y2="11" /> <circle cx="12" cy="14" r="8" /></symbol>
+    <symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></symbol>
+    <symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></symbol>
+    <symbol id="i-undo-2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5" /> <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" /></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></symbol>
+  </svg>
 
   <div class="o-app">
     <!-- 1. SIDEBAR DE NAVEGAÇÃO -->
     <aside class="c-sidebar">
       <div class="c-sidebar__brand">
-        <div class="c-sidebar__logo">⚡</div>
+        <div class="c-sidebar__logo"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg></div>
         <div>
           <div class="c-sidebar__title">
             CWU App
@@ -26,44 +73,44 @@
       <nav class="c-nav">
         <div class="c-nav__category">Principal</div>
         <div class="c-nav__item c-nav__item--active js-nav-item" data-tab="specs">
-          <span class="c-nav__icon">📊</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-cpu></use></svg></span>
           <span>System Specs</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="scan">
-          <span class="c-nav__icon">🔍</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-scan-search></use></svg></span>
           <span>Scannear Drivers</span>
           <span class="c-nav__badge c-badge--neutral" id="sidebar-badge-drivers">-</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="softs">
-          <span class="c-nav__icon">📦</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg></span>
           <span>Softwares Pós-Format</span>
         </div>
 
         <div class="c-nav__category">Diagnóstico & Boost</div>
         <div class="c-nav__item js-nav-item" data-tab="boost">
-          <span class="c-nav__icon">🚀</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-rocket></use></svg></span>
           <span>Boost Gamer</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="perf">
-          <span class="c-nav__icon">📈</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg></span>
           <span>Performance</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="security">
-          <span class="c-nav__icon">🛡️</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-shield></use></svg></span>
           <span>Segurança</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="logs">
-          <span class="c-nav__icon">📋</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg></span>
           <span>Logs</span>
         </div>
 
         <div class="c-nav__category">Aplicativo</div>
         <div class="c-nav__item js-nav-item" data-tab="settings">
-          <span class="c-nav__icon">⚙️</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg></span>
           <span>Configurações</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="versions">
-          <span class="c-nav__icon">✨</span>
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg></span>
           <span>Novas Versões</span>
         </div>
       </nav>
@@ -83,7 +130,7 @@
 
         <div class="c-header__actions">
           <button class="c-btn c-btn--secondary c-btn--sm" id="btn-quick-theme" title="Alternar entre os temas Futurista, Grafite e Clean Light">
-            <span>🎨 Tema</span>
+            <span><svg class=c-icon aria-hidden=true><use href=#i-palette></use></svg> Tema</span>
           </button>
         </div>
       </header>
@@ -96,15 +143,15 @@
           <section id="tab-specs" class="c-tab-panel c-tab-panel--active">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">📊 Especificações do Sistema</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-chart-column></use></svg> Especificações do Sistema</h2>
                 <p class="c-section-header__desc">Diagnóstico detalhado de hardware com pontuação técnica para cada componente.</p>
               </div>
               <div class="o-flex o-flex--gap-sm">
               <a class="c-btn c-btn--secondary c-btn--sm" id="btn-export-report" href="/api/report" download title="Baixa um relatório HTML com specs, drivers e erros (leva alguns segundos)">
-                <span>Exportar relatório</span> 📄
+                <span>Exportar relatório</span> <svg class=c-icon aria-hidden=true><use href=#i-file-down></use></svg>
               </a>
               <button class="c-btn c-btn--outline c-btn--sm" id="btn-refresh-specs">
-                <span>Atualizar Leitura</span> 🔄
+                <span>Atualizar Leitura</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
               </button>
               </div>
             </div>
@@ -141,7 +188,7 @@
                     <h3 class="c-spec-card__name" id="spec-cpu-name">Detectando...</h3>
                     <p class="c-spec-card__details" id="spec-cpu-details">-</p>
                   </div>
-                  <div class="c-spec-card__icon">⚡</div>
+                  <div class="c-spec-card__icon"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg></div>
                 </div>
                 <div class="c-spec-card__bottom">
                   <span class="c-spec-card__rating-label">Nota do Componente</span>
@@ -160,7 +207,7 @@
                     <h3 class="c-spec-card__name" id="spec-gpu-name">Detectando...</h3>
                     <p class="c-spec-card__details" id="spec-gpu-details">-</p>
                   </div>
-                  <div class="c-spec-card__icon">🎮</div>
+                  <div class="c-spec-card__icon"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg></div>
                 </div>
                 <div class="c-spec-card__bottom">
                   <span class="c-spec-card__rating-label">Nota do Componente</span>
@@ -179,7 +226,7 @@
                     <h3 class="c-spec-card__name" id="spec-ram-name">Detectando...</h3>
                     <p class="c-spec-card__details" id="spec-ram-details">-</p>
                   </div>
-                  <div class="c-spec-card__icon">🧠</div>
+                  <div class="c-spec-card__icon"><svg class=c-icon aria-hidden=true><use href=#i-memory-stick></use></svg></div>
                 </div>
                 <div class="c-spec-card__bottom">
                   <span class="c-spec-card__rating-label">Nota do Componente</span>
@@ -198,7 +245,7 @@
                     <h3 class="c-spec-card__name" id="spec-storage-name">Detectando...</h3>
                     <p class="c-spec-card__details" id="spec-storage-details">-</p>
                   </div>
-                  <div class="c-spec-card__icon">💾</div>
+                  <div class="c-spec-card__icon"><svg class=c-icon aria-hidden=true><use href=#i-hard-drive></use></svg></div>
                 </div>
                 <div class="c-spec-card__bottom">
                   <span class="c-spec-card__rating-label">Nota do Componente</span>
@@ -233,11 +280,11 @@
           <section id="tab-scan" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">🔍 Scannear Drivers</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg> Scannear Drivers</h2>
                 <p class="c-section-header__desc">Varre dispositivos Plug-and-Play (PnP) e detecta drivers genéricos ou desatualizados.</p>
               </div>
               <button class="c-btn c-btn--primary" id="btn-start-scan">
-                <span>Scannear Drivers</span> 🔍
+                <span>Scannear Drivers</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg>
               </button>
             </div>
 
@@ -249,7 +296,7 @@
                   <p id="scan-status-summary">Pressione "Scannear Drivers" para examinar os drivers da máquina.</p>
                 </div>
                 <div id="scan-radar-sweep" class="u-hidden">
-                  <span class="c-badge c-badge--warning u-spin">🔄 Escaneando PnP...</span>
+                  <span class="c-badge c-badge--warning u-spin"><svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg> Escaneando PnP...</span>
                 </div>
               </div>
             </div>
@@ -281,7 +328,7 @@
           <section id="tab-softs" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">📦 Catálogo de Softwares Pós-Formatação</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg> Catálogo de Softwares Pós-Formatação</h2>
                 <p class="c-section-header__desc">Encontre e baixe rapidamente instaladores oficiais sem anúncios para seu Windows recém-formatado.</p>
               </div>
               <div id="soft-results-counter" class="c-badge c-badge--info u-hidden">
@@ -292,26 +339,26 @@
             <!-- 1. BARRA UNIFICADA (BUSCA + DROPDOWN DE CATEGORIAS) -->
             <div class="c-soft-toolbar">
               <div class="c-search-box">
-                <span class="c-search-icon">🔍</span>
+                <span class="c-search-icon"><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></span>
                 <input type="text" id="soft-search-input" class="c-search-input" placeholder="Digite o nome do software (ex: Steam, Visual C++, Chrome, Discord, Afterburner)..." autocomplete="off" spellcheck="false">
-                <button id="soft-search-clear" class="c-search-clear" title="Limpar busca">✕</button>
+                <button id="soft-search-clear" class="c-search-clear" title="Limpar busca"><svg class=c-icon aria-hidden=true><use href=#i-x></use></svg></button>
               </div>
 
               <div class="c-select-wrapper">
                 <select id="soft-category-select" class="c-select">
-                  <option value="">📂 Filtrar por Categoria...</option>
-                  <option value="all">🌟 Todas as Categorias (A-Z)</option>
-                  <option value="windows">⚡ Windows & Runtimes</option>
-                  <option value="games">🎮 Games & Launchers</option>
-                  <option value="navegadores">🌐 Navegadores Web</option>
-                  <option value="utilitarios">🛠️ Utilitários & Sistema</option>
-                  <option value="hardware">📊 Hardware & Diagnóstico</option>
-                  <option value="comunicacao">💬 Comunicação & Chat</option>
-                  <option value="midia">🎬 Mídia & Streaming</option>
-                  <option value="dev">💻 Desenvolvimento & Código</option>
-                  <option value="seguranca">🔒 Segurança & Rede</option>
+                  <option value="">Filtrar por Categoria...</option>
+                  <option value="all">Todas as Categorias (A-Z)</option>
+                  <option value="windows">Windows & Runtimes</option>
+                  <option value="games">Games & Launchers</option>
+                  <option value="navegadores">Navegadores Web</option>
+                  <option value="utilitarios">Utilitários & Sistema</option>
+                  <option value="hardware">Hardware & Diagnóstico</option>
+                  <option value="comunicacao">Comunicação & Chat</option>
+                  <option value="midia">Mídia & Streaming</option>
+                  <option value="dev">Desenvolvimento & Código</option>
+                  <option value="seguranca">Segurança & Rede</option>
                 </select>
-                <span class="c-select-arrow">▼</span>
+                <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
               </div>
             </div>
 
@@ -324,7 +371,7 @@
             <div class="c-card u-mb-lg" id="winget-panel">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">⚡ Instalação em lote (winget)</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> Instalação em lote (winget)</h4>
                   <p id="winget-status-text" class="u-text-muted">Verificando o winget…</p>
                 </div>
                 <div class="o-flex o-flex--gap-sm u-hidden" id="winget-panel-actions" style="flex-wrap: wrap;">
@@ -340,7 +387,7 @@
             <!-- 4. LISTA DE SOFTWARES (COMEÇA EM BRANCO COM ESTADO INICIAL) -->
             <div id="soft-results-container">
               <div class="c-soft-empty-state" id="soft-initial-empty-state">
-                <div class="c-soft-empty-state__icon">🔍</div>
+                <div class="c-soft-empty-state__icon"><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></div>
                 <h3 class="c-soft-empty-state__title">Pesquise ou Escolha uma Categoria</h3>
                 <p class="c-soft-empty-state__desc">
                   Digite qualquer letra no campo de busca ou clique em uma das categorias acima para listar os programas disponíveis em ordem alfabética.
@@ -353,17 +400,17 @@
           <section id="tab-boost" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">🚀 Boost Gamer</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-rocket></use></svg> Boost Gamer</h2>
                 <p class="c-section-header__desc">Libere memória, ajuste energia e latência da GPU e defina a prioridade dos seus jogos.</p>
               </div>
               <button class="c-btn c-btn--accent c-btn--lg" id="btn-main-boost">
-                <span>Ativar Boost Gamer</span> ⚡
+                <span>Ativar Boost Gamer</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
               </button>
             </div>
 
             <div class="c-subtabs" role="tablist" data-group="boost">
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="optimize">🚀 Otimizações</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="priority">🎯 Prioridade de processos</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="optimize"><svg class=c-icon aria-hidden=true><use href=#i-rocket></use></svg> Otimizações</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="priority"><svg class=c-icon aria-hidden=true><use href=#i-crosshair></use></svg> Prioridade de processos</button>
             </div>
 
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="boost" data-view="optimize">
@@ -392,21 +439,21 @@
             <div class="c-card" id="proc-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">🎯 Prioridade de processos</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-crosshair></use></svg> Prioridade de processos</h4>
                   <p class="u-text-muted">Escolha um programa em execução e defina a prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> 🔄</button>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
               </div>
               <div class="o-flex o-flex--gap-md u-mt-md" style="flex-wrap: wrap; align-items: center;">
                 <div class="c-select-wrapper" style="flex: 1; min-width: 260px;">
                   <select id="proc-select" class="c-select">
                     <option value="">Carregando programas em execução…</option>
                   </select>
-                  <span class="c-select-arrow">▼</span>
+                  <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
                 </div>
                 <div class="c-select-wrapper" style="min-width: 170px;">
                   <select id="proc-priority" class="c-select"></select>
-                  <span class="c-select-arrow">▼</span>
+                  <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
                 </div>
                 <label style="display:inline-flex; gap:6px; align-items:center; cursor:pointer;" title="Aplica esta prioridade toda vez que o programa abrir (exige administrador)">
                   <input type="checkbox" id="proc-persist"> Sempre
@@ -425,14 +472,14 @@
           <section id="tab-logs" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">📋 Logs</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg> Logs</h2>
                 <p class="c-section-header__desc">Erros registrados pelo Windows e histórico das alterações feitas pelo CWU App.</p>
               </div>
             </div>
 
             <div class="c-subtabs" role="tablist" data-group="logs">
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="windows">🪟 Erros do Windows</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="app">📋 Histórico do CWU App</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="windows"><svg class=c-icon aria-hidden=true><use href=#i-app-window></use></svg> Erros do Windows</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="app"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg> Histórico do CWU App</button>
             </div>
 
             <!-- ===== VISÃO 1: ERROS DO WINDOWS ===== -->
@@ -440,19 +487,19 @@
               <div class="c-card u-mb-lg">
                 <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                   <div>
-                    <h4 class="c-card__title">🪟 Erros do Windows (Visualizador de Eventos)</h4>
+                    <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-app-window></use></svg> Erros do Windows (Visualizador de Eventos)</h4>
                     <p id="errors-summary-text" class="u-text-muted">Telas azuis, desligamentos inesperados, falhas de hardware, disco e aplicativos registrados pelo próprio Windows.</p>
                   </div>
                   <button class="c-btn c-btn--primary c-btn--sm" id="btn-analyze-errors">
-                    <span>Analisar Erros</span> 🩺
+                    <span>Analisar Erros</span> <svg class=c-icon aria-hidden=true><use href=#i-stethoscope></use></svg>
                   </button>
                 </div>
 
                 <!-- FILTROS -->
                 <div class="o-flex o-flex--gap-sm u-mt-md" style="flex-wrap: wrap; align-items: center; border-top: 1px solid var(--color-border); padding-top: 14px;">
-                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-period" class="c-select"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option></select><span class="c-select-arrow">▼</span></div>
-                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-severity" class="c-select"><option value="">Todas as gravidades</option><option value="Crítica">Crítica</option><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select><span class="c-select-arrow">▼</span></div>
-                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-category" class="c-select"><option value="">Todos os tipos</option><option value="bsod">💥 Telas azuis</option><option value="shutdown">⚡ Desligamentos inesperados</option><option value="hardware">🔧 Hardware</option><option value="disk">💾 Disco</option><option value="app">🧩 Aplicativos travando</option><option value="service">⚙️ Serviços do Windows</option><option value="other">• Outros</option></select><span class="c-select-arrow">▼</span></div>
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-period" class="c-select"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option></select><span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span></div>
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-severity" class="c-select"><option value="">Todas as gravidades</option><option value="Crítica">Crítica</option><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select><span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span></div>
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-category" class="c-select"><option value="">Todos os tipos</option><option value="bsod">Telas azuis</option><option value="shutdown">Desligamentos inesperados</option><option value="hardware">Hardware</option><option value="disk">Disco</option><option value="app">Aplicativos travando</option><option value="service">Serviços do Windows</option><option value="other">• Outros</option></select><span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span></div>
                   <input type="text" id="errors-filter-search" class="c-search-input" style="max-width: 260px;" placeholder="Buscar (ex: nvlddmkm, game.exe)…" autocomplete="off" spellcheck="false">
                   <span id="errors-filter-count" class="u-text-muted" style="font-size: 0.85rem;"></span>
                 </div>
@@ -464,20 +511,20 @@
             <div id="logs-view-app" class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="logs" data-view="app">
               <div class="o-flex o-flex--gap-sm u-mb-md" style="flex-wrap: wrap; justify-content: flex-end;">
                 <button class="c-btn c-btn--outline c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
-                  <span>Limpar Histórico</span> 🗑️
+                  <span>Limpar Histórico</span> <svg class=c-icon aria-hidden=true><use href=#i-trash-2></use></svg>
                 </button>
                 <button class="c-btn c-btn--secondary c-btn--sm" id="btn-restore-point" title="Cria um ponto de restauração do Windows agora">
-                  <span>Criar ponto de restauração</span> 🛟
+                  <span>Criar ponto de restauração</span> <svg class=c-icon aria-hidden=true><use href=#i-life-buoy></use></svg>
                 </button>
                 <button class="c-btn c-btn--primary c-btn--sm" id="btn-refresh-logs">
-                  <span>Atualizar Lista</span> 🔄
+                  <span>Atualizar Lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
                 </button>
               </div>
             <!-- RESUMO DE MODIFICAÇÕES -->
             <div class="c-card u-mb-lg">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">📋 Alterações feitas pelo CWU App</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg> Alterações feitas pelo CWU App</h4>
                   <p id="logs-summary-text" class="u-text-muted">Tudo o que o app instalou ou configurou neste PC, com opção de reverter.</p>
                 </div>
                 <div class="o-flex o-flex--gap-md" id="logs-stats-container">
@@ -517,17 +564,17 @@
           <section id="tab-perf" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">📈 Performance</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg> Performance</h2>
                 <p class="c-section-header__desc">Uso e temperatura em tempo real, programas da inicialização, ajustes de jogos do Windows e diagnóstico de RAM.</p>
               </div>
               <span class="c-badge c-badge--neutral" id="perf-monitor-status">Monitor parado</span>
             </div>
 
             <div class="c-subtabs" role="tablist" data-group="perf">
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="monitor">📈 Monitor</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="tweaks">🎮 Ajustes de jogos</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="ram">🧠 Memória RAM</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="startup">⏱️ Inicialização</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="monitor"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg> Monitor</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="tweaks"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajustes de jogos</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="ram"><svg class=c-icon aria-hidden=true><use href=#i-memory-stick></use></svg> Memória RAM</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="startup"><svg class=c-icon aria-hidden=true><use href=#i-timer></use></svg> Inicialização</button>
             </div>
 
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="monitor">
@@ -573,11 +620,11 @@
 
             <div class="o-grid o-grid--2 u-mt-lg">
               <div class="c-card">
-                <h4 class="c-card__title">🔥 Processos que mais usam CPU</h4>
+                <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-flame></use></svg> Processos que mais usam CPU</h4>
                 <div id="perf-top-list" class="u-mt-sm"><p class="u-text-muted">Aguardando leitura…</p></div>
               </div>
               <div class="c-card">
-                <h4 class="c-card__title">🌡️ Temperaturas</h4>
+                <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-thermometer></use></svg> Temperaturas</h4>
                 <div id="perf-temps-list" class="u-mt-sm"><p class="u-text-muted">Aguardando leitura…</p></div>
                 <p class="u-text-muted u-mt-sm" style="font-size: 0.75rem;">GPU via nvidia-smi (NVIDIA). CPU pelo sensor ACPI da placa-mãe (aproximado; nem todas expõem). Discos exigem administrador.</p>
               </div>
@@ -589,10 +636,10 @@
             <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">🎮 Ajustes de jogos do Windows</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajustes de jogos do Windows</h4>
                   <p class="u-text-muted">Configurações reais do Windows que afetam jogos. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> 🔄</button>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
               </div>
               <div id="perf-tweaks-list" class="u-mt-sm"></div>
             </div>
@@ -603,10 +650,10 @@
             <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">🧠 Diagnóstico de memória RAM</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-memory-stick></use></svg> Diagnóstico de memória RAM</h4>
                   <p class="u-text-muted">Verifica XMP/EXPO, dual channel e compatibilidade entre os pentes.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-ram-refresh"><span>Analisar</span> 🔍</button>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-ram-refresh"><span>Analisar</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></button>
               </div>
               <div id="perf-ram-result" class="u-mt-sm"></div>
             </div>
@@ -617,10 +664,10 @@
             <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">⏱️ Programas na inicialização</h4>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-timer></use></svg> Programas na inicialização</h4>
                   <p class="u-text-muted" id="perf-startup-summary">Programas que abrem junto com o Windows. Desativar acelera o boot; nada é apagado.</p>
                 </div>
-                <button class="c-btn c-btn--outline c-btn--sm" id="btn-startup-refresh"><span>Atualizar</span> 🔄</button>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-startup-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
               </div>
               <div id="perf-startup-list" class="u-mt-sm"></div>
             </div>
@@ -632,14 +679,14 @@
           <section id="tab-security" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">🛡️ Processos suspeitos</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-shield></use></svg> Processos suspeitos</h2>
                 <p class="c-section-header__desc">Analisa todos os processos em execução na memória e aponta os que têm sinais comuns de programas maliciosos.</p>
               </div>
-              <button class="c-btn c-btn--primary" id="btn-security-scan"><span>Escanear processos</span> 🔍</button>
+              <button class="c-btn c-btn--primary" id="btn-security-scan"><span>Escanear processos</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></button>
             </div>
 
             <div class="c-card u-mb-lg">
-              <p class="u-text-muted" style="font-size: 0.85rem;">ℹ️ Esta é uma triagem por sinais de risco (local do arquivo, assinatura digital, nomes disfarçados, uso de CPU/GPU, rede e sinais de mineração de criptomoedas). <strong>Não é um antivírus</strong>: um processo marcado não é necessariamente malicioso, e um malware pode passar sem ser marcado. Para confirmar e remover, use um antivírus.</p>
+              <p class="u-text-muted" style="font-size: 0.85rem;"><svg class=c-icon aria-hidden=true><use href=#i-info></use></svg> Esta é uma triagem por sinais de risco (local do arquivo, assinatura digital, nomes disfarçados, uso de CPU/GPU, rede e sinais de mineração de criptomoedas). <strong>Não é um antivírus</strong>: um processo marcado não é necessariamente malicioso, e um malware pode passar sem ser marcado. Para confirmar e remover, use um antivírus.</p>
               <p id="security-summary" class="u-mt-sm">Clique em "Escanear processos" para começar. A análise leva de 15 a 45 segundos.</p>
             </div>
 
@@ -650,14 +697,14 @@
           <section id="tab-settings" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">⚙️ Configurações do Aplicativo</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg> Configurações do Aplicativo</h2>
                 <p class="c-section-header__desc">Personalize os temas visuais, idioma e preferências do CWU App.</p>
               </div>
             </div>
 
             <div class="c-subtabs" role="tablist" data-group="settings">
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="themes">🎨 Temas</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="prefs">⚙️ Preferências</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="themes"><svg class=c-icon aria-hidden=true><use href=#i-palette></use></svg> Temas</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="prefs"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg> Preferências</button>
             </div>
 
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="settings" data-view="themes">
@@ -670,7 +717,7 @@
                 <!-- Tema 1: Futurista -->
                 <div class="c-card js-theme-option" data-theme="futuristic" style="cursor: pointer;">
                   <div class="c-card__header">
-                    <h4 class="c-card__title">⚡ Futurista</h4>
+                    <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> Futurista</h4>
                     <span class="c-badge c-badge--success">Ativo</span>
                   </div>
                   <p class="u-mb-md">Cyberpunk Neon com destaques em ciano elétrico, magenta e modo escuro profundo.</p>
@@ -679,7 +726,7 @@
                 <!-- Tema 2: Grafite -->
                 <div class="c-card js-theme-option" data-theme="graphite" style="cursor: pointer;">
                   <div class="c-card__header">
-                    <h4 class="c-card__title">◼ Grafite</h4>
+                    <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-square></use></svg> Grafite</h4>
                     <span class="c-badge c-badge--neutral">Selecionar</span>
                   </div>
                   <p class="u-mb-md">Painel técnico: preto neutro, um único acento laranja, números em fonte mono e medidores segmentados.</p>
@@ -688,7 +735,7 @@
                 <!-- Tema 3: Clean Light -->
                 <div class="c-card js-theme-option" data-theme="light" style="cursor: pointer;">
                   <div class="c-card__header">
-                    <h4 class="c-card__title">☀️ Clean Light</h4>
+                    <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-sun></use></svg> Clean Light</h4>
                     <span class="c-badge c-badge--neutral">Selecionar</span>
                   </div>
                   <p class="u-mb-md">Tema claro de alto contraste e bordas limpas para ambientes iluminados.</p>
@@ -727,11 +774,11 @@
           <section id="tab-versions" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">✨ Atualizações do CWU App</h2>
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg> Atualizações do CWU App</h2>
                 <p class="c-section-header__desc">Verificador de novas versões do software e histórico de melhorias.</p>
               </div>
               <button class="c-btn c-btn--primary" id="btn-check-new-version">
-                <span>Verificar Atualizações Agora</span> 🔄
+                <span>Verificar Atualizações Agora</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>
               </button>
             </div>
 
@@ -747,7 +794,7 @@
                 </div>
                 <div>
                   <a href="https://github.com/cwu-app/cwu-app/releases" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--accent" title="Baixar instalador mais novo">
-                    <span>Baixar Atualização Oficial</span> ⬇
+                    <span>Baixar Atualização Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
                 </div>
               </div>

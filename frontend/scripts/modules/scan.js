@@ -45,7 +45,7 @@ const ScanModule = {
     try {
       if (scanBtn) {
         scanBtn.disabled = true;
-        scanBtn.innerHTML = '<span>Escaneando Drivers...</span> <span class="u-spin">⏳</span>';
+        scanBtn.innerHTML = '<span>Escaneando Drivers...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
       }
       if (radarSweep) radarSweep.classList.remove('u-hidden');
       if (statusMsg) statusMsg.textContent = 'Examinando barramento PCI-e, controladores e assinaturas digitais do Windows...';
@@ -84,7 +84,7 @@ const ScanModule = {
     } finally {
       if (scanBtn) {
         scanBtn.disabled = false;
-        scanBtn.innerHTML = '<span>Scannear Drivers</span> <span>🔍</span>';
+        scanBtn.innerHTML = '<span>Scannear Drivers</span> <span><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></span>';
       }
       if (radarSweep) radarSweep.classList.add('u-hidden');
     }
@@ -103,7 +103,7 @@ const ScanModule = {
       <tr class="c-table__row c-table__row--clickable js-driver-row" data-id="${item.id}" title="Clique para ver o que este componente faz">
         <td class="c-table__td">
           <div class="c-driver-device">
-            <span class="c-driver-device__chevron">▶</span>
+            <span class="c-driver-device__chevron"><svg class=c-icon aria-hidden=true><use href=#i-chevron-right></use></svg></span>
             <div class="c-driver-device__info">
               <span class="c-driver-device__name">${item.name}</span>
               <span class="c-driver-device__category">${item.category}</span>
@@ -114,19 +114,19 @@ const ScanModule = {
         <td class="c-table__td u-font-mono">${item.currentVersion}</td>
         <td class="c-table__td">
           <span class="c-badge c-badge--${item.statusBadge}">
-            ${item.status === 'updated' ? '✓' : '⚠️'} ${item.statusText}
+            ${item.status === 'updated' ? '' : ''} ${item.statusText}
           </span>
         </td>
         <td class="c-table__td u-text-right">
           <div class="o-flex o-flex--gap-xs" style="justify-content: flex-end; flex-wrap: wrap;">
             ${item.officialUrl ? `
               <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--xs" title="Acessar portal oficial do fabricante">
-                <span>Portal Oficial</span> ↗
+                <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </a>
             ` : ''}
             ${(item.status !== 'updated' && item.directDownload) ? `
               <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--xs" onclick="ScanModule.onDownloadDriver('${item.id}')" title="Download direto do instalador/driver oficial">
-                <span>Download Direto</span> ⬇
+                <span>Download Direto</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
               </a>
             ` : ''}
           </div>
@@ -166,7 +166,7 @@ const ScanModule = {
           <div class="c-device-details-grid">
             <div class="c-device-details__role-box">
               <span class="c-device-details__label">
-                💡 O que este componente faz no computador:
+                O que este componente faz no computador:
               </span>
               <p class="c-device-details__text">
                 ${details.role}
@@ -174,7 +174,7 @@ const ScanModule = {
 
               <div style="margin-top: 8px;">
                 <span class="c-device-details__label" style="color: var(--color-success);">
-                  ⚡ Importância & Desempenho:
+                  Importância & Desempenho:
                 </span>
                 <p class="c-device-details__subtext">
                   ${details.impact}
@@ -192,12 +192,12 @@ const ScanModule = {
               <div class="o-flex o-flex--column o-flex--gap-xs" style="margin-top: 12px;">
                 ${item.officialUrl ? `
                   <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Acessar portal oficial">
-                    <span>Portal Oficial</span> ↗
+                    <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
                   </a>
                 ` : ''}
                 ${(item.status !== 'updated' && item.directDownload) ? `
                   <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" onclick="ScanModule.onDownloadDriver('${item.id}')" title="Download direto do driver">
-                    <span>Download Direto</span> ⬇
+                    <span>Download Direto</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
                 ` : ''}
               </div>

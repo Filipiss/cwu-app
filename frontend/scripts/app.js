@@ -138,15 +138,15 @@ const App = {
     const toast = document.createElement('div');
     toast.className = `c-toast c-toast--${type}`;
 
-    let icon = 'ℹ️';
-    if (type === 'success') icon = '✓';
-    else if (type === 'warning') icon = '⚠️';
-    else if (type === 'danger') icon = '❌';
+    const icons = { success: 'check', warning: 'triangle-alert', danger: 'circle-x', info: 'info' };
+    const iconEl = document.createElement('span');
+    iconEl.className = 'c-toast__icon';
+    iconEl.innerHTML = `<svg class="c-icon" aria-hidden="true"><use href="#i-${icons[type] || 'info'}"></use></svg>`;
 
-    toast.innerHTML = `
-      <span style="font-size: 1.1rem;">${icon}</span>
-      <span>${message}</span>
-    `;
+    // Mensagem como texto puro: pode conter nomes de processos/arquivos vindos do sistema
+    const text = document.createElement('span');
+    text.textContent = String(message).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B50}\u{FE0F}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+    toast.append(iconEl, text);
 
     container.appendChild(toast);
 

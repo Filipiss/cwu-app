@@ -68,7 +68,7 @@ const LogsModule = {
       const p = document.createElement('div');
       p.className = 'c-card';
       p.innerHTML = '<p class="u-text-success"></p>';
-      p.firstChild.textContent = '✓ ' + (d.message || 'Nenhum erro relevante encontrado.');
+      p.firstChild.textContent = '' + (d.message || 'Nenhum erro relevante encontrado.');
       container.appendChild(p);
       return;
     }
@@ -81,7 +81,7 @@ const LogsModule = {
     }
 
     const badgeBySeverity = { 'Crítica': 'danger', 'Alta': 'danger', 'Média': 'warning', 'Baixa': 'success' };
-    const categoryLabel = { bsod: '💥 Tela azul', shutdown: '⚡ Desligamento', hardware: '🔧 Hardware', disk: '💾 Disco', app: '🧩 Aplicativo', service: '⚙️ Serviço', other: '• Outro' };
+    const categoryLabel = { bsod: 'Tela azul', shutdown: 'Desligamento', hardware: 'Hardware', disk: 'Disco', app: 'Aplicativo', service: 'Serviço', other: '• Outro' };
 
     list.forEach(ev => {
       const item = document.createElement('details');
@@ -111,7 +111,7 @@ const LogsModule = {
       const rec = document.createElement('p');
       rec.className = 'u-mt-xs';
       rec.style.whiteSpace = 'pre-line';
-      rec.textContent = '💡 ' + ev.recommendation;
+      rec.textContent = '' + ev.recommendation;
       const raw = document.createElement('p');
       raw.className = 'u-text-muted u-mt-xs';
       raw.style.fontSize = '0.8rem';
@@ -132,7 +132,7 @@ const LogsModule = {
         try {
           const res = await API.createRestorePoint();
           const d = res.data || {};
-          App.showToast('🛟 ' + d.message, d.ok ? 'success' : 'warning', 9000);
+          App.showToast('' + d.message, d.ok ? 'success' : 'warning', 9000);
         } catch (err) {
           App.showToast('Erro ao criar ponto de restauração.', 'danger');
         } finally {
@@ -182,7 +182,7 @@ const LogsModule = {
     try {
       if (refreshBtn) {
         refreshBtn.disabled = true;
-        refreshBtn.innerHTML = '<span>Atualizando...</span> <span class="u-spin">⏳</span>';
+        refreshBtn.innerHTML = '<span>Atualizando...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
       }
 
       const res = await API.getUpdateLogs();
@@ -196,7 +196,7 @@ const LogsModule = {
     } finally {
       if (refreshBtn) {
         refreshBtn.disabled = false;
-        refreshBtn.innerHTML = '<span>Atualizar Lista</span> 🔄';
+        refreshBtn.innerHTML = '<span>Atualizar Lista</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg>';
       }
     }
   },
@@ -283,17 +283,17 @@ const LogsModule = {
     if (!this.logsData || !this.logsData.logs || this.logsData.logs.length === 0) {
       container.innerHTML = `
         <div class="c-card u-text-center" style="padding: 40px 20px;">
-          <div style="font-size: 3rem; margin-bottom: 12px;">📋</div>
+          <div style="font-size: 3rem; margin-bottom: 12px;"><svg class=c-icon aria-hidden=true><use href=#i-clipboard-list></use></svg></div>
           <h3 class="c-card__title u-mb-sm">Nenhuma Atualização Registrada Ainda</h3>
           <p class="u-text-muted u-mb-lg" style="max-width: 540px; margin-left: auto; margin-right: auto;">
             Esta aba exibe exclusivamente o que foi alterado ou atualizado no seu Windows. Quando você atualizar drivers no scanner, instalar softwares ou aplicar modos do Boost Gamer, as alterações aparecerão aqui com a opção de reversão rápida.
           </p>
           <div class="o-flex o-flex--center o-flex--gap-md">
             <button class="c-btn c-btn--primary c-btn--sm" onclick="App.switchTab('scan')">
-              <span>Scannear Drivers</span> 🔍
+              <span>Scannear Drivers</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg>
             </button>
             <button class="c-btn c-btn--secondary c-btn--sm" onclick="App.switchTab('boost')">
-              <span>Ir para Boost Gamer</span> ⚡
+              <span>Ir para Boost Gamer</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
             </button>
           </div>
         </div>
@@ -330,29 +330,29 @@ const LogsModule = {
           
           let typeBadge = '';
           if (item.type === 'driver') {
-            typeBadge = `<span class="c-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3);">🟢 Driver</span>`;
+            typeBadge = `<span class="c-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3);"><svg class=c-icon aria-hidden=true><use href=#i-circle></use></svg> Driver</span>`;
           } else if (item.type === 'boost') {
-            typeBadge = `<span class="c-badge" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3);">⚡ Boost Gamer</span>`;
+            typeBadge = `<span class="c-badge" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3);"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> Boost Gamer</span>`;
           } else if (item.type === 'software') {
-            typeBadge = `<span class="c-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3);">📦 Software</span>`;
+            typeBadge = `<span class="c-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3);"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg> Software</span>`;
           } else if (item.type === 'startup') {
-            typeBadge = `<span class="c-badge c-badge--neutral">⏱️ Inicialização</span>`;
+            typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-timer></use></svg> Inicialização</span>`;
           } else if (item.type === 'priority') {
-            typeBadge = `<span class="c-badge c-badge--neutral">🎯 Prioridade</span>`;
+            typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-crosshair></use></svg> Prioridade</span>`;
           } else if (item.type === 'tweak') {
-            typeBadge = `<span class="c-badge c-badge--neutral">🎮 Ajuste do Windows</span>`;
+            typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajuste do Windows</span>`;
           } else {
-            typeBadge = `<span class="c-badge c-badge--neutral">🔧 Sistema</span>`;
+            typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-wrench></use></svg> Sistema</span>`;
           }
 
           const statusBadge = isReverted
-            ? `<span class="c-badge c-badge--warning">↩️ Revertido</span>`
-            : `<span class="c-badge c-badge--success">✓ Atualizado</span>`;
+            ? `<span class="c-badge c-badge--warning"><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> Revertido</span>`
+            : `<span class="c-badge c-badge--success"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Atualizado</span>`;
 
           const revertBtn = isReverted
-            ? `<span class="c-badge c-badge--warning" style="font-size: 0.8rem; padding: 5px 12px;">↩️ Revertido em ${this.formatDate(item.revertedAt)}</span>`
+            ? `<span class="c-badge c-badge--warning" style="font-size: 0.8rem; padding: 5px 12px;"><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> Revertido em ${this.formatDate(item.revertedAt)}</span>`
             : `<button class="c-btn c-btn--outline c-btn--sm js-btn-revert" data-id="${item.id}" title="Desfazer ou restaurar estado anterior desta alteração">
-                <span>Reverter</span> ↩️
+                <span>Reverter</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
               </button>`;
 
           return `
@@ -380,7 +380,7 @@ const LogsModule = {
                 ${item.previousVersion && item.updatedVersion ? `
                   <div class="o-flex o-flex--gap-md u-mt-sm" style="font-size: 0.8rem; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 6px; width: fit-content;">
                     <span class="u-text-muted">Versão Anterior: <strong style="color: var(--color-text-secondary);">${item.previousVersion}</strong></span>
-                    <span>➔</span>
+                    <span><svg class=c-icon aria-hidden=true><use href=#i-arrow-right></use></svg></span>
                     <span class="u-text-success">Versão Instalada: <strong>${item.updatedVersion}</strong></span>
                   </div>
                 ` : ''}

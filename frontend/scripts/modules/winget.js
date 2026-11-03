@@ -51,7 +51,7 @@ const WingetModule = {
 
   // HTML da caixa de seleção usada em cada item do catálogo
   renderItemControl(id) {
-    if (this.isInstalled(id)) return '<span class="c-badge c-badge--success">✓ Instalado</span>';
+    if (this.isInstalled(id)) return '<span class="c-badge c-badge--success"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Instalado</span>';
     if (!this.isSupported(id)) return '';
     return `<label class="c-badge c-badge--neutral" style="cursor:pointer; gap:6px; display:inline-flex; align-items:center;">
       <input type="checkbox" class="js-winget-check" data-id="${id}" ${this.selected.has(id) ? 'checked' : ''}> Instalar
@@ -138,7 +138,7 @@ const WingetModule = {
     if (!box || !job) return;
     cancelBtn?.classList.toggle('u-hidden', !job.running);
 
-    const icons = { queued: '⏸', installing: '⏳', done: '✅', skipped: '✔️', failed: '❌', cancelled: '⏹' };
+    const icons = { queued: '', installing: '', done: '', skipped: '', failed: '', cancelled: '' };
     const finished = job.done + job.skipped + job.failed;
     box.innerHTML = '';
 

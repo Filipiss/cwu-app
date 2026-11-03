@@ -1,0 +1,64 @@
+/* 6-components/_icons.css — Ícones SVG (Lucide, sprite embutido no index.html)
+ * Uso: <svg class="c-icon"><use href="#i-nome"></use></svg>
+ * Herdam a cor do texto (currentColor) e o tamanho da fonte (1em). */
+.c-icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -0.14em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* Traço um pouco mais fino nos tamanhos maiores, para não pesar */
+.c-section-header__title .c-icon,
+.c-card__title .c-icon {
+  stroke-width: 1.75;
+  color: var(--color-primary);
+}
+
+.c-section-header__title .c-icon { width: 0.9em; height: 0.9em; margin-right: 2px; }
+
+/* Botões e sub-abas: ícone alinhado ao texto */
+.c-btn .c-icon,
+.c-subtabs__tab .c-icon {
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.18em;
+}
+
+.c-subtabs__tab .c-icon { margin-right: 4px; opacity: 0.9; }
+
+/* Menu lateral */
+.c-nav__icon .c-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+
+.c-sidebar__logo .c-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--color-primary);
+  fill: currentColor;
+  stroke-width: 1.5;
+}
+
+/* Seta dos selects e botão limpar da busca */
+.c-select-arrow .c-icon { width: 14px; height: 14px; }
+.c-search-clear .c-icon { width: 14px; height: 14px; }
+
+/* Toast: ícone colorido pelo tipo */
+.c-toast__icon { display: inline-flex; font-size: 1.1rem; }
+.c-toast--success .c-toast__icon { color: var(--color-success); }
+.c-toast--warning .c-toast__icon { color: var(--color-warning); }
+.c-toast--danger .c-toast__icon { color: var(--color-danger); }
+.c-toast--info .c-toast__icon { color: var(--color-primary); }
+
+/* Carregamento: o .u-spin (utilitário) gira o wrapper; inline-flex permite a rotação */
+.u-spin { display: inline-flex; }

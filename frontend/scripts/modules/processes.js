@@ -57,8 +57,8 @@ const ProcessesModule = {
 
     const byName = (a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' });
     const groups = [
-      ['🪟 Programas com janela', this.data.processes.filter(p => p.hasWindow).sort(byName)],
-      ['⚙️ Segundo plano', this.data.processes.filter(p => !p.hasWindow).sort(byName)]
+      ['Programas com janela', this.data.processes.filter(p => p.hasWindow).sort(byName)],
+      ['Segundo plano', this.data.processes.filter(p => !p.hasWindow).sort(byName)]
     ];
     for (const [label, items] of groups) {
       if (!items.length) continue;
@@ -68,7 +68,7 @@ const ProcessesModule = {
         const o = document.createElement('option');
         o.value = p.name;
         const title = p.title ? ` — ${p.title.slice(0, 40)}` : '';
-        o.textContent = `${p.exe}${title} (${p.memoryMb} MB, ${p.priorityLabel})${p.persistentPriority ? ' 📌' : ''}`;
+        o.textContent = `${p.exe}${title} (${p.memoryMb} MB, ${p.priorityLabel})${p.persistentPriority ? '' : ''}`;
         group.appendChild(o);
       }
       select.appendChild(group);
@@ -98,7 +98,7 @@ const ProcessesModule = {
     if (p && status) {
       status.textContent = `${p.exe}: prioridade atual ${p.priorityLabel}` +
         (p.instances > 1 ? ` • ${p.instances} processos (todos serão alterados)` : '') +
-        (p.persistentPriority ? ' • 📌 com prioridade fixa' : '');
+        (p.persistentPriority ? ' • com prioridade fixa' : '');
     }
   },
 
@@ -112,7 +112,7 @@ const ProcessesModule = {
 
     const title = document.createElement('p');
     title.className = 'u-font-bold u-mt-md';
-    title.textContent = '📌 Programas com prioridade fixa (em execução agora)';
+    title.textContent = 'Programas com prioridade fixa (em execução agora)';
     list.appendChild(title);
 
     for (const p of fixed) {
@@ -121,7 +121,7 @@ const ProcessesModule = {
       row.style.cssText = 'gap:12px; padding:6px 0; border-bottom:1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); align-items:center;';
       const label = document.createElement('span');
       const prioLabel = this.data.priorities.find(x => x.value === p.persistentPriority)?.label || p.persistentPriority;
-      label.textContent = `${p.exe} → sempre ${prioLabel}`;
+      label.textContent = `${p.exe} sempre ${prioLabel}`;
       const remove = document.createElement('button');
       remove.className = 'c-btn c-btn--outline c-btn--sm js-proc-remove';
       remove.dataset.exe = p.exe;

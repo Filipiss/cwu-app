@@ -89,7 +89,7 @@ const SpecsModule = {
       details: `${specs.cpu.cores} Núcleos / ${specs.cpu.threads} Threads • ${specs.cpu.clockGhz ? specs.cpu.clockGhz + ' GHz' : 'Clock Dinâmico'}`,
       score: scores.components.cpu.score,
       status: scores.components.cpu.status,
-      icon: '⚡'
+      icon: ''
     });
 
     this.renderComponentCard('gpu', {
@@ -98,16 +98,16 @@ const SpecsModule = {
       details: `${specs.gpu.vramGb > 0 ? specs.gpu.vramGb + ' GB VRAM • ' : ''}Driver: ${specs.gpu.driverVersion}`,
       score: scores.components.gpu.score,
       status: scores.components.gpu.status,
-      icon: '🎮'
+      icon: ''
     });
 
     this.renderComponentCard('ram', {
       category: 'Memória RAM',
       name: `${specs.ram.totalGb} GB ${specs.ram.type || "RAM"}${specs.ram.speedMhz ? " @ " + specs.ram.speedMhz + " MHz" : ""}`,
-      details: `${specs.ram.freeGb} GB livres de ${specs.ram.usableGb || specs.ram.totalGb} GB utilizáveis${specs.ram.singleChannel ? " • ⚠️ 1 pente (canal simples)" : ""}`,
+      details: `${specs.ram.freeGb} GB livres de ${specs.ram.usableGb || specs.ram.totalGb} GB utilizáveis${specs.ram.singleChannel ? " • 1 pente (canal simples)" : ""}`,
       score: scores.components.ram.score,
       status: scores.components.ram.status,
-      icon: '🧠'
+      icon: ''
     });
 
     this.renderComponentCard('storage', {
@@ -116,7 +116,7 @@ const SpecsModule = {
       details: `${specs.storage.model} • ${specs.storage.sizeGb} GB${specs.storage.health ? " • Saúde: " + specs.storage.health : ""}${(specs.disks || []).length > 1 ? " • +" + (specs.disks.length - 1) + " disco(s)" : ""}`,
       score: scores.components.storage.score,
       status: scores.components.storage.status,
-      icon: '💾'
+      icon: ''
     });
 
     // 3. Informações da Placa-Mãe e Windows

@@ -131,7 +131,7 @@ const SoftsModule = {
       <span class="c-suggestions-label">Sugestões:</span>
       ${suggestions.map(s => `
         <button class="c-suggestion-pill js-suggestion-pill" data-value="${s}">
-          <span>${s}</span> ↵
+          <span>${s}</span> <svg class=c-icon aria-hidden=true><use href=#i-corner-down-left></use></svg>
         </button>
       `).join('')}
     `;
@@ -165,7 +165,7 @@ const SoftsModule = {
     if (!this.currentCategory && !this.currentQuery) {
       container.innerHTML = `
         <div class="c-soft-empty-state" id="soft-initial-empty-state">
-          <div class="c-soft-empty-state__icon">🔍</div>
+          <div class="c-soft-empty-state__icon"><svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></div>
           <h3 class="c-soft-empty-state__title">Pesquise ou Escolha uma Categoria</h3>
           <p class="c-soft-empty-state__desc">
             Digite qualquer letra no campo de busca ou clique em uma das categorias acima para listar os programas disponíveis em ordem alfabética.
@@ -208,13 +208,13 @@ const SoftsModule = {
     if (results.length === 0) {
       container.innerHTML = `
         <div class="c-soft-empty-state">
-          <div class="c-soft-empty-state__icon">🚫</div>
+          <div class="c-soft-empty-state__icon"><svg class=c-icon aria-hidden=true><use href=#i-ban></use></svg></div>
           <h3 class="c-soft-empty-state__title">Nenhum software encontrado</h3>
           <p class="c-soft-empty-state__desc">
             Não encontramos nenhum software com o termo "<strong>${this.escapeHtml(this.currentQuery)}</strong>". Tente buscar por palavras alternativas ou clique no botão de limpar.
           </p>
           <button class="c-btn c-btn--outline c-btn--sm u-mt-md" onclick="SoftsModule.clearSearch()">
-            Limpar Filtros e Busca 🔄
+            Limpar Filtros e Busca
           </button>
         </div>
       `;
@@ -230,7 +230,7 @@ const SoftsModule = {
               <div class="c-soft-item__title-row">
                 <span class="c-soft-item__name">${item.name}</span>
                 <span class="c-badge c-badge--info">${item.categoryLabel || item.category}</span>
-                ${item.mustHave ? '<span class="c-badge c-badge--danger">🔥 Obrigatório</span>' : ''}
+                ${item.mustHave ? '<span class="c-badge c-badge--danger"><svg class=c-icon aria-hidden=true><use href=#i-flame></use></svg> Obrigatório</span>' : ''}
                 <span class="c-badge c-badge--neutral">${item.size}</span>
                 ${typeof WingetModule !== 'undefined' ? WingetModule.renderItemControl(item.id) : ''}
               </div>
@@ -238,10 +238,10 @@ const SoftsModule = {
             </div>
             <div class="c-soft-item__actions">
               <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--outline c-btn--sm" title="Visitar site oficial">
-                Portal ↗
+                Portal
               </a>
               <a href="${item.downloadUrl}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm" onclick="SoftsModule.onDownloadSoftware('${encodeURIComponent(item.name)}', '${encodeURIComponent(item.categoryLabel || item.category)}')" title="Baixar instalador oficial">
-                Download Oficial ⬇
+                Download Oficial <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
               </a>
             </div>
           </div>

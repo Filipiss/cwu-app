@@ -63,29 +63,29 @@ const BoostModule = {
       let btnHtml = '';
 
       if (opt.id === 'purge_standby') {
-        badgeHtml = `<span class="c-badge c-badge--danger">⚡ RAMMap / ISLC</span>`;
+        badgeHtml = `<span class="c-badge c-badge--danger"><svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg> RAMMap / ISLC</span>`;
         cardHighlightClass = 'c-card--highlight';
         btnHtml = `
           <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="${opt.id}">
-            <span>${opt.btnLabel || 'Zerar Standby List Agora'}</span> ⚡
+            <span>${opt.btnLabel || 'Zerar Standby List Agora'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
           </button>
         `;
       } else if (opt.gpuType === 'nvidia') {
-        badgeHtml = `<span class="c-badge" style="background: rgba(118, 185, 0, 0.15); color: #84cc16; border: 1px solid rgba(132, 204, 22, 0.4);">🟢 GPU NVIDIA</span>`;
+        badgeHtml = `<span class="c-badge" style="background: rgba(118, 185, 0, 0.15); color: #84cc16; border: 1px solid rgba(132, 204, 22, 0.4);"><svg class=c-icon aria-hidden=true><use href=#i-circle></use></svg> GPU NVIDIA</span>`;
         if (opt.active) {
           cardHighlightClass = 'c-card--highlight';
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <div class="o-flex o-flex--gap-sm">
                 <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="nvidia_default" title="Remove do registro os valores gravados por versões antigas do CWU (o driver NVIDIA não os utiliza)">
-                  <span>Remover ajuste antigo</span> ↩️
+                  <span>Remover ajuste antigo</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
                 </button>
                 <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Reabrir Painel NVIDIA para verificar ou aplicar configurações">
-                  <span>Reabrir Painel</span> ⚡
+                  <span>Reabrir Painel</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
                 </button>
               </div>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="nvidia" title="Abre o Painel de Controle NVIDIA diretamente na sua tela">
-                <span>Abrir Painel NVIDIA</span> ↗
+                <span>Abrir Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </button>
             </div>
           `;
@@ -93,29 +93,29 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <button class="c-btn c-btn--primary c-btn--sm js-btn-opt" data-id="nvidia_ultra" title="Ativa o modo no CWU e abre o Painel de Controle NVIDIA">
-                <span>Configurar no Painel NVIDIA</span> ⚡
+                <span>Configurar no Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
               </button>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="nvidia" title="Abre o Painel de Controle NVIDIA diretamente na sua tela">
-                <span>Abrir Painel NVIDIA</span> ↗
+                <span>Abrir Painel NVIDIA</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </button>
             </div>
           `;
         }
       } else if (opt.gpuType === 'amd') {
-        badgeHtml = `<span class="c-badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4);">🔴 GPU AMD</span>`;
+        badgeHtml = `<span class="c-badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4);"><svg class=c-icon aria-hidden=true><use href=#i-circle></use></svg> GPU AMD</span>`;
         if (opt.active) {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <div class="o-flex o-flex--gap-sm">
                 <button class="c-btn c-btn--outline c-btn--sm js-btn-opt" data-id="amd_default" title="Clique para desativar Anti-Lag">
-                  <span>Remover ajuste antigo</span> ↩️
+                  <span>Remover ajuste antigo</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>
                 </button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
-                  <span>Reabrir AMD</span> ⚡
+                  <span>Reabrir AMD</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
                 </button>
               </div>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="amd" title="Abre o AMD Software Adrenalin diretamente na aba de Gráficos / Jogos">
-                <span>Abrir AMD Software</span> ↗
+                <span>Abrir AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </button>
             </div>
           `;
@@ -123,10 +123,10 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="amd_antilag">
-                <span>Configurar no AMD Software</span> ⚡
+                <span>Configurar no AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
               </button>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-target="amd" title="Abre o AMD Software Adrenalin diretamente na aba de Gráficos / Jogos">
-                <span>Abrir AMD Software</span> ↗
+                <span>Abrir AMD Software</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </button>
             </div>
           `;
@@ -136,17 +136,17 @@ const BoostModule = {
           btnHtml = `
             <div class="o-flex o-flex--between o-flex--gap-sm" style="flex-wrap: wrap;">
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="${opt.id}">
-                <span>${opt.btnLabel || 'Executar'}</span> ⚡
+                <span>${opt.btnLabel || 'Executar'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
               </button>
               <button class="c-btn c-btn--secondary c-btn--sm js-btn-manual" data-action="${opt.manualAction}" title="${opt.manualTooltip || 'Abrir configuração no Windows'}">
-                <span>${opt.manualLabel || 'Mudar Manualmente'}</span> ↗
+                <span>${opt.manualLabel || 'Mudar Manualmente'}</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </button>
             </div>
           `;
         } else {
           btnHtml = `
             <button class="c-btn c-btn--secondary c-btn--sm js-btn-opt" data-id="${opt.id}">
-              <span>${opt.btnLabel || 'Executar'}</span> ⚡
+              <span>${opt.btnLabel || 'Executar'}</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>
             </button>
           `;
         }
@@ -159,7 +159,7 @@ const BoostModule = {
               <div class="o-flex o-flex--gap-sm u-mb-sm">
                 ${badgeHtml}
                 <span class="c-badge c-badge--neutral">${opt.potentialGain}</span>
-                ${opt.active ? '<span class="c-badge c-badge--success">✓ Ativado</span>' : ''}
+                ${opt.active ? '<span class="c-badge c-badge--success"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Ativado</span>' : ''}
               </div>
               <h4 class="c-card__title">${opt.title}</h4>
             </div>
@@ -178,13 +178,13 @@ const BoostModule = {
         const id = btn.dataset.id;
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span>Aplicando...</span> <span class="u-spin">⏳</span>';
+        btn.innerHTML = '<span>Aplicando...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
 
         try {
           const res = await API.runBoost(id);
           const ok = res.success && res.data && res.data.success !== false;
           const rp = res.data && res.data.restorePoint;
-          if (rp && !rp.reused) App.showToast('🛟 ' + rp.message, rp.ok ? 'info' : 'warning', 8000);
+          if (rp && !rp.reused) App.showToast('' + rp.message, rp.ok ? 'info' : 'warning', 8000);
           App.showToast((res.data && res.data.message) || (ok ? 'Otimização executada.' : 'A otimização falhou.'), ok ? 'success' : (res.data && res.data.needsAdmin ? 'warning' : 'danger'), res.data && res.data.needsAdmin ? 9000 : null);
           // Atualiza status real na interface
           await this.loadStatus();
@@ -202,7 +202,7 @@ const BoostModule = {
         const actionId = btn.dataset.action || (btn.dataset.target === 'nvidia' ? 'open_nvidia_settings' : 'open_amd_settings');
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span>Abrindo...</span> <span class="u-spin">⏳</span>';
+        btn.innerHTML = '<span>Abrindo...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
 
         try {
           const res = await API.runBoost(actionId);
@@ -226,21 +226,21 @@ const BoostModule = {
     if (!btn) return;
 
     btn.disabled = true;
-    btn.innerHTML = '<span>Limpando Standby & Otimizando Windows...</span> <span class="u-spin">⚙️</span>';
+    btn.innerHTML = '<span>Limpando Standby & Otimizando Windows...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg></span>';
 
     try {
       const res = await API.runBoost('purge_standby');
       btn.disabled = false;
       btn.className = 'c-btn c-btn--accent c-btn--lg';
-      btn.innerHTML = '<span>🚀 Boost Gamer & Standby Limpos</span>';
+      btn.innerHTML = '<span><svg class=c-icon aria-hidden=true><use href=#i-rocket></use></svg> Boost Gamer & Standby Limpos</span>';
 
       await this.loadStatus();
       const ok = res.data && res.data.success !== false;
-      if (!ok) btn.innerHTML = '<span>Ativar Boost Gamer</span> ⚡';
+      if (!ok) btn.innerHTML = '<span>Ativar Boost Gamer</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>';
       App.showToast((res.data && res.data.message) || 'Otimização concluída.', ok ? 'success' : 'warning', ok ? null : 9000);
     } catch (err) {
       btn.disabled = false;
-      btn.innerHTML = '<span>Ativar Boost Gamer</span> ⚡';
+      btn.innerHTML = '<span>Ativar Boost Gamer</span> <svg class=c-icon aria-hidden=true><use href=#i-zap></use></svg>';
       App.showToast('Erro ao aplicar Boost', 'danger');
     }
   }

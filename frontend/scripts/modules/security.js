@@ -15,7 +15,7 @@ const SecurityModule = {
     if (!box) return;
 
     btn.disabled = true;
-    btn.innerHTML = '<span>Escaneando…</span> <span class="u-spin">⏳</span>';
+    btn.innerHTML = '<span>Escaneando…</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
     summary.textContent = 'Medindo CPU e GPU de cada processo por 5 segundos e lendo assinaturas, linhas de comando e conexões… isso pode levar até 45 segundos.';
     box.innerHTML = '';
 
@@ -26,7 +26,7 @@ const SecurityModule = {
       const flagged = d.processes.filter(p => p.level === 'high' || p.level === 'medium');
       summary.textContent = flagged.length
         ? `${d.total} processos analisados: ${d.summary.high} com risco alto e ${d.summary.medium} com risco médio${d.summary.miners ? ` (${d.summary.miners} com sinais de mineração de criptomoedas)` : ''}.${d.isAdmin ? '' : ' Execute como administrador para analisar também os processos protegidos.'}`
-        : `✅ ${d.total} processos analisados e nenhum apresentou sinais relevantes de comportamento malicioso.${d.isAdmin ? '' : ' Execute como administrador para uma análise mais completa.'}`;
+        : `${d.total} processos analisados e nenhum apresentou sinais relevantes de comportamento malicioso.${d.isAdmin ? '' : ' Execute como administrador para uma análise mais completa.'}`;
 
       flagged.forEach(p => box.appendChild(this.renderProcess(p)));
 
@@ -41,14 +41,14 @@ const SecurityModule = {
       if (d.defender && d.defender.enabled === false) {
         const warn = document.createElement('p');
         warn.className = 'u-text-warning u-mt-md';
-        warn.textContent = '⚠️ O Microsoft Defender está desativado neste PC. Se você não usa outro antivírus, ative-o em Segurança do Windows.';
+        warn.textContent = 'O Microsoft Defender está desativado neste PC. Se você não usa outro antivírus, ative-o em Segurança do Windows.';
         box.appendChild(warn);
       }
     } catch (err) {
       summary.textContent = 'Erro ao escanear os processos.';
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<span>Escanear novamente</span> 🔍';
+      btn.innerHTML = '<span>Escanear novamente</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg>';
     }
   },
 
@@ -62,7 +62,7 @@ const SecurityModule = {
     head.style.cssText = 'align-items:center; flex-wrap:wrap;';
     const badge = document.createElement('span');
     badge.className = `c-badge c-badge--${p.level === 'high' ? 'danger' : 'warning'}`;
-    badge.textContent = (p.level === 'high' ? '⚠️ Risco alto' : '⚠ Risco médio') + (p.isMinerSuspect ? ' · ⛏️ Minerador' : '');
+    badge.textContent = (p.level === 'high' ? 'Risco alto' : 'Risco médio') + (p.isMinerSuspect ? ' · Minerador' : '');
     const title = document.createElement('strong');
     title.textContent = `${p.name} (PID ${p.pid})`;
     head.append(badge, title);
@@ -90,7 +90,7 @@ const SecurityModule = {
 
     const rec = document.createElement('p');
     rec.className = 'u-mt-sm';
-    rec.textContent = '🛡️ Recomendamos utilizar um antivírus (como o Microsoft Defender, já incluso no Windows, ou o Malwarebytes) para verificar e tentar eliminar este processo.';
+    rec.textContent = 'Recomendamos utilizar um antivírus (como o Microsoft Defender, já incluso no Windows, ou o Malwarebytes) para verificar e tentar eliminar este processo.';
 
     const details = document.createElement('p');
     details.className = 'u-text-muted u-mt-sm';
