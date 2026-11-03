@@ -122,6 +122,18 @@ const API = {
     return this.request('/api/system/restore-point', { method: 'POST', body: '{}' });
   },
 
+  getProcesses() {
+    return this.request('/api/processes');
+  },
+
+  setProcessPriority(name, priority, persistent) {
+    return this.request('/api/processes/priority', { method: 'POST', body: JSON.stringify({ name, priority, persistent }) });
+  },
+
+  removeProcessPriority(exe) {
+    return this.request('/api/processes/priority/remove', { method: 'POST', body: JSON.stringify({ exe }) });
+  },
+
   // Version
   getVersionInfo() {
     return this.request('/api/version');

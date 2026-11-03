@@ -382,6 +382,26 @@
             <div class="o-grid o-grid--2" id="boost-optimizations-grid">
               <!-- Renderizado dinamicamente via boost.js -->
             </div>
+
+            <!-- PRIORIDADE DE PROCESSOS -->
+            <div class="c-card u-mt-lg" id="proc-card">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">🎯 Prioridade de processos</h4>
+                  <p class="u-text-muted">Coloque um jogo ou programa aberto em alta prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
+                </div>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> 🔄</button>
+              </div>
+              <div class="o-flex o-flex--gap-md u-mt-md" style="flex-wrap: wrap; align-items: center;">
+                <input type="text" id="proc-search" class="c-search-input" style="max-width: 320px;" placeholder="Buscar programa (ex: cs2, valorant, obs)…" autocomplete="off" spellcheck="false">
+                <label style="display:inline-flex; gap:6px; align-items:center; cursor:pointer;">
+                  <input type="checkbox" id="proc-only-windows" checked> Só programas com janela
+                </label>
+              </div>
+              <p id="proc-status" class="u-text-muted u-mt-sm">Abra esta aba para carregar a lista.</p>
+              <div id="proc-list"></div>
+              <p class="u-text-muted u-mt-sm" style="font-size: 0.8rem;">A prioridade "Tempo real" não é oferecida porque pode travar mouse e teclado. Processos do sistema e alguns jogos com anti-cheat não permitem alteração.</p>
+            </div>
           </section>
 
           <!-- ABA 6: LOGS DE ATUALIZAÇÕES & MODIFICAÇÕES -->
@@ -575,6 +595,7 @@
   <script src="scripts/modules/softs.js"></script>
   <script src="scripts/modules/winget.js"></script>
   <script src="scripts/modules/boost.js"></script>
+  <script src="scripts/modules/processes.js"></script>
   <script src="scripts/modules/logs.js"></script>
   <script src="scripts/modules/settings.js"></script>
   <script src="scripts/modules/versions.js"></script>

@@ -8,6 +8,7 @@ const versionController = require('../controllers/versionController');
 const wingetController = require('../controllers/wingetController');
 const restorePointService = require('../services/restorePointService');
 const reportService = require('../services/reportService');
+const processService = require('../services/processService');
 
 /**
  * Tabela de rotas da API
@@ -56,6 +57,11 @@ const routes = [
     });
     res.end(html);
   } },
+
+  // Prioridade de processos
+  { method: 'GET', path: '/api/processes', handler: async (req, res) => res.json({ success: true, data: await processService.list() }) },
+  { method: 'POST', path: '/api/processes/priority', handler: async (req, res) => res.json({ success: true, data: await processService.setPriority(req.body || {}) }) },
+  { method: 'POST', path: '/api/processes/priority/remove', handler: async (req, res) => res.json({ success: true, data: await processService.removePersistent((req.body || {}).exe) }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

@@ -35,6 +35,10 @@ class LogsService {
         const { spawn } = require('child_process');
         spawn('explorer.exe', ['devmgmt.msc'], { detached: true, stdio: 'ignore' }).unref();
       }
+    } else if (item.type === 'priority' && item.exeName) {
+      const processService = require('./processService');
+      const r = await processService.removePersistent(item.exeName);
+      if (!r.success) return { success: false, message: r.message };
     } else if (item.type === 'software') {
       if (process.platform === 'win32') {
         const { spawn } = require('child_process');
