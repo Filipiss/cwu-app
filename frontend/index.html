@@ -42,7 +42,11 @@
         <div class="c-nav__category">Diagnóstico & Boost</div>
         <div class="c-nav__item js-nav-item" data-tab="boost">
           <span class="c-nav__icon">🚀</span>
-          <span>Boost Gamer (Demo)</span>
+          <span>Boost Gamer</span>
+        </div>
+        <div class="c-nav__item js-nav-item" data-tab="perf">
+          <span class="c-nav__icon">📈</span>
+          <span>Performance</span>
         </div>
         <div class="c-nav__item js-nav-item" data-tab="logs">
           <span class="c-nav__icon">📋</span>
@@ -486,6 +490,105 @@
             </div>
           </section>
 
+          <!-- ABA: PERFORMANCE -->
+          <section id="tab-perf" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">📈 Performance</h2>
+                <p class="c-section-header__desc">Uso e temperatura em tempo real, programas da inicialização, ajustes de jogos do Windows e diagnóstico de RAM.</p>
+              </div>
+              <span class="c-badge c-badge--neutral" id="perf-monitor-status">Monitor parado</span>
+            </div>
+
+            <!-- MONITOR EM TEMPO REAL -->
+            <div class="o-grid o-grid--4">
+                <div class="c-card c-perf-tile" id="perf-tile-cpu">
+                  <div class="c-perf-tile__head">
+                    <span class="c-perf-tile__label">CPU</span>
+                    <span class="c-perf-tile__sub js-perf-hover"></span>
+                  </div>
+                  <span class="c-perf-tile__value js-perf-value">—</span>
+                  <span class="c-perf-tile__sub c-perf-tile__sub--wrap js-perf-sub">&nbsp;</span>
+                  <svg class="c-perf-tile__chart js-perf-chart" viewBox="0 0 300 56" preserveAspectRatio="none" role="img" aria-label="Histórico de uso de CPU"></svg>
+                </div>
+                <div class="c-card c-perf-tile" id="perf-tile-gpu">
+                  <div class="c-perf-tile__head">
+                    <span class="c-perf-tile__label">GPU</span>
+                    <span class="c-perf-tile__sub js-perf-hover"></span>
+                  </div>
+                  <span class="c-perf-tile__value js-perf-value">—</span>
+                  <span class="c-perf-tile__sub c-perf-tile__sub--wrap js-perf-sub">&nbsp;</span>
+                  <svg class="c-perf-tile__chart js-perf-chart" viewBox="0 0 300 56" preserveAspectRatio="none" role="img" aria-label="Histórico de uso de GPU"></svg>
+                </div>
+                <div class="c-card c-perf-tile" id="perf-tile-ram">
+                  <div class="c-perf-tile__head">
+                    <span class="c-perf-tile__label">Memória RAM</span>
+                    <span class="c-perf-tile__sub js-perf-hover"></span>
+                  </div>
+                  <span class="c-perf-tile__value js-perf-value">—</span>
+                  <span class="c-perf-tile__sub c-perf-tile__sub--wrap js-perf-sub">&nbsp;</span>
+                  <svg class="c-perf-tile__chart js-perf-chart" viewBox="0 0 300 56" preserveAspectRatio="none" role="img" aria-label="Histórico de uso de Memória RAM"></svg>
+                </div>
+                <div class="c-card c-perf-tile" id="perf-tile-disk">
+                  <div class="c-perf-tile__head">
+                    <span class="c-perf-tile__label">Disco</span>
+                    <span class="c-perf-tile__sub js-perf-hover"></span>
+                  </div>
+                  <span class="c-perf-tile__value js-perf-value">—</span>
+                  <span class="c-perf-tile__sub c-perf-tile__sub--wrap js-perf-sub">&nbsp;</span>
+                  <svg class="c-perf-tile__chart js-perf-chart" viewBox="0 0 300 56" preserveAspectRatio="none" role="img" aria-label="Histórico de uso de Disco"></svg>
+                </div>
+            </div>
+
+            <div class="o-grid o-grid--2 u-mt-lg">
+              <div class="c-card">
+                <h4 class="c-card__title">🔥 Processos que mais usam CPU</h4>
+                <div id="perf-top-list" class="u-mt-sm"><p class="u-text-muted">Aguardando leitura…</p></div>
+              </div>
+              <div class="c-card">
+                <h4 class="c-card__title">🌡️ Temperaturas</h4>
+                <div id="perf-temps-list" class="u-mt-sm"><p class="u-text-muted">Aguardando leitura…</p></div>
+                <p class="u-text-muted u-mt-sm" style="font-size: 0.75rem;">GPU via nvidia-smi (NVIDIA). CPU pelo sensor ACPI da placa-mãe (aproximado; nem todas expõem). Discos exigem administrador.</p>
+              </div>
+            </div>
+
+            <!-- AJUSTES DE JOGOS DO WINDOWS -->
+            <div class="c-card u-mt-lg">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">🎮 Ajustes de jogos do Windows</h4>
+                  <p class="u-text-muted">Configurações reais do Windows que afetam jogos. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
+                </div>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> 🔄</button>
+              </div>
+              <div id="perf-tweaks-list" class="u-mt-sm"></div>
+            </div>
+
+            <!-- DIAGNÓSTICO DE RAM -->
+            <div class="c-card u-mt-lg">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">🧠 Diagnóstico de memória RAM</h4>
+                  <p class="u-text-muted">Verifica XMP/EXPO, dual channel e compatibilidade entre os pentes.</p>
+                </div>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-ram-refresh"><span>Analisar</span> 🔍</button>
+              </div>
+              <div id="perf-ram-result" class="u-mt-sm"></div>
+            </div>
+
+            <!-- PROGRAMAS DA INICIALIZAÇÃO -->
+            <div class="c-card u-mt-lg">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">⏱️ Programas na inicialização</h4>
+                  <p class="u-text-muted" id="perf-startup-summary">Programas que abrem junto com o Windows. Desativar acelera o boot; nada é apagado.</p>
+                </div>
+                <button class="c-btn c-btn--outline c-btn--sm" id="btn-startup-refresh"><span>Atualizar</span> 🔄</button>
+              </div>
+              <div id="perf-startup-list" class="u-mt-sm"></div>
+            </div>
+          </section>
+
           <!-- ABA 7: CONFIGURAÇÕES -->
           <section id="tab-settings" class="c-tab-panel">
             <div class="c-section-header">
@@ -606,6 +709,7 @@
   <script src="scripts/modules/winget.js"></script>
   <script src="scripts/modules/boost.js"></script>
   <script src="scripts/modules/processes.js"></script>
+  <script src="scripts/modules/perf.js"></script>
   <script src="scripts/modules/logs.js"></script>
   <script src="scripts/modules/settings.js"></script>
   <script src="scripts/modules/versions.js"></script>

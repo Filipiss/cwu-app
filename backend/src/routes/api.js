@@ -9,6 +9,9 @@ const wingetController = require('../controllers/wingetController');
 const restorePointService = require('../services/restorePointService');
 const reportService = require('../services/reportService');
 const processService = require('../services/processService');
+const monitorService = require('../services/monitorService');
+const startupService = require('../services/startupService');
+const tweaksService = require('../services/tweaksService');
 
 /**
  * Tabela de rotas da API
@@ -62,6 +65,14 @@ const routes = [
   { method: 'GET', path: '/api/processes', handler: async (req, res) => res.json({ success: true, data: await processService.list() }) },
   { method: 'POST', path: '/api/processes/priority', handler: async (req, res) => res.json({ success: true, data: await processService.setPriority(req.body || {}) }) },
   { method: 'POST', path: '/api/processes/priority/remove', handler: async (req, res) => res.json({ success: true, data: await processService.removePersistent((req.body || {}).exe) }) },
+
+  // Performance: monitor, inicialização, ajustes do Windows e diagnóstico de RAM
+  { method: 'GET', path: '/api/monitor', handler: (req, res) => res.json({ success: true, data: monitorService.snapshot() }) },
+  { method: 'GET', path: '/api/startup', handler: async (req, res) => res.json({ success: true, data: await startupService.list() }) },
+  { method: 'POST', path: '/api/startup/toggle', handler: async (req, res) => res.json({ success: true, data: await startupService.toggle(req.body || {}) }) },
+  { method: 'GET', path: '/api/tweaks', handler: async (req, res) => res.json({ success: true, data: await tweaksService.getStatus() }) },
+  { method: 'POST', path: '/api/tweaks/set', handler: async (req, res) => res.json({ success: true, data: await tweaksService.set(req.body || {}) }) },
+  { method: 'GET', path: '/api/ram-diagnostic', handler: async (req, res) => res.json({ success: true, data: await tweaksService.ramDiagnostic() }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

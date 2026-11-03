@@ -35,6 +35,16 @@ class LogsService {
         const { spawn } = require('child_process');
         spawn('explorer.exe', ['devmgmt.msc'], { detached: true, stdio: 'ignore' }).unref();
       }
+    } else if (item.type === 'tweak' && item.tweakId) {
+      const tweaksService = require('./tweaksService');
+      // Volta ao estado anterior; se era 'padrão desconhecido' (null), desfaz o que foi aplicado
+      const target = typeof item.tweakPrevious === 'boolean' ? item.tweakPrevious : !/: ativado$/.test(item.title);
+      const r = await tweaksService.set({ id: item.tweakId, enabled: target });
+      if (!r.success) return { success: false, message: r.message };
+    } else if (item.type === 'startup' && item.startupId) {
+      const startupService = require('./startupService');
+      const r = await startupService.toggle({ id: item.startupId, enabled: !item.startupEnabled });
+      if (!r.success) return { success: false, message: r.message };
     } else if (item.type === 'priority' && item.exeName) {
       const processService = require('./processService');
       const r = await processService.removePersistent(item.exeName);

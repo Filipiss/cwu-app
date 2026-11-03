@@ -31,6 +31,7 @@
 @import url('./6-components/_tabs.css');
 @import url('./6-components/_toast.css');
 @import url('./6-components/_soft-list.css');
+@import url('./6-components/_perf.css');
 
 /* 7. Utilities */
 @import url('./7-utilities/_utilities.css');

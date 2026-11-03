@@ -134,6 +134,13 @@ const API = {
     return this.request('/api/processes/priority/remove', { method: 'POST', body: JSON.stringify({ exe }) });
   },
 
+  getMonitor() { return this.request('/api/monitor'); },
+  getStartup() { return this.request('/api/startup'); },
+  toggleStartup(id, enabled) { return this.request('/api/startup/toggle', { method: 'POST', body: JSON.stringify({ id, enabled }) }); },
+  getTweaks() { return this.request('/api/tweaks'); },
+  setTweak(id, enabled) { return this.request('/api/tweaks/set', { method: 'POST', body: JSON.stringify({ id, enabled }) }); },
+  getRamDiagnostic() { return this.request('/api/ram-diagnostic'); },
+
   // Version
   getVersionInfo() {
     return this.request('/api/version');
