@@ -15,8 +15,10 @@ $ErrorActionPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $cores = [Environment]::ProcessorCount
 $nvsmi = @("$env:ProgramFiles\\NVIDIA Corporation\\NVSMI\\nvidia-smi.exe", "$env:SystemRoot\\System32\\nvidia-smi.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
-$diskTemps = @(); $tick = 0
+$diskTemps = @(); $top = @(); $tick = 0
+$sw = [Diagnostics.Stopwatch]::new()
 while ($true) {
+  $sw.Restart()
   $cpu = (Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor -Filter "Name='_Total'").PercentProcessorTime
   $disk = Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk -Filter "Name='_Total'"
   $gpuEngines = Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine
@@ -40,16 +42,16 @@ while ($true) {
   # Temperatura ACPI (aproximada; muitas placas não expõem) e de discos (a cada ~30 s)
   $acpi = Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature | Select-Object -First 1
   $cpuTemp = if ($acpi -and $acpi.CurrentTemperature) { [math]::Round($acpi.CurrentTemperature / 10 - 273.15, 1) } else { $null }
-  if ($tick % 20 -eq 0) {
+  if ($tick % 20 -eq 1) {
     $diskTemps = @(Get-PhysicalDisk | ForEach-Object {
       $r = $_ | Get-StorageReliabilityCounter
       [PSCustomObject]@{ name = $_.FriendlyName; temp = $r.Temperature }
     })
   }
-  $top = Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.Name -notin '_Total','Idle' } |
+  if ($tick % 3 -eq 0) { $top = Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.Name -notin '_Total','Idle' } |
     Sort-Object PercentProcessorTime -Descending | Select-Object -First 5 |
-    ForEach-Object { [PSCustomObject]@{ name = ($_.Name -replace '#\\d+$',''); cpu = [math]::Round($_.PercentProcessorTime / $cores, 1); memMb = [math]::Round($_.WorkingSetPrivate / 1MB) } }
-  [PSCustomObject]@{
+    ForEach-Object { [PSCustomObject]@{ name = ($_.Name -replace '#\\d+$',''); cpu = [math]::Round($_.PercentProcessorTime / $cores, 1); memMb = [math]::Round($_.WorkingSetPrivate / 1MB) } } }
+  $json = [PSCustomObject]@{
     t = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
     cpu = $cpu
     cpuTemp = $cpuTemp
@@ -61,8 +63,12 @@ while ($true) {
     diskTemps = $diskTemps
     top = @($top)
   } | ConvertTo-Json -Depth 3 -Compress
+  # Marcadores delimitam cada amostra (imune a quebras de linha do console) e o flush envia na hora
+  [Console]::Out.WriteLine('@@CWU@@' + $json + '@@END@@')
+  [Console]::Out.Flush()
   $tick++
-  Start-Sleep -Milliseconds ${INTERVAL_MS}
+  $wait = ${INTERVAL_MS} - $sw.ElapsedMilliseconds
+  if ($wait -gt 50) { Start-Sleep -Milliseconds $wait }
 }
 `;
 
@@ -82,33 +88,51 @@ class MonitorService {
     if (this.child || process.platform !== 'win32') return;
 
     this.error = null;
-    this.child = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', '-'], {
+    this.startedAt = Date.now();
+    this.stderr = '';
+    // -EncodedCommand (UTF-16LE em base64): o script chega inteiro, sem depender de linha em branco no stdin
+    const encoded = Buffer.from(LOOP_SCRIPT, 'utf16le').toString('base64');
+    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', encoded], {
       windowsHide: true,
-      stdio: ['pipe', 'pipe', 'ignore']
+      stdio: ['ignore', 'pipe', 'pipe']
     });
-    this.child.stdout.on('data', (chunk) => this.onData(chunk));
-    this.child.on('error', (err) => { this.error = err.message; this.child = null; });
-    this.child.on('exit', () => { this.child = null; });
-    this.child.stdin.write(LOOP_SCRIPT);
-    this.child.stdin.end();
+    this.child = child;
+    child.stdout.on('data', (chunk) => this.onData(chunk));
+    child.stderr.on('data', (chunk) => { this.stderr = (this.stderr + chunk.toString('utf8')).slice(-2000); });
+    child.on('error', (err) => { this.error = err.message; if (this.child === child) this.child = null; });
+    child.on('exit', (code) => {
+      if (this.child === child) this.child = null;
+      if (code && !this.error) this.error = `PowerShell encerrou (código ${code}). ${this.stderr.trim().split(/\r?\n/).slice(-3).join(' ')}`;
+    });
 
     clearInterval(this.idleTimer);
     this.idleTimer = setInterval(() => {
-      if (Date.now() - this.lastPoll > IDLE_STOP_MS) this.stop();
+      if (Date.now() - this.lastPoll > IDLE_STOP_MS) return this.stop();
+      // Watchdog: sem amostra há 15 s → reinicia e registra o motivo
+      const lastSample = this.latest ? this.latest.receivedAt : this.startedAt;
+      if (this.child && Date.now() - lastSample > 15000) {
+        this.error = 'Os sensores pararam de responder; reiniciando. ' + this.stderr.trim().split(/\r?\n/).slice(-2).join(' ');
+        this.latest = null;
+        this.stop();
+        this.ensureRunning();
+      }
     }, 5000);
   }
 
   onData(chunk) {
     this.buffer += chunk.toString('utf8');
-    let idx;
-    while ((idx = this.buffer.indexOf('\n')) >= 0) {
-      const line = this.buffer.slice(0, idx).trim();
-      this.buffer = this.buffer.slice(idx + 1);
-      if (!line.startsWith('{')) continue;
+    let start;
+    while ((start = this.buffer.indexOf('@@CWU@@')) >= 0) {
+      const end = this.buffer.indexOf('@@END@@', start);
+      if (end < 0) break; // amostra ainda chegando
+      const json = this.buffer.slice(start + 7, end).replace(/[\r\n]/g, '');
+      this.buffer = this.buffer.slice(end + 7);
       try {
-        this.push(JSON.parse(line));
-      } catch (e) { /* linha incompleta ou ruído do PowerShell */ }
+        this.push(JSON.parse(json));
+        this.error = null;
+      } catch (e) { /* amostra corrompida: descarta */ }
     }
+    if (this.buffer.length > 100000) this.buffer = this.buffer.slice(-20000);
   }
 
   // Normaliza uma amostra e adiciona RAM (lida pelo Node, sem custo)
@@ -137,6 +161,7 @@ class MonitorService {
         .filter(d => d && d.name).map(d => ({ name: d.name, temp: Number.isFinite(d.temp) && d.temp > 0 ? d.temp : null })),
       top: Array.isArray(raw.top) ? raw.top : (raw.top ? [raw.top] : [])
     };
+    sample.receivedAt = Date.now();
     this.latest = sample;
     this.history.push({ t: sample.t, cpu: sample.cpu, ram: sample.ram, gpu: sample.gpu, disk: sample.disk });
     if (this.history.length > HISTORY_SIZE) this.history.shift();
@@ -150,6 +175,7 @@ class MonitorService {
     return {
       available: true,
       warmingUp: !this.latest,
+      secondsWaiting: this.latest ? 0 : Math.round((Date.now() - (this.startedAt || Date.now())) / 1000),
       error: this.error,
       intervalMs: INTERVAL_MS,
       latest: this.latest,

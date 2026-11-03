@@ -54,8 +54,14 @@ const PerfModule = {
         if (status) status.textContent = d.message;
         return;
       }
-      if (status) {
-        status.textContent = d.warmingUp ? 'Iniciando sensores…' : '● Ao vivo';
+      if (d.error && status) {
+        status.textContent = '⚠ Sensores com problema';
+        status.className = 'c-badge c-badge--warning';
+        status.title = d.error;
+        if (!this.errorShown) { this.errorShown = true; App.showToast('Monitor: ' + d.error, 'warning', 10000); }
+      } else if (status) {
+        status.title = '';
+        status.textContent = d.warmingUp ? `Iniciando sensores… ${d.secondsWaiting || 0}s` : '● Ao vivo';
         status.className = `c-badge ${d.warmingUp ? 'c-badge--neutral' : 'c-badge--success'}`;
       }
       if (d.latest) this.render(d.latest, d.history || []);

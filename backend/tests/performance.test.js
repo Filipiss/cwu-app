@@ -53,14 +53,15 @@ test('ajuste ou parâmetro inválido é recusado antes de tocar no registro', as
   assert.equal(r.success, false);
 });
 
-test('monitor junta linhas quebradas, ignora lixo e limita valores', () => {
+test('monitor lê amostras entre marcadores, mesmo quebradas em vários pedaços', () => {
   const m = new MonitorService();
-  m.onData(Buffer.from('aviso do PowerShell\n{"t":1,"cpu":12.6,"cpuTemp":-273.2,"diskBusy":180,"gpuUsage":40,"top":[]}\n{"t":2,'));
+  m.onData(Buffer.from('AVISO: ruído do PowerShell\r\n@@CWU@@{"t":1,"cpu":12.6,"cpuTemp":-273.2,"diskBusy":180,"gpuUsage":40,"top":[]}@@END@@\r\n@@CWU@@{"t":2,'));
   assert.equal(m.history.length, 1);
   assert.equal(m.latest.cpu, 13);
   assert.equal(m.latest.cpuTemp, null, 'temperatura ACPI inválida é descartada');
   assert.equal(m.latest.disk, 100);
-  m.onData(Buffer.from('"cpu":50,"top":[]}\n'));
+  // Continuação chegando com quebra de linha do console no meio do JSON
+  m.onData(Buffer.from('"cpu":5\r\n0,"top":[]}@@END@@'));
   assert.equal(m.history.length, 2);
   assert.equal(m.latest.cpu, 50);
 });
