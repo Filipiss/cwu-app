@@ -5,7 +5,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.1.0-blue)
+![Versão](https://img.shields.io/badge/versão-1.0.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 

@@ -56,30 +56,6 @@ $after = Get-Mem
 } | ConvertTo-Json -Compress
 `;
 
-// Remove valores de registro que versões antigas do CWU gravavam (sem efeito real no driver)
-const LEGACY_GPU_CLEANUP_SCRIPT = (vendor) => `
-$ErrorActionPreference = 'SilentlyContinue'
-$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-$names = ${vendor === 'nvidia' ? "@('LowLatencyMode','PrerenderLimit','D3D_OGL_MaxPrerenderedFrames')" : "@('AntiLag','KMD_FRTC_AntiLag','FlipQueueSize')"}
-$filter = ${vendor === 'nvidia' ? "'*NVIDIA*'" : "'*AMD*'"}
-$base = 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}'
-$found = 0; $removed = 0
-Get-ChildItem $base | Where-Object { $_.PSChildName -match '^\\d{4}$' } | ForEach-Object {
-  $p = Get-ItemProperty $_.PSPath
-  if (($p.ProviderName -like $filter) -or ($p.DriverDesc -like $filter) -or (('${vendor}' -eq 'amd') -and ($p.ProviderName -like '*Advanced Micro*'))) {
-    foreach ($n in $names) {
-      if ($null -ne $p.$n) {
-        $found++
-        if ($isAdmin) {
-          try { Remove-ItemProperty -Path $_.PSPath -Name $n -ErrorAction Stop; $removed++ } catch {}
-        }
-      }
-    }
-  }
-}
-[PSCustomObject]@{ isAdmin = $isAdmin; found = $found; removed = $removed } | ConvertTo-Json -Compress
-`;
-
 class BoostService {
   async getBoostStatus() {
     const totalMem = os.totalmem();
@@ -211,7 +187,7 @@ class BoostService {
 
   // Ações que alteram configurações do Windows ganham um ponto de restauração antes
   async runBoostOptimization(actionId) {
-    const SYSTEM_CHANGING = ['power_plan', 'telemetry_services', 'nvidia_default', 'amd_default'];
+    const SYSTEM_CHANGING = ['power_plan', 'telemetry_services'];
     if (SYSTEM_CHANGING.includes(actionId) && db.getSettings().autoRestorePoint !== false) {
       const restorePoint = await restorePointService.ensureForSession('antes de ' + actionId);
       const result = await this.applyOptimization(actionId);
@@ -350,56 +326,22 @@ class BoostService {
     //   O "Modo de baixa latência" da NVIDIA e o Anti-Lag da AMD ficam no perfil
     //   interno do driver, que só o painel do fabricante altera. Valores gravados
     //   na chave de classe do registro NÃO são lidos pelo driver. Por isso:
-    //   - "ativar" abre o painel oficial com o passo a passo;
-    //   - "desativar" remove ajustes de registro que versões antigas do CWU gravaram.
-    if (['nvidia_ultra', 'nvidia_default', 'amd_antilag', 'amd_default'].includes(actionId)) {
+    //   o botão abre o painel oficial com o passo a passo.
+    if (['nvidia_ultra', 'amd_antilag'].includes(actionId)) {
       const vendor = actionId.startsWith('nvidia') ? 'nvidia' : 'amd';
-      const isCleanup = actionId.endsWith('_default');
 
       if (process.platform !== 'win32') {
         return { success: false, actionId, message: 'Disponível apenas no Windows.', freedMemoryMb: 0 };
       }
 
-      if (!isCleanup) {
-        await this.runBoostOptimization(vendor === 'nvidia' ? 'open_nvidia_settings' : 'open_amd_settings');
-        return {
-          success: true,
-          actionId,
-          message: vendor === 'nvidia'
-            ? 'Painel NVIDIA aberto: vá em "Gerenciar as configurações em 3D" › "Modo de baixa latência" › Ultra › Aplicar.'
-            : 'AMD Software aberto: vá em Jogos › Gráficos e ative o Radeon Anti-Lag.',
-          freedMemoryMb: 0
-        };
-      }
-
-      const res = await runPowerShell(LEGACY_GPU_CLEANUP_SCRIPT(vendor), 15000);
-      const d = (res.success && res.data) ? res.data : null;
-
-      if (!d) {
-        return { success: false, actionId, message: 'Falha ao acessar o registro: ' + (res.error || 'sem resposta do PowerShell'), freedMemoryMb: 0 };
-      }
-      if (d.found > 0 && !d.isAdmin) {
-        return {
-          success: false,
-          actionId,
-          needsAdmin: true,
-          message: 'Remover os ajustes antigos do registro exige administrador. Abra o CWU App com "Executar como administrador".',
-          freedMemoryMb: 0
-        };
-      }
-
-      if (!db.state.activeBoosts) db.state.activeBoosts = {};
-      db.state.activeBoosts[vendor === 'nvidia' ? 'nvidia_ultra' : 'amd_antilag'] = false;
-      db.save();
-
+      await this.runBoostOptimization(vendor === 'nvidia' ? 'open_nvidia_settings' : 'open_amd_settings');
       return {
         success: true,
         actionId,
-        message: d.removed > 0
-          ? `${d.removed} ajuste(s) antigo(s) removido(s) do registro. Para mudar a latência de fato, use o painel ${vendor === 'nvidia' ? 'NVIDIA' : 'AMD'}.`
-          : `Nenhum ajuste antigo do CWU no registro. A configuração real fica no painel ${vendor === 'nvidia' ? 'NVIDIA' : 'AMD'}.`,
-        freedMemoryMb: 0,
-        details: d
+        message: vendor === 'nvidia'
+          ? 'Painel NVIDIA aberto: vá em "Gerenciar as configurações em 3D" › "Modo de baixa latência" › Ultra › Aplicar.'
+          : 'AMD Software aberto: vá em Jogos › Gráficos e ative o Radeon Anti-Lag.',
+        freedMemoryMb: 0
       };
     }
 

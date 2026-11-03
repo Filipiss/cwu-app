@@ -91,9 +91,7 @@ const BoostModule = {
       let primary = '';
       const secondary = [];
       if (isGpu) {
-        const prefix = opt.gpuType === 'nvidia' ? 'nvidia' : 'amd';
         primary = btn('primary', { cls: 'js-btn-opt', data: `data-id="${opt.id}"` }, `Configurar no ${opt.gpuType === 'nvidia' ? 'Painel NVIDIA' : 'AMD Software'}`, 'arrow-up-right', `Abre o painel oficial ${vendor} com o passo a passo`);
-        if (opt.active) secondary.push(btn('secondary', { cls: 'js-btn-opt', data: `data-id="${prefix}_default"` }, 'Remover ajuste antigo', 'undo-2', 'Remove valores de registro gravados por versões antigas do CWU (o driver não os utiliza)'));
       } else {
         primary = btn('primary', { cls: 'js-btn-opt', data: `data-id="${opt.id}"` }, opt.btnLabel || 'Executar', 'zap');
         if (opt.manualAction) secondary.push(btn('secondary', { cls: 'js-btn-manual', data: `data-action="${opt.manualAction}"` }, opt.manualLabel || 'Mudar manualmente', 'arrow-up-right', opt.manualTooltip || 'Abrir a configuração no Windows'));

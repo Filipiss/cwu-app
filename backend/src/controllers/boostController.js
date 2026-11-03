@@ -5,7 +5,7 @@ const boostService = require('../services/boostService');
 const ALLOWED_ACTIONS = new Set([
   'purge_standby', 'ram_clean', 'full_boost', 'temp_cleanup',
   'power_plan', 'power_balanced',
-  'nvidia_ultra', 'nvidia_default', 'amd_antilag', 'amd_default',
+  'nvidia_ultra', 'amd_antilag',
   'telemetry_services', 'telemetry_restore',
   'open_temp_folder', 'open_taskmgr', 'open_power_settings',
   'open_telemetry_settings', 'open_nvidia_settings', 'open_amd_settings'

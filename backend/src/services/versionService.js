@@ -13,7 +13,7 @@ const CHANGELOG_CANDIDATES = [
 
 /**
  * Lê o formato Keep a Changelog:
- *   ## [1.1.0] - 2026-11-03
+ *   ## [1.0.0] - 2026-11-03
  *   ### Adicionado
  *   - item
  */
