@@ -60,7 +60,7 @@ function runPowerShell(script, timeoutMs = 15000) {
     });
 
     // Envia script com codificação UTF-8
-    child.stdin.write(`[Console]::OutputEncoding = [System.Text.Encoding]::UTF8\n` + script + `\n`);
+    child.stdin.write(`[Console]::OutputEncoding = [System.Text.Encoding]::UTF8\n` + script + `\n\n`); // linha em branco: fecha blocos de várias linhas no modo stdin
     child.stdin.end();
   });
 }

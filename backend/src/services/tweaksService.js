@@ -78,8 +78,9 @@ function analyzeRam(modules, totalSlots) {
   if (!modules.length) return { modules: [], issues: [{ level: 'info', text: 'Não foi possível ler os pentes de memória.' }] };
 
   const type = MEMORY_TYPES[modules[0].smbiosType] || null;
-  const configured = Math.min(...modules.map(m => m.configuredMhz || m.ratedMhz || 0).filter(Boolean));
-  const rated = Math.max(...modules.map(m => m.ratedMhz || 0));
+  const speeds = modules.map(m => m.configuredMhz || m.ratedMhz || 0).filter(Boolean);
+  const configured = speeds.length ? Math.min(...speeds) : 0;
+  const rated = Math.max(0, ...modules.map(m => m.ratedMhz || 0));
 
   if (rated && configured && configured < rated - 50) {
     issues.push({ level: 'warning', text: `A memória está a ${configured} MHz, mas os pentes suportam ${rated} MHz. Ative o perfil XMP (Intel) ou EXPO/DOCP (AMD) na BIOS para ganhar desempenho de graça.` });
