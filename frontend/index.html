@@ -54,7 +54,7 @@
         </div>
         <div class="c-nav__item js-nav-item" data-tab="logs">
           <span class="c-nav__icon">📋</span>
-          <span>Logs de Atualizações</span>
+          <span>Logs</span>
         </div>
 
         <div class="c-nav__category">Aplicativo</div>
@@ -426,10 +426,45 @@
           <section id="tab-logs" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">📋 Logs de Atualizações & Modificações</h2>
-                <p class="c-section-header__desc">Histórico exclusivo do que foi atualizado e configurado na máquina, com suporte a reversão rápida.</p>
+                <h2 class="c-section-header__title">📋 Logs</h2>
+                <p class="c-section-header__desc">Erros registrados pelo Windows e histórico das alterações feitas pelo CWU App.</p>
               </div>
-              <div class="o-flex o-flex--gap-sm">
+            </div>
+
+            <!-- ALTERNÂNCIA ENTRE OS DOIS TIPOS DE LOG -->
+            <div class="o-flex o-flex--gap-sm u-mb-lg" role="tablist" style="flex-wrap: wrap;">
+              <button class="c-btn c-btn--primary js-logs-view" data-view="windows" role="tab" aria-selected="true">🪟 Erros do Windows</button>
+              <button class="c-btn c-btn--outline js-logs-view" data-view="app" role="tab" aria-selected="false">📋 Histórico do CWU App</button>
+            </div>
+
+            <!-- ===== VISÃO 1: ERROS DO WINDOWS ===== -->
+            <div id="logs-view-windows">
+              <div class="c-card u-mb-lg">
+                <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                  <div>
+                    <h4 class="c-card__title">🪟 Erros do Windows (Visualizador de Eventos)</h4>
+                    <p id="errors-summary-text" class="u-text-muted">Telas azuis, desligamentos inesperados, falhas de hardware, disco e aplicativos registrados pelo próprio Windows.</p>
+                  </div>
+                  <button class="c-btn c-btn--primary c-btn--sm" id="btn-analyze-errors">
+                    <span>Analisar Erros</span> 🩺
+                  </button>
+                </div>
+
+                <!-- FILTROS -->
+                <div class="o-flex o-flex--gap-sm u-mt-md" style="flex-wrap: wrap; align-items: center; border-top: 1px solid var(--color-border); padding-top: 14px;">
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-period" class="c-select"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option></select><span class="c-select-arrow">▼</span></div>
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-severity" class="c-select"><option value="">Todas as gravidades</option><option value="Crítica">Crítica</option><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option></select><span class="c-select-arrow">▼</span></div>
+                  <div class="c-select-wrapper" style="min-width: 170px;"><select id="errors-filter-category" class="c-select"><option value="">Todos os tipos</option><option value="bsod">💥 Telas azuis</option><option value="shutdown">⚡ Desligamentos inesperados</option><option value="hardware">🔧 Hardware</option><option value="disk">💾 Disco</option><option value="app">🧩 Aplicativos travando</option><option value="service">⚙️ Serviços do Windows</option><option value="other">• Outros</option></select><span class="c-select-arrow">▼</span></div>
+                  <input type="text" id="errors-filter-search" class="c-search-input" style="max-width: 260px;" placeholder="Buscar (ex: nvlddmkm, game.exe)…" autocomplete="off" spellcheck="false">
+                  <span id="errors-filter-count" class="u-text-muted" style="font-size: 0.85rem;"></span>
+                </div>
+              </div>
+              <div id="errors-results-container"></div>
+            </div>
+
+            <!-- ===== VISÃO 2: HISTÓRICO DO CWU APP ===== -->
+            <div id="logs-view-app" class="u-hidden">
+              <div class="o-flex o-flex--gap-sm u-mb-md" style="flex-wrap: wrap; justify-content: flex-end;">
                 <button class="c-btn c-btn--outline c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
                   <span>Limpar Histórico</span> 🗑️
                 </button>
@@ -440,28 +475,12 @@
                   <span>Atualizar Lista</span> 🔄
                 </button>
               </div>
-            </div>
-
-            <!-- DIAGNÓSTICO DE ERROS DO WINDOWS (Event Viewer + Minidumps) -->
-            <div class="c-card u-mb-lg">
-              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
-                <div>
-                  <h4 class="c-card__title">Diagnóstico de Erros e Telas Azuis</h4>
-                  <p id="errors-summary-text" class="u-text-muted">Analisa os últimos 30 dias do Visualizador de Eventos e os arquivos de minidump.</p>
-                </div>
-                <button class="c-btn c-btn--primary c-btn--sm" id="btn-analyze-errors">
-                  <span>Analisar Erros</span> 🩺
-                </button>
-              </div>
-              <div id="errors-results-container" class="u-mt-md"></div>
-            </div>
-
             <!-- RESUMO DE MODIFICAÇÕES -->
             <div class="c-card u-mb-lg">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
-                  <h4 class="c-card__title">Status das Modificações Realizadas</h4>
-                  <p id="logs-summary-text" class="u-text-muted">Acompanhe apenas as alterações aplicadas nesta máquina.</p>
+                  <h4 class="c-card__title">📋 Alterações feitas pelo CWU App</h4>
+                  <p id="logs-summary-text" class="u-text-muted">Tudo o que o app instalou ou configurou neste PC, com opção de reverter.</p>
                 </div>
                 <div class="o-flex o-flex--gap-md" id="logs-stats-container">
                   <div class="u-text-center">
@@ -481,16 +500,18 @@
 
               <!-- FILTROS POR CATEGORIA -->
               <div class="o-flex o-flex--gap-sm u-mt-md" style="border-top: 1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); padding-top: 14px;">
-                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter c-btn--active" data-filter="all">Todas as Modificações</button>
-                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="driver">Drivers Atualizados</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter c-btn--active" data-filter="all">Todas</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="driver">Drivers</button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="boost">Boost Gamer</button>
                 <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="software">Softwares</button>
+                <button class="c-btn c-btn--secondary c-btn--sm js-log-filter" data-filter="windows">Ajustes do Windows</button>
               </div>
             </div>
 
             <!-- CONTAINER DE RESULTADOS DOS LOGS -->
             <div id="logs-results-container">
               <!-- Renderizado dinamicamente via logs.js -->
+            </div>
             </div>
           </section>
 

@@ -4,7 +4,7 @@ const logsService = require('../services/logsService');
 class LogsController {
   async getLogs(req, res) {
     try {
-      const data = await logsService.getSystemErrorLogs();
+      const data = await logsService.getSystemErrorLogs((req.query || {}).days);
       res.json({ success: true, data });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });

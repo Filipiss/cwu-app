@@ -49,8 +49,8 @@ const API = {
   },
 
   // System Logs & Atualizações
-  getLogs() {
-    return this.request('/api/logs');
+  getLogs(days = 30) {
+    return this.request(`/api/logs?days=${encodeURIComponent(days)}`);
   },
 
   getUpdateLogs() {

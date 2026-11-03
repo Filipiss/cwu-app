@@ -12,79 +12,127 @@ const LogsModule = {
     this.fetchLogs();
   },
 
+  errorsData: null,
+
+  // Alterna entre "Erros do Windows" e "Histórico do CWU App"
+  switchView(view) {
+    document.querySelectorAll('.js-logs-view').forEach(btn => {
+      const active = btn.dataset.view === view;
+      btn.classList.toggle('c-btn--primary', active);
+      btn.classList.toggle('c-btn--outline', !active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    document.getElementById('logs-view-windows')?.classList.toggle('u-hidden', view !== 'windows');
+    document.getElementById('logs-view-app')?.classList.toggle('u-hidden', view !== 'app');
+  },
+
   async analyzeErrors() {
     const btn = document.getElementById('btn-analyze-errors');
     const summary = document.getElementById('errors-summary-text');
     const container = document.getElementById('errors-results-container');
     if (!container) return;
 
+    const days = document.getElementById('errors-filter-period')?.value || '30';
     if (btn) btn.disabled = true;
     if (summary) summary.textContent = 'Lendo o Visualizador de Eventos… isso pode levar alguns segundos.';
     container.innerHTML = '';
 
     try {
-      const res = await API.getLogs();
+      const res = await API.getLogs(days);
       const d = res.data || {};
+      this.errorsData = d;
       if (!d.readAvailable) {
         if (summary) summary.textContent = d.message || 'Leitura indisponível.';
         return;
       }
-
       if (summary) {
-        summary.textContent = `Últimos ${d.periodDays} dias: ${d.bsodCount} tela(s) azul(is), ${d.unexpectedShutdowns} desligamento(s) inesperado(s), ${d.minidumps.length} minidump(s) encontrado(s).`;
+        summary.textContent = `Últimos ${d.periodDays} dias: ${d.bsodCount} tela(s) azul(is), ${d.unexpectedShutdowns} desligamento(s) inesperado(s), ${d.minidumps.length} minidump(s).`;
       }
-
-      if (!d.events.length) {
-        const p = document.createElement('p');
-        p.className = 'u-text-success';
-        p.textContent = '✓ ' + (d.message || 'Nenhum erro relevante encontrado.');
-        container.appendChild(p);
-        return;
-      }
-
-      const badgeBySeverity = { 'Crítica': 'danger', 'Alta': 'danger', 'Média': 'warning', 'Baixa': 'success' };
-      d.events.forEach(ev => {
-        const item = document.createElement('details');
-        item.className = 'c-card u-mt-sm';
-        item.style.padding = '12px 14px';
-
-        const head = document.createElement('summary');
-        head.style.cursor = 'pointer';
-        const badge = document.createElement('span');
-        badge.className = `c-badge c-badge--${badgeBySeverity[ev.severity] || 'warning'}`;
-        badge.textContent = ev.severity;
-        const title = document.createElement('strong');
-        title.style.marginLeft = '8px';
-        title.textContent = ev.title + (ev.occurrences > 1 ? ` (×${ev.occurrences})` : '');
-        const date = document.createElement('span');
-        date.className = 'u-text-muted';
-        date.style.marginLeft = '8px';
-        date.textContent = '· último: ' + ev.date;
-        head.append(badge, title, date);
-
-        const body = document.createElement('div');
-        body.className = 'u-mt-sm';
-        const diag = document.createElement('p');
-        diag.textContent = ev.diagnosis;
-        const rec = document.createElement('p');
-        rec.className = 'u-mt-xs';
-        rec.style.whiteSpace = 'pre-line';
-        rec.textContent = '💡 ' + ev.recommendation;
-        const raw = document.createElement('p');
-        raw.className = 'u-text-muted u-mt-xs';
-        raw.style.fontSize = '0.8rem';
-        raw.textContent = `Evento ${ev.id} · ${ev.provider} — ${ev.originalSnippet}`;
-        body.append(diag, rec, raw);
-
-        item.append(head, body);
-        container.appendChild(item);
-      });
+      this.renderErrors();
     } catch (err) {
       console.error('Erro ao analisar eventos:', err);
       if (summary) summary.textContent = 'Erro ao consultar o Visualizador de Eventos.';
     } finally {
       if (btn) btn.disabled = false;
     }
+  },
+
+  // Aplica os filtros (gravidade, tipo, busca) sem consultar o Windows de novo
+  renderErrors() {
+    const container = document.getElementById('errors-results-container');
+    const countEl = document.getElementById('errors-filter-count');
+    const d = this.errorsData;
+    if (!container || !d || !d.readAvailable) return;
+
+    const severity = document.getElementById('errors-filter-severity')?.value || '';
+    const category = document.getElementById('errors-filter-category')?.value || '';
+    const query = (document.getElementById('errors-filter-search')?.value || '').trim().toLowerCase();
+
+    const list = d.events.filter(ev =>
+      (!severity || ev.severity === severity) &&
+      (!category || ev.category === category) &&
+      (!query || [ev.title, ev.diagnosis, ev.provider, ev.originalSnippet, ev.id].join(' ').toLowerCase().includes(query)));
+
+    if (countEl) countEl.textContent = `${list.length} de ${d.events.length} tipo(s) de evento`;
+    container.innerHTML = '';
+
+    if (!d.events.length) {
+      const p = document.createElement('div');
+      p.className = 'c-card';
+      p.innerHTML = '<p class="u-text-success"></p>';
+      p.firstChild.textContent = '✓ ' + (d.message || 'Nenhum erro relevante encontrado.');
+      container.appendChild(p);
+      return;
+    }
+    if (!list.length) {
+      const p = document.createElement('div');
+      p.className = 'c-card u-text-center';
+      p.innerHTML = '<p class="u-text-muted">Nenhum evento corresponde aos filtros.</p>';
+      container.appendChild(p);
+      return;
+    }
+
+    const badgeBySeverity = { 'Crítica': 'danger', 'Alta': 'danger', 'Média': 'warning', 'Baixa': 'success' };
+    const categoryLabel = { bsod: '💥 Tela azul', shutdown: '⚡ Desligamento', hardware: '🔧 Hardware', disk: '💾 Disco', app: '🧩 Aplicativo', service: '⚙️ Serviço', other: '• Outro' };
+
+    list.forEach(ev => {
+      const item = document.createElement('details');
+      item.className = 'c-card u-mb-sm';
+      item.style.padding = '12px 16px';
+
+      const head = document.createElement('summary');
+      head.style.cssText = 'cursor:pointer; display:flex; gap:8px; align-items:center; flex-wrap:wrap;';
+      const sev = document.createElement('span');
+      sev.className = `c-badge c-badge--${badgeBySeverity[ev.severity] || 'warning'}`;
+      sev.textContent = ev.severity;
+      const cat = document.createElement('span');
+      cat.className = 'c-badge c-badge--neutral';
+      cat.textContent = categoryLabel[ev.category] || categoryLabel.other;
+      const title = document.createElement('strong');
+      title.textContent = ev.title + (ev.occurrences > 1 ? ` (×${ev.occurrences})` : '');
+      const date = document.createElement('span');
+      date.className = 'u-text-muted';
+      date.style.fontSize = '0.85rem';
+      date.textContent = '· último: ' + ev.date;
+      head.append(sev, cat, title, date);
+
+      const body = document.createElement('div');
+      body.className = 'u-mt-sm';
+      const diag = document.createElement('p');
+      diag.textContent = ev.diagnosis;
+      const rec = document.createElement('p');
+      rec.className = 'u-mt-xs';
+      rec.style.whiteSpace = 'pre-line';
+      rec.textContent = '💡 ' + ev.recommendation;
+      const raw = document.createElement('p');
+      raw.className = 'u-text-muted u-mt-xs';
+      raw.style.fontSize = '0.8rem';
+      raw.textContent = `Evento ${ev.id} · ${ev.provider} — ${ev.originalSnippet}`;
+      body.append(diag, rec, raw);
+
+      item.append(head, body);
+      container.appendChild(item);
+    });
   },
 
   bindEvents() {
@@ -104,6 +152,12 @@ const LogsModule = {
         }
       });
     }
+
+    document.querySelectorAll('.js-logs-view').forEach(btn => btn.addEventListener('click', () => this.switchView(btn.dataset.view)));
+    // Período muda a consulta ao Windows; os demais filtros só refiltram o que já foi lido
+    document.getElementById('errors-filter-period')?.addEventListener('change', () => { if (this.errorsData) this.analyzeErrors(); });
+    ['errors-filter-severity', 'errors-filter-category'].forEach(id => document.getElementById(id)?.addEventListener('change', () => this.renderErrors()));
+    document.getElementById('errors-filter-search')?.addEventListener('input', () => this.renderErrors());
 
     const analyzeBtn = document.getElementById('btn-analyze-errors');
     if (analyzeBtn) {
@@ -268,6 +322,8 @@ const LogsModule = {
       list = list.filter(l => l.type === 'boost');
     } else if (this.activeFilter === 'software') {
       list = list.filter(l => l.type === 'software');
+    } else if (this.activeFilter === 'windows') {
+      list = list.filter(l => ['tweak', 'startup', 'priority'].includes(l.type));
     }
 
     if (list.length === 0) {
@@ -280,7 +336,7 @@ const LogsModule = {
     }
 
     container.innerHTML = `
-      <div class="o-flex o-flex--column o-flex--gap-md">
+      <div class="o-flex o-flex--column o-flex--gap-md" style="align-items: stretch;">
         ${list.map(item => {
           const isReverted = item.status === 'reverted';
           const cardClass = isReverted ? 'c-card--reverted' : 'c-card--highlight';
@@ -292,6 +348,12 @@ const LogsModule = {
             typeBadge = `<span class="c-badge" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3);">⚡ Boost Gamer</span>`;
           } else if (item.type === 'software') {
             typeBadge = `<span class="c-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3);">📦 Software</span>`;
+          } else if (item.type === 'startup') {
+            typeBadge = `<span class="c-badge c-badge--neutral">⏱️ Inicialização</span>`;
+          } else if (item.type === 'priority') {
+            typeBadge = `<span class="c-badge c-badge--neutral">🎯 Prioridade</span>`;
+          } else if (item.type === 'tweak') {
+            typeBadge = `<span class="c-badge c-badge--neutral">🎮 Ajuste do Windows</span>`;
           } else {
             typeBadge = `<span class="c-badge c-badge--neutral">🔧 Sistema</span>`;
           }

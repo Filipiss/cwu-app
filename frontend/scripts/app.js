@@ -88,7 +88,7 @@ const App = {
         boost: { title: 'Boost Gamer', desc: 'Memória, energia, latência de GPU e prioridade de processos' },
         security: { title: 'Segurança', desc: 'Triagem de processos com sinais de programas maliciosos' },
         perf: { title: 'Performance', desc: 'Monitor em tempo real, inicialização, ajustes de jogos e diagnóstico de RAM' },
-        logs: { title: 'Logs de Atualizações', desc: 'Histórico exclusivo do que foi atualizado e configurado na máquina com opção de reversão' },
+        logs: { title: 'Logs', desc: 'Erros do Windows e histórico de alterações do CWU App' },
         settings: { title: 'Configurações', desc: 'Temas visuais, preferências e idioma' },
         versions: { title: 'Novas Versões', desc: 'Histórico de versões e atualizações do CWU App' }
       };

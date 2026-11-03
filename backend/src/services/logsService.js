@@ -81,7 +81,9 @@ class LogsService {
     };
   }
 
-  async getSystemErrorLogs() {
+  async getSystemErrorLogs(days = 30) {
+    // Período aceito: 7, 30 ou 90 dias
+    const periodDays = [7, 30, 90].includes(Number(days)) ? Number(days) : 30;
     const encyclopedia = db.getBsodEncyclopedia();
     let events = [];
     let minidumps = [];
@@ -93,8 +95,8 @@ class LogsService {
         // Últimos 30 dias: erros/críticos do Sistema + travamentos de aplicativos + lista de minidumps
         const psCommand = `
           $ErrorActionPreference = 'SilentlyContinue'
-          $since = (Get-Date).AddDays(-30)
-          $system = @(Get-WinEvent -FilterHashtable @{LogName='System'; Level=1,2; StartTime=$since} -MaxEvents 60)
+          $since = (Get-Date).AddDays(-${periodDays})
+          $system = @(Get-WinEvent -FilterHashtable @{LogName='System'; Level=1,2; StartTime=$since} -MaxEvents ${periodDays > 30 ? 150 : 80})
           $apps = @(Get-WinEvent -FilterHashtable @{LogName='Application'; Id=1000,1002; StartTime=$since} -MaxEvents 20)
           $dumps = @(Get-ChildItem "$env:SystemRoot\\Minidump\\*.dmp" | Sort-Object LastWriteTime -Descending | Select-Object -First 10 Name, Length, LastWriteTime)
           [PSCustomObject]@{
@@ -139,8 +141,8 @@ class LogsService {
     return {
       timestamp: new Date().toISOString(),
       readAvailable: readOk,
-      message: readOk ? (grouped.length ? null : 'Nenhum erro relevante nos últimos 30 dias.') : 'Não foi possível ler o Visualizador de Eventos (requer Windows).',
-      periodDays: 30,
+      message: readOk ? (grouped.length ? null : `Nenhum erro relevante nos últimos ${periodDays} dias.`) : 'Não foi possível ler o Visualizador de Eventos (requer Windows).',
+      periodDays,
       minidumps,
       bsodCount: events.filter(e => e.id === '1001' && e.isBsodOrKernelPower).length,
       unexpectedShutdowns: events.filter(e => e.id === '41').length,
@@ -156,6 +158,8 @@ class LogsService {
     const provider = (raw.ProviderName || 'Windows System').trim();
     const rawMessage = (raw.Message || '').trim();
     const dateStr = this.formatDate(raw.TimeCreated);
+    const timestamp = this.toIso(raw.TimeCreated);
+    let category = 'other';
 
     let title = `Evento ID ${id} (${provider})`;
     let diagnosis = 'Registro de instabilidade ou advertência do sistema operacional.';
@@ -167,6 +171,7 @@ class LogsService {
     if (id === '41' || provider.toLowerCase().includes('kernel-power')) {
       isBsodOrKernelPower = true;
       title = 'Kernel-Power (Desligamento Repentino / Queda de Energia)';
+      category = 'shutdown';
       diagnosis = 'O computador foi desligado ou reiniciado sem o encerramento correto do Windows. Isso acontece por queda de luz, estabilizador/nobreak desarmando, botão power pressionado ou corte de energia da fonte por proteção térmica.';
       recommendation = '1. Verifique se o cabo de energia está bem encaixado na fonte e na tomada.\n2. Evite usar estabilizadores antigos; use filtro de linha de qualidade (ex: Clamper).\n3. Se ocorrer durante jogos pesados, a fonte pode não estar suprindo a potência exigida pela placa de vídeo.';
       severity = 'Alta';
@@ -175,6 +180,7 @@ class LogsService {
     else if (id === '1001' || provider.toLowerCase().includes('bugcheck')) {
       isBsodOrKernelPower = true;
       title = 'BugCheck (Registro Oficial de Tela Azul - BSOD)';
+      category = 'bsod';
       
       // Procura códigos hexadecimais no texto (ex: 0x0000009f, 0x000000d1, etc)
       const matchedCode = encyclopedia.find(entry => rawMessage.toLowerCase().includes(entry.code.toLowerCase()));
@@ -193,6 +199,7 @@ class LogsService {
     else if (id === '1000' || id === '1002') {
       const appMatch = rawMessage.match(/^[^:\n]*:\s*([^\s,]+\.exe)/i) || rawMessage.match(/([\w.-]+\.exe)/i);
       const appName = appMatch ? appMatch[1] : 'aplicativo';
+      category = 'app';
       title = id === '1000' ? `Falha de aplicativo: ${appName}` : `Aplicativo parou de responder: ${appName}`;
       diagnosis = id === '1000'
         ? 'O programa fechou sozinho por um erro interno (crash). Pode ser bug do próprio programa, runtime ausente ou driver de vídeo.'
@@ -203,6 +210,7 @@ class LogsService {
     // Disco com setores defeituosos / falhas de E/S
     else if (/^(7|51|153|129)$/.test(id) && /disk|stor|nvme/i.test(provider)) {
       title = 'Erro de leitura/escrita no disco';
+      category = 'disk';
       diagnosis = 'O Windows registrou falha de comunicação com uma unidade de armazenamento. Pode indicar cabo SATA ruim, setores defeituosos ou SSD com problema.';
       recommendation = 'Faça backup dos seus arquivos, verifique a saúde do disco (aba Specs) e rode "chkdsk /f" no Prompt como administrador.';
       severity = 'Alta';
@@ -210,6 +218,7 @@ class LogsService {
     // WHEA — erro de hardware reportado pelo processador
     else if (provider.toLowerCase().includes('whea')) {
       title = 'Erro de hardware (WHEA)';
+      category = 'hardware';
       diagnosis = 'O processador ou o barramento PCIe reportou um erro de hardware. Comum com overclock/undervolt instável, XMP agressivo ou fonte insuficiente.';
       recommendation = 'Desative overclock/XMP para testar, atualize a BIOS e verifique temperaturas.';
       severity = 'Alta';
@@ -217,6 +226,7 @@ class LogsService {
     // Erros de Hardware HAL (ACPI / Relógio / Barramento)
     else if (provider.toLowerCase().includes('hal') || id === '21') {
       title = 'Alerta de Sincronização de Hardware (HAL ACPI)';
+      category = 'hardware';
       diagnosis = 'Falha momentânea na comunicação entre a BIOS/placa-mãe e o relógio de tempo real do Windows durante a inicialização rápida.';
       recommendation = 'Atualizar a BIOS da placa-mãe para a versão estável mais recente e desativar a "Inicialização Rápida" no Painel de Controle de Energia.';
       severity = 'Média';
@@ -224,6 +234,7 @@ class LogsService {
     // DCOM / Serviços do Windows
     else if (provider.toLowerCase().includes('distributedcom') || id === '10010' || id === '10016') {
       title = 'Tempo Limite em Serviço DCOM';
+      category = 'service';
       diagnosis = 'Um serviço em segundo plano do Windows demorou mais que o esperado para responder. Não causa tela azul nem instabilidade séria.';
       recommendation = 'Comportamento comum do Windows. Nenhuma ação urgente é necessária.';
       severity = 'Baixa';
@@ -238,8 +249,18 @@ class LogsService {
       recommendation,
       severity,
       isBsodOrKernelPower,
+      category,
+      timestamp,
       originalSnippet: rawMessage.length > 250 ? rawMessage.substring(0, 250) + '...' : rawMessage
     };
+  }
+
+  toIso(value) {
+    if (!value) return null;
+    if (typeof value === 'object') value = value.value || value.DateTime;
+    const m = String(value).match(/\/Date\((-?\d+)/);
+    const d = m ? new Date(Number(m[1])) : new Date(value);
+    return isNaN(d.getTime()) ? null : d.toISOString();
   }
 
   formatDate(value) {
