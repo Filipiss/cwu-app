@@ -1,0 +1,91 @@
+/* 6-components/_account.css — Minha Conta (login, perfil e lista pós-formatação).
+ * Tudo por tokens do tema: funciona igual no Grafite e no Névoa. */
+
+/* Campos de texto */
+.c-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-text-primary) 3%, var(--color-bg-card));
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.c-input::placeholder { color: var(--color-text-muted); }
+.c-input:hover { border-color: var(--color-border-bright); }
+.c-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.c-input-group { position: relative; display: block; }
+.c-input-group .c-input { padding-right: 42px; }
+.c-input-group__btn {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  width: 30px; height: 30px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--color-text-muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.c-input-group__btn:hover { color: var(--color-text-primary); background: color-mix(in srgb, var(--color-text-primary) 6%, transparent); }
+.c-input-group__btn:focus-visible { outline: 2px solid var(--color-primary); }
+
+/* Botão discreto (links de ação) */
+.c-btn--ghost { background: transparent; border-color: transparent; color: var(--color-text-secondary); box-shadow: none; }
+.c-btn--ghost:hover:not(:disabled) { color: var(--color-text-primary); background: color-mix(in srgb, var(--color-text-primary) 6%, transparent); }
+
+/* Mensagem do formulário */
+.c-form-msg {
+  margin: 0; padding: 10px 12px; border-radius: var(--radius-md); font-size: 0.85rem; line-height: 1.45;
+  --msg-c: var(--color-danger);
+  background: color-mix(in srgb, var(--msg-c) 9%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--msg-c) 18%, transparent);
+  color: color-mix(in srgb, var(--msg-c) 80%, var(--color-text-primary));
+}
+.c-form-msg[data-type="success"] { --msg-c: var(--color-success); }
+.c-form-msg[data-type="info"] { --msg-c: var(--color-primary); }
+
+/* Bloco de entrar/criar conta */
+.c-account-auth { max-width: 460px; display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.c-account-auth .c-subtabs { width: 100%; margin-bottom: var(--spacing-md); }
+.c-account-auth .c-subtabs__tab { flex: 1; justify-content: center; }
+.c-account-form { gap: 14px; }
+.c-account-form__actions { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-sm); margin-top: 4px; }
+.c-account-auth__note { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--color-text-muted); margin: 0; }
+
+/* Perfil */
+.c-profile { display: flex; align-items: center; gap: 14px; }
+.c-profile__avatar {
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.05rem;
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--color-bg-card));
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+.c-profile__text { flex: 1; min-width: 0; }
+.c-profile__name { font-weight: 600; font-size: 1rem; color: var(--color-text-primary); }
+
+/* Lista de programas para marcar */
+.c-app-groups { display: flex; flex-direction: column; gap: var(--spacing-md); max-height: 460px; overflow-y: auto; padding-right: 4px; }
+.c-app-group__title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 8px; }
+.c-app-group__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.c-app-pick {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer;
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-text-primary) 2%, transparent);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+.c-app-pick:hover { border-color: var(--color-border-bright); }
+.c-app-pick:has(input:checked) {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card));
+}
+.c-app-pick input { accent-color: var(--color-primary); width: 16px; height: 16px; margin: 0; flex-shrink: 0; }
+.c-app-pick__name { font-size: 0.86rem; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.c-account-user { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.c-account-user:not(.u-hidden) { display: flex; }

@@ -15,4 +15,5 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Segurança: triagem de processos suspeitos, incluindo mineradores de criptomoedas
 - Logs: erros do Windows (telas azuis, Kernel-Power) e histórico de ações do app, com filtros
 - Ponto de restauração automático e relatório do PC em HTML
+- Minha Conta: login e cadastro (Supabase) com lista pós-formatação personalizada salva na nuvem
 - Temas Grafite e Névoa, menu lateral recolhível e aviso para reiniciar como administrador

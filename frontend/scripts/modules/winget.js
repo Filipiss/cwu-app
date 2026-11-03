@@ -60,7 +60,7 @@ const WingetModule = {
 
   selectSuggestions() {
     const all = (typeof SoftsModule !== 'undefined') ? SoftsModule.allSoftwares : [];
-    all.filter(s => s.mustHave && this.isSupported(s.id) && !this.isInstalled(s.id)).forEach(s => this.selected.add(s.id));
+    all.filter(s => Account.isSuggested(s) && this.isSupported(s.id) && !this.isInstalled(s.id)).forEach(s => this.selected.add(s.id));
     this.refreshUi();
     // Mostra só as sugestões, para o usuário ver exatamente o que foi marcado
     if (typeof SoftsModule !== 'undefined') {

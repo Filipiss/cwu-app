@@ -40,6 +40,7 @@ const App = {
     BoostModule.init();
     LogsModule.init();
     VersionsModule.init();
+    Account.init();
 
     // Auto-scan se estiver ativo nas configurações
     if (SettingsModule.settings.autoScanOnStart) {
@@ -50,7 +51,7 @@ const App = {
 
     // Suporte a rotas por hash (#boost, #scan, #softs, etc.)
     const initialHash = window.location.hash.replace('#', '');
-    if (initialHash && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions'].includes(initialHash)) {
+    if (initialHash && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions', 'account'].includes(initialHash)) {
       this.switchTab(initialHash);
     }
   },
@@ -66,7 +67,7 @@ const App = {
 
     window.addEventListener('hashchange', () => {
       const tab = window.location.hash.replace('#', '');
-      if (tab && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions'].includes(tab)) {
+      if (tab && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions', 'account'].includes(tab)) {
         this.switchTab(tab);
       }
     });
@@ -104,7 +105,8 @@ const App = {
         perf: { title: 'Performance', desc: 'Monitor em tempo real, inicialização, ajustes de jogos e diagnóstico de RAM' },
         logs: { title: 'Logs', desc: 'Erros do Windows e histórico de alterações do CWU App' },
         settings: { title: 'Configurações', desc: 'Temas visuais, preferências e idioma' },
-        versions: { title: 'Novas Versões', desc: 'Histórico de versões e atualizações do CWU App' }
+        versions: { title: 'Novas Versões', desc: 'Histórico de versões e atualizações do CWU App' },
+        account: { title: 'Minha Conta', desc: 'Login e personalização do app' }
       };
 
       const headerTitle = document.getElementById('page-header-title');

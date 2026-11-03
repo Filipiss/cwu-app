@@ -180,7 +180,7 @@ const SoftsModule = {
 
     // 1. Filtrar por Categoria
     if (this.currentCategory === 'suggested') {
-      results = results.filter(sw => sw.mustHave);
+      results = results.filter(sw => Account.isSuggested(sw));
     } else if (this.currentCategory && this.currentCategory !== 'all') {
       results = results.filter(sw => sw.category === this.currentCategory);
     }
@@ -227,12 +227,12 @@ const SoftsModule = {
     container.innerHTML = `
       <div class="c-soft-list">
         ${results.map(item => `
-          <div class="c-soft-item ${item.mustHave ? 'c-soft-item--highlight' : ''}">
+          <div class="c-soft-item ${Account.isSuggested(item) ? 'c-soft-item--highlight' : ''}">
             <div class="c-soft-item__info">
               <div class="c-soft-item__title-row">
                 <span class="c-soft-item__name">${item.name}</span>
                 <span class="c-badge c-badge--info">${item.categoryLabel || item.category}</span>
-                ${item.mustHave ? '<span class="c-badge c-badge--info">Sugerido</span>' : ''}
+                ${Account.isSuggested(item) ? '<span class="c-badge c-badge--info">Sugerido</span>' : ''}
                 <span class="c-badge c-badge--neutral">${item.size}</span>
                 ${typeof WingetModule !== 'undefined' ? WingetModule.renderItemControl(item.id) : ''}
               </div>

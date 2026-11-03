@@ -90,6 +90,16 @@ O app roda como administrador, então a API local foi tratada como superfície d
 
 É uma heurística para orientar o usuário, não um benchmark.
 
+## Contas de usuário (Supabase)
+
+Login é opcional: sem conta, tudo funciona. Com conta, o usuário monta a própria lista de programas pós-formatação e ela vai junto para qualquer PC.
+
+1. Crie um projeto no [Supabase](https://supabase.com) e rode `supabase/schema.sql` no SQL Editor (tabela `user_preferences` com RLS: cada usuário só lê e altera a própria linha).
+2. Em *Authentication › Providers*, deixe **Email** ligado (de preferência com confirmação de e-mail).
+3. Copie a *Project URL* e a chave **anon** (*Project Settings › API*) para `frontend/scripts/config.js`. A chave `service_role` nunca vai para o app.
+
+O app fala com o Supabase direto pela API REST (sem bibliotecas). A senha só trafega para o Supabase por HTTPS e nunca é salva no PC; o app guarda apenas o token de sessão.
+
 ## Como usar
 
 **Usuário:** baixe o `.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
@@ -107,7 +117,7 @@ npm run dist:portable  # gera o .exe em release/
 
 ## Roadmap
 
-- [ ] Contas de usuário com Supabase (salvar perfis e preferências)
+- [x] Contas de usuário com Supabase (lista pós-formatação personalizada)
 - [ ] Análise de frame time com PresentMon
 - [ ] Perfil gamer de um clique
 - [ ] Encerrar programas em segundo plano antes de jogar
