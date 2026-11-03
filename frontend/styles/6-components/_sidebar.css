@@ -1,7 +1,15 @@
 /* frontend/styles/6-components/_sidebar.css */
-/* Components: Sidebar de Navegação do CWU App */
+/* Components: Sidebar de Navegação do CWU App
+ * Estilo compacto: itens baixos com texto menor, ícones em tom neutro,
+ * item ativo com fundo sutil arredondado e grupos separados por linhas finas.
+ * As cores vêm dos tokens do tema (color-mix gera os tons de hover/ativo
+ * a partir da cor do texto, então funciona em temas claros e escuros). */
 
 .c-sidebar {
+  --nav-hover: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+  --nav-active: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+  --nav-divider: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+
   width: var(--sidebar-width);
   height: 100vh;
   background-color: var(--color-bg-sidebar);
@@ -10,134 +18,154 @@
   flex-direction: column;
   flex-shrink: 0;
   z-index: 10;
+  padding: 12px 10px;
 }
 
+/* ---------- Marca: bloco em formato de cartão ---------- */
 .c-sidebar__brand {
-  padding: var(--spacing-lg) var(--spacing-md);
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background-color: color-mix(in srgb, var(--color-text-primary) 3%, transparent);
 }
 
 .c-sidebar__logo {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  border-radius: var(--radius-md);
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--glow-primary);
-  color: #060911;
-  font-weight: 800;
-  font-size: var(--font-size-md);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .c-sidebar__title {
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 6px;
+  line-height: 1.2;
 }
 
 .c-sidebar__version-tag {
-  font-size: var(--font-size-xs);
-  padding: 1px 6px;
-  border-radius: var(--radius-full);
-  background-color: rgba(var(--color-primary-rgb), 0.15);
-  color: var(--color-primary);
-  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .c-sidebar__subtitle {
   font-size: 0.7rem;
   color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+  margin-top: 1px;
 }
 
+/* ---------- Navegação ---------- */
 .c-nav {
   flex: 1;
-  padding: var(--spacing-md) var(--spacing-xs);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xxs);
+  gap: 2px;
   overflow-y: auto;
+  padding-top: 4px;
 }
 
+/* Grupos separados por uma linha fina; o rótulo fica discreto */
 .c-nav__category {
-  font-size: 0.65rem;
-  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--color-text-muted);
-  letter-spacing: 1px;
-  font-weight: 700;
-  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xxs);
+  padding: 12px 10px 4px;
+  margin-top: 8px;
+  border-top: 1px solid var(--nav-divider);
+}
+
+.c-nav__category:first-child {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 4px;
 }
 
 .c-nav__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
+  gap: 10px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 7px;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 0.84rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
   border: 1px solid transparent;
   position: relative;
 }
 
 .c-nav__item:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--nav-hover);
   color: var(--color-text-primary);
 }
 
 .c-nav__item--active {
-  background-color: rgba(var(--color-primary-rgb), 0.12);
-  color: var(--color-primary);
-  border-color: rgba(var(--color-primary-rgb), 0.25);
+  background-color: var(--nav-active);
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
-.c-nav__item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 15%;
-  height: 70%;
-  width: 3px;
-  background-color: var(--color-primary);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  box-shadow: var(--glow-primary);
+.c-nav__item--active:hover {
+  background-color: var(--nav-active);
 }
 
+/* Ícones em tom neutro (como ícones de linha); o ativo ganha cor plena */
 .c-nav__icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: filter var(--transition-fast), opacity var(--transition-fast);
+}
+
+.c-nav__item:hover .c-nav__icon {
+  opacity: 0.95;
+}
+
+.c-nav__item--active .c-nav__icon {
+  filter: none;
+  opacity: 1;
 }
 
 .c-nav__badge {
   margin-left: auto;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--color-border);
 }
 
-.c-sidebar__footer {
-  padding: var(--spacing-md);
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.c-nav__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
 }

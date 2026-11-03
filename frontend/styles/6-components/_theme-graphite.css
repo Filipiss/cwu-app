@@ -39,8 +39,7 @@
 }
 
 /* Rótulos pequenos e discretos */
-[data-theme="graphite"] .c-perf-tile__label,
-[data-theme="graphite"] .c-nav__category {
+[data-theme="graphite"] .c-perf-tile__label {
   color: var(--color-text-muted);
   letter-spacing: 0.04em;
 }
@@ -90,18 +89,6 @@
 [data-theme="graphite"] .c-badge--warning { color: var(--color-warning); border-color: rgba(var(--color-warning-rgb), 0.35); }
 [data-theme="graphite"] .c-badge--danger { color: var(--color-danger); border-color: rgba(var(--color-danger-rgb), 0.35); }
 [data-theme="graphite"] .c-badge--info { color: var(--color-primary); border-color: rgba(var(--color-primary-rgb), 0.35); }
-
-/* ---------- Sidebar: item ativo com barra lateral laranja ---------- */
-[data-theme="graphite"] .c-nav__item--active {
-  background: var(--color-bg-surface);
-  color: var(--color-text-primary);
-  box-shadow: inset 3px 0 0 var(--color-primary) !important;
-  border-color: transparent;
-}
-
-[data-theme="graphite"] .c-nav__item--active .c-nav__icon {
-  filter: none;
-}
 
 [data-theme="graphite"] .c-header__dot {
   box-shadow: none;
