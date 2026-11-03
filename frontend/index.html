@@ -973,15 +973,15 @@
             </div>
 
             <!-- Visitante: entrar ou criar conta -->
-            <div id="account-guest" class="c-account-auth u-hidden">
-              <div class="c-card">
-                <div class="c-subtabs" role="tablist" data-group="account">
-                  <button class="c-subtabs__tab js-subtab" role="tab" data-group="account" data-view="login"><svg class=c-icon aria-hidden=true><use href=#i-log-in></use></svg> Entrar</button>
-                  <button class="c-subtabs__tab js-subtab" role="tab" data-group="account" data-view="signup"><svg class=c-icon aria-hidden=true><use href=#i-user></use></svg> Criar conta</button>
-                </div>
-
-                <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account" data-view="login">
-                  <form id="account-login-form" class="c-form c-account-form" novalidate>
+<div id="account-guest" class="c-account-view u-hidden">
+<div class="c-subtabs" role="tablist" data-group="account"><button class="c-subtabs__tab js-subtab" role="tab" data-group="account" data-view="login"><svg class=c-icon aria-hidden=true><use href=#i-log-in></use></svg> Entrar</button><button class="c-subtabs__tab js-subtab" role="tab" data-group="account" data-view="signup"><svg class=c-icon aria-hidden=true><use href=#i-user></use></svg> Criar conta</button></div>
+<div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account" data-view="login">
+<div class="o-grid o-grid--2 c-account-grid"><div class="c-card">
+<div class="c-card__head"><div class="c-card__head-text">
+<h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-log-in></use></svg> Entrar na sua conta</h4>
+<p class="c-card__desc">Use o e-mail e a senha cadastrados.</p>
+</div></div>
+<form id="account-login-form" class="c-form c-account-form" novalidate>
                     <label class="c-field"><span class="c-field__label">E-mail</span>
                       <input class="c-input" type="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com"></label>
                     <label class="c-field"><span class="c-field__label">Senha</span>
@@ -993,10 +993,20 @@
                       <button type="button" class="c-btn c-btn--ghost c-btn--sm" id="btn-account-forgot">Esqueci minha senha</button>
                     </div>
                   </form>
-                </div>
-
-                <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account" data-view="signup">
-                  <form id="account-signup-form" class="c-form c-account-form" novalidate>
+</div><div class="c-card">
+<div class="c-card__head"><div class="c-card__head-text">
+<h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg> Por que ter uma conta</h4>
+<p class="c-card__desc">Personalize o CWU App e leve suas escolhas com você.</p>
+</div></div>
+<ul class="c-benefits"><li><svg class=c-icon aria-hidden=true><use href=#i-list-checks></use></svg><span><strong>Sua lista pós-formatação</strong> com os programas que você realmente usa.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-cloud></use></svg><span><strong>Sincronizada na nuvem:</strong> formatou ou trocou de PC, é só entrar.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-lock></use></svg><span><strong>Senha protegida:</strong> verificada pelo servidor de contas e nunca salva no seu PC.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg><span><strong>Opcional:</strong> sem conta, todas as funções continuam liberadas.</span></li></ul>
+</div></div>
+</div><div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account" data-view="signup">
+<div class="o-grid o-grid--2 c-account-grid"><div class="c-card">
+<div class="c-card__head"><div class="c-card__head-text">
+<h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-user></use></svg> Criar conta</h4>
+<p class="c-card__desc">Leva menos de um minuto. Enviaremos um link para confirmar o seu e-mail.</p>
+</div></div>
+<form id="account-signup-form" class="c-form c-account-form" novalidate>
                     <label class="c-field"><span class="c-field__label">Nome</span>
                       <input class="c-input" type="text" name="name" autocomplete="name" maxlength="60" placeholder="Como quer ser chamado"></label>
                     <label class="c-field"><span class="c-field__label">E-mail</span>
@@ -1012,25 +1022,29 @@
                       <button type="submit" class="c-btn c-btn--primary"><span>Criar conta</span><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg></button>
                     </div>
                   </form>
-                </div>
-              </div>
-              <p class="c-account-auth__note"><svg class=c-icon aria-hidden=true><use href=#i-lock></use></svg> A senha é verificada pelo servidor de contas e nunca fica salva no seu PC.</p>
-            </div>
+</div><div class="c-card">
+<div class="c-card__head"><div class="c-card__head-text">
+<h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-sparkles></use></svg> Por que ter uma conta</h4>
+<p class="c-card__desc">Personalize o CWU App e leve suas escolhas com você.</p>
+</div></div>
+<ul class="c-benefits"><li><svg class=c-icon aria-hidden=true><use href=#i-list-checks></use></svg><span><strong>Sua lista pós-formatação</strong> com os programas que você realmente usa.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-cloud></use></svg><span><strong>Sincronizada na nuvem:</strong> formatou ou trocou de PC, é só entrar.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-lock></use></svg><span><strong>Senha protegida:</strong> verificada pelo servidor de contas e nunca salva no seu PC.</span></li><li><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg><span><strong>Opcional:</strong> sem conta, todas as funções continuam liberadas.</span></li></ul>
+</div></div>
+</div>
+</div>
 
             <!-- Usuário logado -->
-            <div id="account-user" class="c-account-user u-hidden">
-              <div class="c-card">
-                <div class="c-profile">
-                  <div class="c-profile__avatar" id="account-avatar" aria-hidden="true">?</div>
-                  <div class="c-profile__text">
-                    <div class="c-profile__name" id="account-name">—</div>
-                    <div class="c-card__desc" id="account-email">—</div>
-                  </div>
-                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-account-logout"><span>Sair</span><svg class=c-icon aria-hidden=true><use href=#i-log-out></use></svg></button>
-                </div>
-              </div>
-
-              <div class="c-card">
+<div id="account-user" class="c-account-view u-hidden">
+<div class="c-subtabs" role="tablist" data-group="account-user"><button class="c-subtabs__tab js-subtab" role="tab" data-group="account-user" data-view="profile"><svg class=c-icon aria-hidden=true><use href=#i-user></use></svg> Perfil</button><button class="c-subtabs__tab js-subtab" role="tab" data-group="account-user" data-view="apps"><svg class=c-icon aria-hidden=true><use href=#i-list-checks></use></svg> Minha lista pós-formatação</button></div>
+<div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account-user" data-view="profile">
+<div class="c-card"><div class="c-profile"><div class="c-profile__avatar" id="account-avatar" aria-hidden="true">?</div><div class="c-profile__text"><div class="c-profile__name" id="account-name">-</div><div class="c-card__desc" id="account-email">-</div></div><button class="c-btn c-btn--secondary c-btn--sm" id="btn-account-logout"><span>Sair</span><svg class=c-icon aria-hidden=true><use href=#i-log-out></use></svg></button></div></div><div class="c-card">
+<div class="c-card__head"><div class="c-card__head-text">
+<h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-lock></use></svg> Conta e segurança</h4>
+<p class="c-card__desc">Dados da sua conta no servidor do CWU App.</p>
+</div></div>
+<div class="c-stat-row"><div class="c-stat"><span class="c-stat__label">E-mail</span><span class="c-stat__value c-stat__value--sm" id="account-stat-confirmed">-</span></div><div class="c-stat"><span class="c-stat__label">Conta criada em</span><span class="c-stat__value c-stat__value--sm" id="account-stat-created">-</span></div><div class="c-stat"><span class="c-stat__label">Último acesso</span><span class="c-stat__value c-stat__value--sm" id="account-stat-last">-</span></div><div class="c-stat"><span class="c-stat__label">Programas na sua lista</span><span class="c-stat__value c-stat__value--sm" id="account-stat-apps">-</span></div></div>
+</div>
+</div><div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="account-user" data-view="apps">
+<div class="c-card">
                 <div class="c-card__head">
                   <div class="c-card__head-text">
                     <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-list-checks></use></svg> Minha lista pós-formatação</h4>
@@ -1044,8 +1058,9 @@
                   <button class="c-btn c-btn--secondary" id="btn-account-reset"><span>Restaurar sugestões padrão</span><svg class=c-icon aria-hidden=true><use href=#i-rotate-ccw></use></svg></button>
                   <button class="c-btn c-btn--primary" id="btn-account-save"><span>Salvar minha lista</span><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg></button>
                 </div>
-              </div>
-            </div>
+</div>
+</div>
+</div>
           </section>
 
         </div>

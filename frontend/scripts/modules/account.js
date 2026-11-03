@@ -212,6 +212,12 @@ const Account = {
     document.getElementById('account-name').textContent = name;
     document.getElementById('account-email').textContent = u.email || '';
     document.getElementById('account-avatar').textContent = name.slice(0, 1).toUpperCase() || '?';
+    const date = (v) => v ? new Date(v).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('account-stat-confirmed', u.email_confirmed_at ? 'Confirmado' : 'Não confirmado');
+    set('account-stat-created', date(u.created_at));
+    set('account-stat-last', date(u.last_sign_in_at));
+    set('account-stat-apps', this.suggested ? String(this.suggested.size) : 'Padrão (10)');
     this.openEditor();
   },
 
@@ -239,6 +245,8 @@ const Account = {
     try {
       await this.savePreferences(this.draft);
       App.showToast(`Lista salva: ${this.draft.size} programa(s) nas suas sugestões pós-formatação.`, 'success');
+      const st = document.getElementById('account-stat-apps');
+      if (st) st.textContent = String(this.draft.size);
       if (typeof SoftsModule !== 'undefined' && SoftsModule.filterAndRender) SoftsModule.filterAndRender();
     } catch (e) {
       App.showToast(e.message, 'danger');
