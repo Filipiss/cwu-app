@@ -388,15 +388,25 @@
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
                   <h4 class="c-card__title">🎯 Prioridade de processos</h4>
-                  <p class="u-text-muted">Coloque um jogo ou programa aberto em alta prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
+                  <p class="u-text-muted">Escolha um programa em execução e defina a prioridade de CPU. Marque "Sempre" para o Windows aplicar a prioridade toda vez que ele abrir.</p>
                 </div>
                 <button class="c-btn c-btn--outline c-btn--sm" id="btn-proc-refresh"><span>Atualizar lista</span> 🔄</button>
               </div>
               <div class="o-flex o-flex--gap-md u-mt-md" style="flex-wrap: wrap; align-items: center;">
-                <input type="text" id="proc-search" class="c-search-input" style="max-width: 320px;" placeholder="Buscar programa (ex: cs2, valorant, obs)…" autocomplete="off" spellcheck="false">
-                <label style="display:inline-flex; gap:6px; align-items:center; cursor:pointer;">
-                  <input type="checkbox" id="proc-only-windows" checked> Só programas com janela
+                <div class="c-select-wrapper" style="flex: 1; min-width: 260px;">
+                  <select id="proc-select" class="c-select">
+                    <option value="">Carregando programas em execução…</option>
+                  </select>
+                  <span class="c-select-arrow">▼</span>
+                </div>
+                <div class="c-select-wrapper" style="min-width: 170px;">
+                  <select id="proc-priority" class="c-select"></select>
+                  <span class="c-select-arrow">▼</span>
+                </div>
+                <label style="display:inline-flex; gap:6px; align-items:center; cursor:pointer;" title="Aplica esta prioridade toda vez que o programa abrir (exige administrador)">
+                  <input type="checkbox" id="proc-persist"> Sempre
                 </label>
+                <button class="c-btn c-btn--primary c-btn--sm" id="btn-proc-apply" disabled>Aplicar</button>
               </div>
               <p id="proc-status" class="u-text-muted u-mt-sm">Abra esta aba para carregar a lista.</p>
               <div id="proc-list"></div>

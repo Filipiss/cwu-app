@@ -1,24 +1,19 @@
 // frontend/scripts/modules/processes.js
 /**
- * Prioridade de processos: lista os programas abertos e permite definir a
- * prioridade de CPU agora e, opcionalmente, de forma permanente.
+ * Prioridade de processos: um dropdown com todos os programas em execução.
+ * O usuário escolhe um, escolhe a prioridade e aplica (agora ou de forma permanente).
  */
 const ProcessesModule = {
   data: null,
-  query: '',
-  onlyWindows: true,
 
   init() {
     document.getElementById('btn-proc-refresh')?.addEventListener('click', () => this.load());
-    document.getElementById('proc-search')?.addEventListener('input', (e) => { this.query = e.target.value.trim().toLowerCase(); this.render(); });
-    document.getElementById('proc-only-windows')?.addEventListener('change', (e) => { this.onlyWindows = e.target.checked; this.render(); });
+    document.getElementById('btn-proc-apply')?.addEventListener('click', () => this.apply());
+    document.getElementById('proc-select')?.addEventListener('change', () => this.onSelect());
 
-    const list = document.getElementById('proc-list');
-    list?.addEventListener('click', (e) => {
-      const apply = e.target.closest('.js-proc-apply');
-      if (apply) return this.apply(apply.closest('[data-name]'), apply);
+    document.getElementById('proc-list')?.addEventListener('click', (e) => {
       const remove = e.target.closest('.js-proc-remove');
-      if (remove) return this.removePersistent(remove.dataset.exe, remove);
+      if (remove) this.removePersistent(remove.dataset.exe, remove);
     });
 
     // Carrega quando a aba Boost é aberta pela primeira vez (listar processos custa ~1 s)
@@ -32,108 +27,121 @@ const ProcessesModule = {
     try {
       const res = await API.getProcesses();
       this.data = res.data;
-      if (status) status.textContent = this.data.available ? '' : this.data.message;
+      if (status) status.textContent = this.data.available ? `${this.data.processes.length} programas em execução.` : this.data.message;
     } catch (err) {
       if (status) status.textContent = 'Erro ao listar processos.';
     }
     this.render();
   },
 
+  find(name) {
+    return this.data && this.data.processes.find(p => p.name === name);
+  },
+
   render() {
-    const list = document.getElementById('proc-list');
-    if (!list || !this.data || !this.data.available) return;
+    const select = document.getElementById('proc-select');
+    const prio = document.getElementById('proc-priority');
+    if (!select || !prio || !this.data || !this.data.available) return;
 
-    const items = this.data.processes.filter(p =>
-      (!this.onlyWindows || p.hasWindow || p.persistentPriority) &&
-      (!this.query || p.name.toLowerCase().includes(this.query) || p.title.toLowerCase().includes(this.query)));
+    const previous = select.value;
+    select.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = '— Escolha um programa em execução —';
+    select.appendChild(placeholder);
 
-    list.innerHTML = '';
-    if (items.length === 0) {
-      list.innerHTML = '<p class="u-text-muted u-mt-sm">Nenhum programa encontrado. Desmarque "Só programas com janela" para ver os processos em segundo plano.</p>';
-      return;
-    }
-
-    for (const p of items.slice(0, 80)) {
-      const row = document.createElement('div');
-      row.dataset.name = p.name;
-      row.className = 'o-flex o-flex--between';
-      row.style.cssText = 'gap:12px; padding:8px 0; border-bottom:1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); flex-wrap:wrap; align-items:center;';
-
-      const info = document.createElement('div');
-      info.style.minWidth = '220px';
-      info.style.flex = '1';
-      const name = document.createElement('strong');
-      name.textContent = p.exe + (p.instances > 1 ? ` (${p.instances})` : '');
-      const sub = document.createElement('div');
-      sub.className = 'u-text-muted';
-      sub.style.fontSize = '0.8rem';
-      sub.textContent = `${p.title ? p.title.slice(0, 60) + ' • ' : ''}${p.memoryMb} MB • Atual: ${p.priorityLabel}`;
-      info.append(name, sub);
-      if (p.persistentPriority) {
-        const badge = document.createElement('span');
-        badge.className = 'c-badge c-badge--info';
-        badge.style.marginLeft = '8px';
-        badge.textContent = '📌 Sempre ' + (this.data.priorities.find(x => x.value === p.persistentPriority)?.label || p.persistentPriority);
-        name.after(badge);
+    const byName = (a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' });
+    const groups = [
+      ['🪟 Programas com janela', this.data.processes.filter(p => p.hasWindow).sort(byName)],
+      ['⚙️ Segundo plano', this.data.processes.filter(p => !p.hasWindow).sort(byName)]
+    ];
+    for (const [label, items] of groups) {
+      if (!items.length) continue;
+      const group = document.createElement('optgroup');
+      group.label = label;
+      for (const p of items) {
+        const o = document.createElement('option');
+        o.value = p.name;
+        const title = p.title ? ` — ${p.title.slice(0, 40)}` : '';
+        o.textContent = `${p.exe}${title} (${p.memoryMb} MB, ${p.priorityLabel})${p.persistentPriority ? ' 📌' : ''}`;
+        group.appendChild(o);
       }
+      select.appendChild(group);
+    }
+    if (previous && this.find(previous)) select.value = previous;
 
-      const controls = document.createElement('div');
-      controls.className = 'o-flex o-flex--gap-sm';
-      controls.style.alignItems = 'center';
-
-      const select = document.createElement('select');
-      select.className = 'c-select js-proc-priority';
-      select.style.minWidth = '150px';
+    if (!prio.options.length) {
       this.data.priorities.forEach(opt => {
         const o = document.createElement('option');
         o.value = opt.value;
         o.textContent = opt.label;
-        if (opt.value === (p.priority || 'High')) o.selected = true;
-        select.appendChild(o);
+        prio.appendChild(o);
       });
-      if (!p.priority || p.priority === 'Normal') select.value = 'High';
+      prio.value = 'High';
+    }
 
-      const persistLabel = document.createElement('label');
-      persistLabel.style.cssText = 'font-size:0.8rem; display:inline-flex; gap:4px; align-items:center; cursor:pointer;';
-      persistLabel.title = 'Aplica esta prioridade toda vez que o programa abrir (exige administrador)';
-      const persist = document.createElement('input');
-      persist.type = 'checkbox';
-      persist.className = 'js-proc-persist';
-      persistLabel.append(persist, document.createTextNode('Sempre'));
+    this.onSelect();
+    this.renderPersistent();
+  },
 
-      const apply = document.createElement('button');
-      apply.className = 'c-btn c-btn--primary c-btn--sm js-proc-apply';
-      apply.textContent = 'Aplicar';
+  onSelect() {
+    const select = document.getElementById('proc-select');
+    const btn = document.getElementById('btn-proc-apply');
+    const status = document.getElementById('proc-status');
+    const p = select && this.find(select.value);
+    if (btn) btn.disabled = !p;
+    if (p && status) {
+      status.textContent = `${p.exe}: prioridade atual ${p.priorityLabel}` +
+        (p.instances > 1 ? ` • ${p.instances} processos (todos serão alterados)` : '') +
+        (p.persistentPriority ? ' • 📌 com prioridade fixa' : '');
+    }
+  },
 
-      controls.append(select, persistLabel, apply);
+  // Lista abaixo do dropdown só com os programas que têm prioridade fixa
+  renderPersistent() {
+    const list = document.getElementById('proc-list');
+    if (!list) return;
+    list.innerHTML = '';
+    const fixed = this.data.processes.filter(p => p.persistentPriority);
+    if (!fixed.length) return;
 
-      if (p.persistentPriority) {
-        const remove = document.createElement('button');
-        remove.className = 'c-btn c-btn--outline c-btn--sm js-proc-remove';
-        remove.dataset.exe = p.exe;
-        remove.textContent = 'Remover fixo';
-        controls.appendChild(remove);
-      }
+    const title = document.createElement('p');
+    title.className = 'u-font-bold u-mt-md';
+    title.textContent = '📌 Programas com prioridade fixa (em execução agora)';
+    list.appendChild(title);
 
-      row.append(info, controls);
+    for (const p of fixed) {
+      const row = document.createElement('div');
+      row.className = 'o-flex o-flex--between';
+      row.style.cssText = 'gap:12px; padding:6px 0; border-bottom:1px solid var(--color-border-subtle, rgba(255,255,255,0.08)); align-items:center;';
+      const label = document.createElement('span');
+      const prioLabel = this.data.priorities.find(x => x.value === p.persistentPriority)?.label || p.persistentPriority;
+      label.textContent = `${p.exe} → sempre ${prioLabel}`;
+      const remove = document.createElement('button');
+      remove.className = 'c-btn c-btn--outline c-btn--sm js-proc-remove';
+      remove.dataset.exe = p.exe;
+      remove.textContent = 'Remover fixo';
+      row.append(label, remove);
       list.appendChild(row);
     }
   },
 
-  async apply(row, btn) {
-    if (!row) return;
-    const priority = row.querySelector('.js-proc-priority').value;
-    const persistent = row.querySelector('.js-proc-persist').checked;
+  async apply() {
+    const name = document.getElementById('proc-select')?.value;
+    const priority = document.getElementById('proc-priority')?.value;
+    const persistent = document.getElementById('proc-persist')?.checked;
+    const btn = document.getElementById('btn-proc-apply');
+    if (!name) return;
     btn.disabled = true;
     try {
-      const res = await API.setProcessPriority(row.dataset.name, priority, persistent);
+      const res = await API.setProcessPriority(name, priority, persistent);
       const d = res.data || {};
       App.showToast(d.message || 'Concluído.', d.success ? 'success' : (d.needsAdmin ? 'warning' : 'danger'), 7000);
       if (d.success) await this.load();
     } catch (err) {
       App.showToast('Erro ao alterar a prioridade.', 'danger');
     } finally {
-      btn.disabled = false;
+      btn.disabled = !document.getElementById('proc-select')?.value;
     }
   },
 
