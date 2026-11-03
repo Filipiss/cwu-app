@@ -183,6 +183,8 @@ const BoostModule = {
         try {
           const res = await API.runBoost(id);
           const ok = res.success && res.data && res.data.success !== false;
+          const rp = res.data && res.data.restorePoint;
+          if (rp && !rp.reused) App.showToast('🛟 ' + rp.message, rp.ok ? 'info' : 'warning', 8000);
           App.showToast((res.data && res.data.message) || (ok ? 'Otimização executada.' : 'A otimização falhou.'), ok ? 'success' : (res.data && res.data.needsAdmin ? 'warning' : 'danger'), res.data && res.data.needsAdmin ? 9000 : null);
           // Atualiza status real na interface
           await this.loadStatus();

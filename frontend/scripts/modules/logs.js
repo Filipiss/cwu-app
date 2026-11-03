@@ -88,6 +88,23 @@ const LogsModule = {
   },
 
   bindEvents() {
+    const rpBtn = document.getElementById('btn-restore-point');
+    if (rpBtn) {
+      rpBtn.addEventListener('click', async () => {
+        rpBtn.disabled = true;
+        App.showToast('Criando ponto de restauração… pode levar até 1 minuto.', 'info');
+        try {
+          const res = await API.createRestorePoint();
+          const d = res.data || {};
+          App.showToast('🛟 ' + d.message, d.ok ? 'success' : 'warning', 9000);
+        } catch (err) {
+          App.showToast('Erro ao criar ponto de restauração.', 'danger');
+        } finally {
+          rpBtn.disabled = false;
+        }
+      });
+    }
+
     const analyzeBtn = document.getElementById('btn-analyze-errors');
     if (analyzeBtn) {
       analyzeBtn.addEventListener('click', () => this.analyzeErrors());

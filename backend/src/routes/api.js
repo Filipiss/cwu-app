@@ -6,6 +6,7 @@ const boostController = require('../controllers/boostController');
 const settingsController = require('../controllers/settingsController');
 const versionController = require('../controllers/versionController');
 const wingetController = require('../controllers/wingetController');
+const restorePointService = require('../services/restorePointService');
 
 /**
  * Tabela de rotas da API
@@ -40,6 +41,9 @@ const routes = [
   { method: 'POST', path: '/api/winget/install', handler: wingetController.install },
   { method: 'GET', path: '/api/winget/job', handler: wingetController.job },
   { method: 'POST', path: '/api/winget/cancel', handler: wingetController.cancel },
+
+  // Ponto de restauração manual
+  { method: 'POST', path: '/api/system/restore-point', handler: async (req, res) => res.json({ success: true, data: await restorePointService.create('ponto manual') }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

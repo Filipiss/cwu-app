@@ -118,6 +118,10 @@ const API = {
     return this.request('/api/winget/cancel', { method: 'POST', body: '{}' });
   },
 
+  createRestorePoint() {
+    return this.request('/api/system/restore-point', { method: 'POST', body: '{}' });
+  },
+
   // Version
   getVersionInfo() {
     return this.request('/api/version');
