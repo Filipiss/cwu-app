@@ -62,11 +62,14 @@ const WingetModule = {
     const all = (typeof SoftsModule !== 'undefined') ? SoftsModule.allSoftwares : [];
     all.filter(s => s.mustHave && this.isSupported(s.id) && !this.isInstalled(s.id)).forEach(s => this.selected.add(s.id));
     this.refreshUi();
-    // Mostra a lista completa para o usuário ver o que foi marcado
+    // Mostra só as sugestões, para o usuário ver exatamente o que foi marcado
     if (typeof SoftsModule !== 'undefined') {
-      SoftsModule.currentCategory = 'all';
+      SoftsModule.currentCategory = 'suggested';
+      SoftsModule.currentQuery = '';
+      const search = document.getElementById('soft-search-input');
+      if (search) search.value = '';
       const sel = document.getElementById('soft-category-select');
-      if (sel) sel.value = 'all';
+      if (sel) sel.value = 'suggested';
       SoftsModule.filterAndRender();
     }
     App.showToast(`${this.selected.size} programa(s) sugerido(s) selecionado(s). Desmarque o que não quiser.`, 'info');
