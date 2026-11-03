@@ -23,6 +23,8 @@ const API = {
       }
 
       const json = await response.json();
+      // Qualquer ação que precise de administrador reexibe a faixa com o botão de reiniciar
+      if (json && json.data && json.data.needsAdmin && typeof ElevationBanner !== 'undefined') ElevationBanner.show();
       return json;
     } catch (error) {
       console.error(`[API Error] ${endpoint}:`, error);

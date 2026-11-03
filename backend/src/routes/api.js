@@ -14,6 +14,7 @@ const startupService = require('../services/startupService');
 const tweaksService = require('../services/tweaksService');
 const securityService = require('../services/securityService');
 const competitiveService = require('../services/competitiveService');
+const elevationService = require('../services/elevationService');
 
 /**
  * Tabela de rotas da API
@@ -89,6 +90,10 @@ const routes = [
   { method: 'POST', path: '/api/competitive/ultimate', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUltimatePlan(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/usb-suspend', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUsbSelectiveSuspend(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/adapter', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setAdapterPowerSaving(req.body || {}) }) },
+
+  // Permissão de administrador
+  { method: 'GET', path: '/api/system/elevation', handler: async (req, res) => res.json({ success: true, data: await elevationService.status() }) },
+  { method: 'POST', path: '/api/system/relaunch-admin', handler: async (req, res) => res.json({ success: true, data: await elevationService.relaunchAsAdmin() }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

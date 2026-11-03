@@ -69,6 +69,7 @@
     <symbol id="i-mouse-pointer-click" viewBox="0 0 24 24"><path d="M14 4.1 12 6" /> <path d="m5.1 8-2.9-.8" /> <path d="m6 12-1.9 2" /> <path d="M7.2 2.2 8 5.1" /> <path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z" /></symbol>
     <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /> <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" /> <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" /></symbol>
     <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" /></symbol>
+    <symbol id="i-shield-alert" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M12 8v4" /> <path d="M12 16h.01" /></symbol>
   </svg>
 
   <div class="o-app">
@@ -149,6 +150,19 @@
           </button>
         </div>
       </header>
+
+      <!-- AVISO DE PERMISSÃO DE ADMINISTRADOR -->
+      <div class="c-admin-banner u-hidden" id="admin-banner" role="status">
+        <span class="c-admin-banner__icon"><svg class=c-icon aria-hidden=true><use href=#i-shield-alert></use></svg></span>
+        <div class="c-admin-banner__text">
+          <span id="admin-banner-text">Algumas funções precisam de permissão de administrador.</span>
+          <small>Limpar a Standby List, HAGS, ponto de restauração, prioridade fixa, placa de rede e a análise completa de segurança.</small>
+        </div>
+        <div class="c-admin-banner__actions">
+          <button class="c-btn c-btn--primary c-btn--sm" id="btn-admin-relaunch"><span>Reiniciar como administrador</span><svg class=c-icon aria-hidden=true><use href=#i-shield></use></svg></button>
+          <button class="c-admin-banner__close" id="btn-admin-dismiss" aria-label="Fechar aviso"><svg class=c-icon aria-hidden=true><use href=#i-x></use></svg></button>
+        </div>
+      </div>
 
       <!-- CONTEÚDO SCROLLÁVEL COM TODAS AS ABAS -->
       <div class="o-content-scroll">
@@ -916,6 +930,7 @@
   <!-- SCRIPTS DOS MÓDULOS E APLICAÇÃO -->
   <script src="scripts/api.js"></script>
   <script src="scripts/modules/subtabs.js"></script>
+  <script src="scripts/modules/elevation.js"></script>
   <script src="scripts/modules/specs.js"></script>
   <script src="scripts/modules/scan.js"></script>
   <script src="scripts/modules/softs.js"></script>

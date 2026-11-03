@@ -1,0 +1,21 @@
+/* 6-components/_admin-banner.css — Faixa de aviso de permissão (BEM: c-admin-banner) */
+.c-admin-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-lg);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-main));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+}
+.c-admin-banner__icon { color: var(--color-warning); display: inline-flex; font-size: 1.05rem; flex-shrink: 0; }
+.c-admin-banner__text { flex: 1; min-width: 0; }
+.c-admin-banner__text small { display: block; color: var(--color-text-muted); font-size: 0.78rem; margin-top: 1px; }
+.c-admin-banner__actions { display: flex; align-items: center; gap: var(--spacing-xs); flex-shrink: 0; }
+.c-admin-banner__close {
+  appearance: none; border: none; background: transparent; cursor: pointer;
+  color: var(--color-text-muted); width: 28px; height: 28px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.c-admin-banner__close:hover { color: var(--color-text-primary); background: color-mix(in srgb, var(--color-text-primary) 8%, transparent); }
