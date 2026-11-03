@@ -26,6 +26,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | Módulo | Status | O que faz |
 | :--- | :---: | :--- |
 | **System Specs** | ✅ | Lê CPU, GPUs (VRAM real via registro), RAM (tipo, frequência, nº de pentes), todos os discos (NVMe/SSD/HDD + saúde), placa-mãe, BIOS e Windows. Dá uma nota de 0 a 10 por componente. |
+| **Vida útil dos discos** | ✅ | Para cada SSD, NVMe e HD: % de vida útil restante, temperatura, horas ligado e erros sem correção (contadores SMART do Windows), com alerta quando é hora de fazer backup ou trocar. |
 | **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e drivers antigos pela **data real do driver instalado**. |
 | **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
 | **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 46 runtimes e programas essenciais e links oficiais. |

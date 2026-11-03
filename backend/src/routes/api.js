@@ -1,5 +1,6 @@
 // backend/src/routes/api.js
 const specsController = require('../controllers/specsController');
+const diskHealthService = require('../services/diskHealthService');
 const driverController = require('../controllers/driverController');
 const logsController = require('../controllers/logsController');
 const boostController = require('../controllers/boostController');
@@ -22,6 +23,7 @@ const elevationService = require('../services/elevationService');
 const routes = [
   // System Specs
   { method: 'GET', path: '/api/specs', handler: (req, res) => specsController.getSpecs(req, res) },
+  { method: 'GET', path: '/api/specs/disks', handler: async (req, res) => res.json({ success: true, data: await diskHealthService.getDiskHealth() }) },
 
   // Driver Scanner & Catalogs
   { method: 'GET', path: '/api/drivers/scan', handler: (req, res) => driverController.scan(req, res) },

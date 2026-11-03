@@ -244,3 +244,20 @@
 .c-form { display: flex; flex-direction: column; gap: var(--spacing-md); align-items: stretch; }
 
 .c-card__head ~ * { margin-top: var(--spacing-md); }
+
+/* ===== Vida útil dos discos ===== */
+.c-disk-list { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.c-disk { padding: 14px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-text-primary) 2%, transparent); display: flex; flex-direction: column; gap: 12px; }
+.c-disk__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.c-disk__name { font-weight: 600; color: var(--color-text-primary); }
+.c-disk__life-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 6px; }
+.c-disk__life-label strong { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+.c-disk__bar { height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--color-text-primary) 10%, transparent); overflow: hidden; }
+.c-disk__bar-fill { display: block; height: 100%; border-radius: inherit; transition: width 600ms ease; }
+.c-disk__bar-fill--success { background: var(--color-success); }
+.c-disk__bar-fill--warning { background: var(--color-warning); }
+.c-disk__bar-fill--danger { background: var(--color-danger); }
+.c-disk__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.c-disk__stats span { display: block; font-size: 0.72rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.c-disk__stats strong { font-size: 0.95rem; font-variant-numeric: tabular-nums; color: var(--color-text-primary); }
+.c-disk__notes { margin: 0; padding-left: 18px; font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.5; }

@@ -17,6 +17,42 @@ const SpecsModule = {
   async init() {
     this.bindEvents();
     await this.loadSpecs();
+    this.loadDiskHealth();
+  },
+
+  async loadDiskHealth() {
+    const box = document.getElementById('disk-health-list');
+    if (!box) return;
+    let d;
+    try { d = (await API.request('/api/specs/disks')).data || {}; } catch (e) { d = { disks: [] }; }
+    const esc = (v) => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    if (!d.disks || !d.disks.length) {
+      box.innerHTML = `<p class="c-card__desc">${d.supported === false ? 'Disponível apenas no Windows.' : 'Não foi possível ler os discos.'}</p>`;
+      return;
+    }
+    const badge = { good: ['success', 'Saudável'], warn: ['warning', 'Atenção'], bad: ['danger', 'Crítico'] };
+    const fmtHours = (h) => h === null ? '—' : (h >= 24 * 365 ? `${(h / 8760).toFixed(1).replace('.', ',')} anos` : `${Math.round(h).toLocaleString('pt-BR')} h`);
+    const missing = d.disks.every(x => x.lifeRemaining === null && x.temperature === null && x.powerOnHours === null);
+    box.innerHTML = d.disks.map(x => {
+      const [cls, label] = badge[x.status] || badge.good;
+      const life = x.lifeRemaining;
+      return `<div class="c-disk">
+        <div class="c-disk__head">
+          <div><div class="c-disk__name">${esc(x.model)}</div><div class="c-card__desc">${esc(x.type)}${x.sizeGb ? ' • ' + x.sizeGb + ' GB' : ''} • Windows: ${esc(x.health)}</div></div>
+          <span class="c-badge c-badge--${cls}">${label}</span>
+        </div>
+        <div class="c-disk__life">
+          <div class="c-disk__life-label"><span>Vida útil restante</span><strong>${life === null ? (x.type === 'HD' ? 'HDs não informam' : 'Não informado') : life + '%'}</strong></div>
+          <div class="c-disk__bar"><span class="c-disk__bar-fill c-disk__bar-fill--${cls}" style="width:${life ?? 0}%"></span></div>
+        </div>
+        <div class="c-disk__stats">
+          <div><span>Temperatura</span><strong>${x.temperature === null ? '—' : x.temperature + ' °C'}</strong></div>
+          <div><span>Tempo ligado</span><strong>${fmtHours(x.powerOnHours)}</strong></div>
+          <div><span>Erros sem correção</span><strong>${x.errors}</strong></div>
+        </div>
+        ${x.notes.length ? `<ul class="c-disk__notes">${x.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+      </div>`;
+    }).join('') + (missing && !d.isAdmin ? '<p class="c-card__desc">O Windows só libera desgaste, temperatura e horas ligado para administrador. Use "Reiniciar como administrador" para ver tudo.</p>' : '');
   },
 
   bindEvents() {

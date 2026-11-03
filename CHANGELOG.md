@@ -6,6 +6,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ### Adicionado
 - System Specs: leitura real do hardware e nota de 0 a 10 por componente e para o PC
+- Vida útil dos discos (SSD, NVMe e HD): desgaste, temperatura, horas ligado e erros sem correção, lidos do SMART
 - Varredura de drivers com explicação dos erros, drivers genéricos e drivers antigos, com atalhos para as páginas oficiais
 - Softwares pós-formatação: catálogo com links oficiais e instalação em lote via winget
 - Boost Gamer: limpeza de memória, plano de energia, baixa latência NVIDIA/AMD e prioridade de processos
