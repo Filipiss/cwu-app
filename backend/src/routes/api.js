@@ -5,6 +5,7 @@ const logsController = require('../controllers/logsController');
 const boostController = require('../controllers/boostController');
 const settingsController = require('../controllers/settingsController');
 const versionController = require('../controllers/versionController');
+const wingetController = require('../controllers/wingetController');
 
 /**
  * Tabela de rotas da API
@@ -33,6 +34,12 @@ const routes = [
   { method: 'GET', path: '/api/settings', handler: (req, res) => settingsController.getSettings(req, res) },
   { method: 'POST', path: '/api/settings', handler: (req, res) => settingsController.updateSettings(req, res) },
   { method: 'GET', path: '/api/history', handler: (req, res) => settingsController.getScanHistory(req, res) },
+
+  // Instalação em lote (winget)
+  { method: 'GET', path: '/api/winget/status', handler: wingetController.status },
+  { method: 'POST', path: '/api/winget/install', handler: wingetController.install },
+  { method: 'GET', path: '/api/winget/job', handler: wingetController.job },
+  { method: 'POST', path: '/api/winget/cancel', handler: wingetController.cancel },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

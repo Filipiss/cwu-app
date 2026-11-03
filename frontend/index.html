@@ -318,6 +318,23 @@
               <!-- Pílulas de sugestão renderizadas dinamicamente via softs.js -->
             </div>
 
+            <!-- 3. INSTALAÇÃO EM LOTE VIA WINGET -->
+            <div class="c-card u-mb-lg" id="winget-panel">
+              <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
+                <div>
+                  <h4 class="c-card__title">⚡ Instalação em lote (winget)</h4>
+                  <p id="winget-status-text" class="u-text-muted">Verificando o winget…</p>
+                </div>
+                <div class="o-flex o-flex--gap-sm u-hidden" id="winget-panel-actions" style="flex-wrap: wrap;">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-winget-kit" title="Marca todos os programas obrigatórios ainda não instalados">Kit essencial pós-formatação</button>
+                  <button class="c-btn c-btn--outline c-btn--sm" id="btn-winget-clear">Limpar seleção</button>
+                  <button class="c-btn c-btn--primary c-btn--sm" id="btn-winget-install" disabled>Instalar selecionados (<span id="winget-selected-count">0</span>)</button>
+                  <button class="c-btn c-btn--outline c-btn--sm u-hidden" id="btn-winget-cancel">Cancelar restantes</button>
+                </div>
+              </div>
+              <div id="winget-job-container"></div>
+            </div>
+
             <!-- 4. LISTA DE SOFTWARES (COMEÇA EM BRANCO COM ESTADO INICIAL) -->
             <div id="soft-results-container">
               <div class="c-soft-empty-state" id="soft-initial-empty-state">
@@ -548,6 +565,7 @@
   <script src="scripts/modules/specs.js"></script>
   <script src="scripts/modules/scan.js"></script>
   <script src="scripts/modules/softs.js"></script>
+  <script src="scripts/modules/winget.js"></script>
   <script src="scripts/modules/boost.js"></script>
   <script src="scripts/modules/logs.js"></script>
   <script src="scripts/modules/settings.js"></script>

@@ -9,7 +9,9 @@
     "electron": "electron electron-main.js",
     "app": "electron .",
     "dist": "electron-builder --win",
-    "dist:portable": "electron-builder --win portable"
+    "dist:portable": "electron-builder --win portable",
+    "check-winget": "node scripts/check-winget.js",
+    "test": "node --test tests/"
   },
   "build": {
     "appId": "com.cwuapp.utility",
@@ -24,7 +26,9 @@
       }
     ],
     "win": {
-      "target": ["portable"]
+      "target": [
+        "portable"
+      ]
     },
     "portable": {
       "artifactName": "CWU-App-Portable-${version}.${ext}"

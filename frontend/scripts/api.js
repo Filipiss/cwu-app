@@ -101,6 +101,23 @@ const API = {
     });
   },
 
+  // Instalação em lote (winget)
+  getWingetStatus() {
+    return this.request('/api/winget/status');
+  },
+
+  installWinget(ids) {
+    return this.request('/api/winget/install', { method: 'POST', body: JSON.stringify({ ids }) });
+  },
+
+  getWingetJob() {
+    return this.request('/api/winget/job');
+  },
+
+  cancelWinget() {
+    return this.request('/api/winget/cancel', { method: 'POST', body: '{}' });
+  },
+
   // Version
   getVersionInfo() {
     return this.request('/api/version');

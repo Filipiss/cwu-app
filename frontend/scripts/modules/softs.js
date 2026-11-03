@@ -232,6 +232,7 @@ const SoftsModule = {
                 <span class="c-badge c-badge--info">${item.categoryLabel || item.category}</span>
                 ${item.mustHave ? '<span class="c-badge c-badge--danger">🔥 Obrigatório</span>' : ''}
                 <span class="c-badge c-badge--neutral">${item.size}</span>
+                ${typeof WingetModule !== 'undefined' ? WingetModule.renderItemControl(item.id) : ''}
               </div>
               <p class="c-soft-item__desc">${item.description}</p>
             </div>

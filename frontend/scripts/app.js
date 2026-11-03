@@ -16,6 +16,7 @@ const App = {
     await SpecsModule.init();
     ScanModule.init();
     SoftsModule.init();
+    WingetModule.init();
     BoostModule.init();
     LogsModule.init();
     VersionsModule.init();
