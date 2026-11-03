@@ -17,6 +17,7 @@ O CWU App junta num único executável portátil as tarefas que todo mundo faz d
 | **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use o "Kit essencial") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
 | **Diagnóstico de erros / BSOD** | ✅ | Analisa 30 dias do Visualizador de Eventos (Kernel-Power 41, BugCheck 1001, WHEA, disco, crashes de apps), agrupa repetições e lista minidumps. |
 | **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
+| **Competitivo (input lag e consistência)** | ✅ | Monitor na taxa máxima (EnumDisplaySettings/ChangeDisplaySettingsEx), aceleração e velocidade 1:1 do mouse, teste de polling rate no navegador (pointerrawupdate), overlays em execução, plano Desempenho Máximo, suspensão seletiva de USB, teste de ping/jitter/perda com ajustes da placa de rede, guia de latência por GPU (Reflex/Anti-Lag/XeLL + limite de FPS para VRR) e uma seção de mitos de otimização. |
 | **Prioridade de processos** | ✅ | Escolha um programa em execução e defina a prioridade de CPU, na hora ou de forma permanente (Image File Execution Options). |
 | **Monitor em tempo real** | ✅ | Uso de CPU, GPU, RAM e disco com histórico, temperaturas (GPU NVIDIA, discos, ACPI) e processos que mais consomem. Um único PowerShell contínuo, para não pesar o PC. |
 | **Programas na inicialização** | ✅ | Ativa/desativa pelo mesmo mecanismo do Gerenciador de Tarefas (StartupApproved), reversível. |
@@ -105,7 +106,7 @@ npm install
 npm run app            # abre a janela Electron
 npm start              # apenas o servidor: http://127.0.0.1:4321
 npm run dist:portable  # gera o .exe portátil em /release
-npm test               # 37 testes (nota, parsers, eventos, winget, segurança, performance)
+npm test               # 49 testes (nota, parsers, eventos, winget, segurança, performance)
 npm run check-winget   # valida no Windows se todos os IDs do winget existem
 ```
 
@@ -126,6 +127,7 @@ npm run check-winget   # valida no Windows se todos os IDs do winget existem
 - [x] Relatório exportável (HTML)
 - [x] Testes automatizados (node:test) e CI no GitHub Actions
 - [ ] Alterar a baixa latência da NVIDIA direto pela NVAPI
+- [ ] Análise de frame time e latência do PC com o PresentMon (Intel, MIT)
 - [ ] Migrar a comunicação HTTP para IPC do Electron
 
 ---
