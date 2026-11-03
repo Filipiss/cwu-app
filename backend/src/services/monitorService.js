@@ -45,7 +45,7 @@ while ($true) {
   if ($tick % 20 -eq 1) {
     $diskTemps = @(Get-PhysicalDisk | ForEach-Object {
       $r = $_ | Get-StorageReliabilityCounter
-      [PSCustomObject]@{ name = $_.FriendlyName; temp = $r.Temperature }
+      [PSCustomObject]@{ name = $_.FriendlyName; temp = $r.Temperature; hdd = (($_.SpindleSpeed -gt 0) -and ($_.SpindleSpeed -lt 4294967295)) }
     })
   }
   if ($tick % 3 -eq 0) { $top = Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.Name -notin '_Total','Idle' } |
@@ -158,7 +158,7 @@ class MonitorService {
       diskReadMBs: raw.diskReadMBs || 0,
       diskWriteMBs: raw.diskWriteMBs || 0,
       diskTemps: (Array.isArray(raw.diskTemps) ? raw.diskTemps : (raw.diskTemps ? [raw.diskTemps] : []))
-        .filter(d => d && d.name).map(d => ({ name: d.name, temp: Number.isFinite(d.temp) && d.temp > 0 ? d.temp : null })),
+        .filter(d => d && d.name).map(d => ({ name: d.name, temp: Number.isFinite(d.temp) && d.temp > 0 ? d.temp : null, hdd: d.hdd === true })),
       top: Array.isArray(raw.top) ? raw.top : (raw.top ? [raw.top] : [])
     };
     sample.receivedAt = Date.now();

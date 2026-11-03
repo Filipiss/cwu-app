@@ -82,7 +82,9 @@ const PerfModule = {
   // Classifica temperatura com cor de status + texto (nunca só a cor)
   tempInfo(value, kind) {
     if (value === null || value === undefined) return null;
-    const [warn, hot] = kind === 'disk' ? [50, 60] : [75, 88];
+    // HD mecânico sofre acima de ~50 °C; SSD/NVMe trabalham bem até ~70 °C
+    const limits = { hdd: [50, 60], ssd: [70, 80] };
+    const [warn, hot] = limits[kind] || [75, 88];
     if (value >= hot) return { cls: 'hot', label: 'muito quente' };
     if (value >= warn) return { cls: 'warn', label: 'quente' };
     return { cls: 'ok', label: 'normal' };
@@ -201,7 +203,7 @@ const PerfModule = {
       ['Processador (ACPI)', s.cpuTemp, 'cpu', 'Sensor não exposto pela placa-mãe'],
       [s.gpuName || 'Placa de vídeo', s.gpuTemp, 'gpu', 'Disponível apenas em GPUs NVIDIA']
     ];
-    (s.diskTemps || []).forEach(d => rows.push([d.name, d.temp, 'disk', 'Execute como administrador']));
+    (s.diskTemps || []).forEach(d => rows.push([d.name, d.temp, d.hdd ? 'hdd' : 'ssd', 'Execute como administrador']));
 
     box.innerHTML = '';
     rows.forEach(([name, temp, kind, missing]) => {
