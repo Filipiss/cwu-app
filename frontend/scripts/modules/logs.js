@@ -14,18 +14,6 @@ const LogsModule = {
 
   errorsData: null,
 
-  // Alterna entre "Erros do Windows" e "Histórico do CWU App"
-  switchView(view) {
-    document.querySelectorAll('.js-logs-view').forEach(btn => {
-      const active = btn.dataset.view === view;
-      btn.classList.toggle('c-btn--primary', active);
-      btn.classList.toggle('c-btn--outline', !active);
-      btn.setAttribute('aria-selected', active ? 'true' : 'false');
-    });
-    document.getElementById('logs-view-windows')?.classList.toggle('u-hidden', view !== 'windows');
-    document.getElementById('logs-view-app')?.classList.toggle('u-hidden', view !== 'app');
-  },
-
   async analyzeErrors() {
     const btn = document.getElementById('btn-analyze-errors');
     const summary = document.getElementById('errors-summary-text');
@@ -153,7 +141,6 @@ const LogsModule = {
       });
     }
 
-    document.querySelectorAll('.js-logs-view').forEach(btn => btn.addEventListener('click', () => this.switchView(btn.dataset.view)));
     // Período muda a consulta ao Windows; os demais filtros só refiltram o que já foi lido
     document.getElementById('errors-filter-period')?.addEventListener('change', () => { if (this.errorsData) this.analyzeErrors(); });
     ['errors-filter-severity', 'errors-filter-category'].forEach(id => document.getElementById(id)?.addEventListener('change', () => this.renderErrors()));

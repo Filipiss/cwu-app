@@ -7,7 +7,7 @@ const PerfModule = {
   timer: null,
   history: [],
   intervalMs: 1500,
-  loadedOnce: false,
+  loaded: {},
   hoverIndex: {},
 
   init() {
@@ -30,6 +30,14 @@ const PerfModule = {
     this.timer = setInterval(() => this.tick(), this.intervalMs);
   },
 
+  ensureLoaded(view) {
+    if (this.loaded[view]) return;
+    this.loaded[view] = true;
+    if (view === 'tweaks') this.loadTweaks();
+    else if (view === 'ram') this.loadRam();
+    else if (view === 'startup') this.loadStartup();
+  },
+
   isActive() {
     const panel = document.getElementById('tab-perf');
     return panel && panel.classList.contains('c-tab-panel--active') && !document.hidden;
@@ -41,11 +49,12 @@ const PerfModule = {
       if (status) { status.textContent = 'Monitor pausado'; status.className = 'c-badge c-badge--neutral'; }
       return;
     }
-    if (!this.loadedOnce) {
-      this.loadedOnce = true;
-      this.loadTweaks();
-      this.loadRam();
-      this.loadStartup();
+    // Carrega o conteúdo de cada sub-aba só quando ela é aberta pela primeira vez
+    const view = (typeof SubTabs !== 'undefined' && SubTabs.current.perf) || 'monitor';
+    this.ensureLoaded(view);
+    if (view !== 'monitor') {
+      if (status) { status.textContent = 'Monitor pausado'; status.className = 'c-badge c-badge--neutral'; }
+      return;
     }
     try {
       const res = await API.getMonitor();

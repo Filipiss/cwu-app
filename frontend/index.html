@@ -364,14 +364,20 @@
           <section id="tab-boost" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
-                <h2 class="c-section-header__title">🚀 Boost Gamer (Modo Otimizador)</h2>
-                <p class="c-section-header__desc">Aba demonstrativa para liberação de memória RAM e suspensão de processos supérfluos.</p>
+                <h2 class="c-section-header__title">🚀 Boost Gamer</h2>
+                <p class="c-section-header__desc">Libere memória, ajuste energia e latência da GPU e defina a prioridade dos seus jogos.</p>
               </div>
               <button class="c-btn c-btn--accent c-btn--lg" id="btn-main-boost">
                 <span>Ativar Boost Gamer</span> ⚡
               </button>
             </div>
 
+            <div class="c-subtabs" role="tablist" data-group="boost">
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="optimize">🚀 Otimizações</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="boost" data-view="priority">🎯 Prioridade de processos</button>
+            </div>
+
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="boost" data-view="optimize">
             <!-- PAINEL DE MEMÓRIA RAM ATUAL -->
             <div class="c-card u-mb-lg">
               <div class="c-card__header">
@@ -390,9 +396,11 @@
             <div class="o-grid o-grid--2" id="boost-optimizations-grid">
               <!-- Renderizado dinamicamente via boost.js -->
             </div>
+            </div>
 
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="boost" data-view="priority">
             <!-- PRIORIDADE DE PROCESSOS -->
-            <div class="c-card u-mt-lg" id="proc-card">
+            <div class="c-card" id="proc-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
                   <h4 class="c-card__title">🎯 Prioridade de processos</h4>
@@ -420,6 +428,8 @@
               <div id="proc-list"></div>
               <p class="u-text-muted u-mt-sm" style="font-size: 0.8rem;">A prioridade "Tempo real" não é oferecida porque pode travar mouse e teclado. Processos do sistema e alguns jogos com anti-cheat não permitem alteração.</p>
             </div>
+            </div>
+
           </section>
 
           <!-- ABA 6: LOGS DE ATUALIZAÇÕES & MODIFICAÇÕES -->
@@ -431,14 +441,13 @@
               </div>
             </div>
 
-            <!-- ALTERNÂNCIA ENTRE OS DOIS TIPOS DE LOG -->
-            <div class="o-flex o-flex--gap-sm u-mb-lg" role="tablist" style="flex-wrap: wrap;">
-              <button class="c-btn c-btn--primary js-logs-view" data-view="windows" role="tab" aria-selected="true">🪟 Erros do Windows</button>
-              <button class="c-btn c-btn--outline js-logs-view" data-view="app" role="tab" aria-selected="false">📋 Histórico do CWU App</button>
+            <div class="c-subtabs" role="tablist" data-group="logs">
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="windows">🪟 Erros do Windows</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="logs" data-view="app">📋 Histórico do CWU App</button>
             </div>
 
             <!-- ===== VISÃO 1: ERROS DO WINDOWS ===== -->
-            <div id="logs-view-windows">
+            <div id="logs-view-windows" class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="logs" data-view="windows">
               <div class="c-card u-mb-lg">
                 <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                   <div>
@@ -463,7 +472,7 @@
             </div>
 
             <!-- ===== VISÃO 2: HISTÓRICO DO CWU APP ===== -->
-            <div id="logs-view-app" class="u-hidden">
+            <div id="logs-view-app" class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="logs" data-view="app">
               <div class="o-flex o-flex--gap-sm u-mb-md" style="flex-wrap: wrap; justify-content: flex-end;">
                 <button class="c-btn c-btn--outline c-btn--sm" id="btn-clear-logs" title="Limpar histórico de logs">
                   <span>Limpar Histórico</span> 🗑️
@@ -525,6 +534,14 @@
               <span class="c-badge c-badge--neutral" id="perf-monitor-status">Monitor parado</span>
             </div>
 
+            <div class="c-subtabs" role="tablist" data-group="perf">
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="monitor">📈 Monitor</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="tweaks">🎮 Ajustes de jogos</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="ram">🧠 Memória RAM</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="startup">⏱️ Inicialização</button>
+            </div>
+
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="monitor">
             <!-- MONITOR EM TEMPO REAL -->
             <div class="o-grid o-grid--4">
                 <div class="c-card c-perf-tile" id="perf-tile-cpu">
@@ -576,9 +593,11 @@
                 <p class="u-text-muted u-mt-sm" style="font-size: 0.75rem;">GPU via nvidia-smi (NVIDIA). CPU pelo sensor ACPI da placa-mãe (aproximado; nem todas expõem). Discos exigem administrador.</p>
               </div>
             </div>
+            </div>
 
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="tweaks">
             <!-- AJUSTES DE JOGOS DO WINDOWS -->
-            <div class="c-card u-mt-lg">
+            <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
                   <h4 class="c-card__title">🎮 Ajustes de jogos do Windows</h4>
@@ -588,9 +607,11 @@
               </div>
               <div id="perf-tweaks-list" class="u-mt-sm"></div>
             </div>
+            </div>
 
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="ram">
             <!-- DIAGNÓSTICO DE RAM -->
-            <div class="c-card u-mt-lg">
+            <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
                   <h4 class="c-card__title">🧠 Diagnóstico de memória RAM</h4>
@@ -600,9 +621,11 @@
               </div>
               <div id="perf-ram-result" class="u-mt-sm"></div>
             </div>
+            </div>
 
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="startup">
             <!-- PROGRAMAS DA INICIALIZAÇÃO -->
-            <div class="c-card u-mt-lg">
+            <div class="c-card">
               <div class="o-flex o-flex--between o-flex--gap-md" style="flex-wrap: wrap;">
                 <div>
                   <h4 class="c-card__title">⏱️ Programas na inicialização</h4>
@@ -612,6 +635,8 @@
               </div>
               <div id="perf-startup-list" class="u-mt-sm"></div>
             </div>
+            </div>
+
           </section>
 
           <!-- ABA: SEGURANÇA -->
@@ -641,6 +666,12 @@
               </div>
             </div>
 
+            <div class="c-subtabs" role="tablist" data-group="settings">
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="themes">🎨 Temas</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="prefs">⚙️ Preferências</button>
+            </div>
+
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="settings" data-view="themes">
             <!-- SELETOR DE TEMAS -->
             <div class="c-card u-mb-lg">
               <div class="c-card__header">
@@ -676,7 +707,9 @@
                 </div>
               </div>
             </div>
+            </div>
 
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="settings" data-view="prefs">
             <!-- PREFERÊNCIAS GERAIS -->
             <div class="c-card">
               <div class="c-card__header">
@@ -698,6 +731,8 @@
                 </div>
               </div>
             </div>
+            </div>
+
           </section>
 
           <!-- ABA 8: NOVAS VERSÕES -->
@@ -746,6 +781,7 @@
 
   <!-- SCRIPTS DOS MÓDULOS E APLICAÇÃO -->
   <script src="scripts/api.js"></script>
+  <script src="scripts/modules/subtabs.js"></script>
   <script src="scripts/modules/specs.js"></script>
   <script src="scripts/modules/scan.js"></script>
   <script src="scripts/modules/softs.js"></script>

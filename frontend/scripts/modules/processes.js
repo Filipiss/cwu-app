@@ -16,9 +16,14 @@ const ProcessesModule = {
       if (remove) this.removePersistent(remove.dataset.exe, remove);
     });
 
-    // Carrega quando a aba Boost é aberta pela primeira vez (listar processos custa ~1 s)
-    document.querySelectorAll('[data-tab="boost"]').forEach(el => el.addEventListener('click', () => { if (!this.data) this.load(); }, { once: true }));
-    if (location.hash === '#boost') this.load();
+    // Carrega na primeira vez que a sub-aba "Prioridade de processos" fica visível (listar custa ~1 s)
+    const loadIfVisible = () => {
+      const tabOpen = document.getElementById('tab-boost')?.classList.contains('c-tab-panel--active');
+      if (!this.data && tabOpen && SubTabs.is('boost', 'priority')) this.load();
+    };
+    document.addEventListener('subtab:change', loadIfVisible);
+    document.querySelectorAll('[data-tab="boost"]').forEach(el => el.addEventListener('click', () => setTimeout(loadIfVisible, 0)));
+    setTimeout(loadIfVisible, 0);
   },
 
   async load() {

@@ -1,0 +1,77 @@
+/* 6-components/_subtabs.css — Sub-abas dentro de uma aba (BEM: c-subtabs) */
+.c-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  padding: 4px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.c-subtabs__tab {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: calc(var(--radius-md) - 3px);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.c-subtabs__tab:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-card-hover);
+}
+
+.c-subtabs__tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.c-subtabs__tab--active {
+  background: var(--color-primary);
+  color: var(--color-bg-main);
+  border-color: var(--color-primary);
+}
+
+.c-subtabs__tab--active:hover {
+  background: var(--color-primary-hover);
+  color: var(--color-bg-main);
+}
+
+/* Painéis: entrada suave ao trocar */
+.c-subtab-panel {
+  animation: c-subtab-in var(--transition-normal);
+}
+
+@keyframes c-subtab-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-subtab-panel { animation: none; }
+}
+
+/* Grafite: controle segmentado em pílula, ativo com texto escuro sobre laranja */
+[data-theme="graphite"] .c-subtabs {
+  border-radius: var(--radius-full);
+  background: var(--color-bg-card);
+}
+
+[data-theme="graphite"] .c-subtabs__tab {
+  border-radius: var(--radius-full);
+}
+
+[data-theme="graphite"] .c-subtabs__tab--active {
+  color: #0b0b0c;
+}

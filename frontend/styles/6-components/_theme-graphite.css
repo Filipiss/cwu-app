@@ -162,3 +162,15 @@
   border: 1px solid var(--color-border-bright);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
+
+/* Botão de destaque (ex.: "Ativar Boost Gamer"): laranja chapado, sem degradê */
+[data-theme="graphite"] .c-btn--accent {
+  background: var(--color-primary);
+  color: #0b0b0c;
+  border-color: var(--color-primary);
+}
+
+[data-theme="graphite"] .c-btn--accent:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: none;
+}
