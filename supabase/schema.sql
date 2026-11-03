@@ -14,3 +14,16 @@ create policy "criar as próprias preferências" on public.user_preferences
   for insert with check (auth.uid() = user_id);
 create policy "alterar as próprias preferências" on public.user_preferences
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Limites contra abuso: a chave publishable é pública, então alguém poderia chamar a API
+-- direto (sem o app) tentando gravar listas gigantes. O banco recusa:
+alter table public.user_preferences
+  drop constraint if exists suggested_apps_limits;
+alter table public.user_preferences
+  add constraint suggested_apps_limits check (
+    cardinality(suggested_apps) <= 200
+    and pg_column_size(suggested_apps) <= 8192
+  );
+
+-- Nenhuma outra função ou tabela fica exposta: só o dono altera a própria linha (RLS acima),
+-- e ninguém pode apagar linhas pela API (não há política de DELETE).
