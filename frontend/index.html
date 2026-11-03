@@ -48,6 +48,10 @@
           <span class="c-nav__icon">📈</span>
           <span>Performance</span>
         </div>
+        <div class="c-nav__item js-nav-item" data-tab="security">
+          <span class="c-nav__icon">🛡️</span>
+          <span>Segurança</span>
+        </div>
         <div class="c-nav__item js-nav-item" data-tab="logs">
           <span class="c-nav__icon">📋</span>
           <span>Logs de Atualizações</span>
@@ -589,6 +593,24 @@
             </div>
           </section>
 
+          <!-- ABA: SEGURANÇA -->
+          <section id="tab-security" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title">🛡️ Processos suspeitos</h2>
+                <p class="c-section-header__desc">Analisa todos os processos em execução na memória e aponta os que têm sinais comuns de programas maliciosos.</p>
+              </div>
+              <button class="c-btn c-btn--primary" id="btn-security-scan"><span>Escanear processos</span> 🔍</button>
+            </div>
+
+            <div class="c-card u-mb-lg">
+              <p class="u-text-muted" style="font-size: 0.85rem;">ℹ️ Esta é uma triagem por sinais de risco (local do arquivo, assinatura digital, nomes disfarçados, uso de CPU e rede). <strong>Não é um antivírus</strong>: um processo marcado não é necessariamente malicioso, e um malware pode passar sem ser marcado. Para confirmar e remover, use um antivírus.</p>
+              <p id="security-summary" class="u-mt-sm">Clique em "Escanear processos" para começar. A análise leva de 10 a 40 segundos.</p>
+            </div>
+
+            <div id="security-results"></div>
+          </section>
+
           <!-- ABA 7: CONFIGURAÇÕES -->
           <section id="tab-settings" class="c-tab-panel">
             <div class="c-section-header">
@@ -710,6 +732,7 @@
   <script src="scripts/modules/boost.js"></script>
   <script src="scripts/modules/processes.js"></script>
   <script src="scripts/modules/perf.js"></script>
+  <script src="scripts/modules/security.js"></script>
   <script src="scripts/modules/logs.js"></script>
   <script src="scripts/modules/settings.js"></script>
   <script src="scripts/modules/versions.js"></script>

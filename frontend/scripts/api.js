@@ -141,6 +141,8 @@ const API = {
   setTweak(id, enabled) { return this.request('/api/tweaks/set', { method: 'POST', body: JSON.stringify({ id, enabled }) }); },
   getRamDiagnostic() { return this.request('/api/ram-diagnostic'); },
 
+  scanSecurity() { return this.request('/api/security/scan'); },
+
   // Version
   getVersionInfo() {
     return this.request('/api/version');

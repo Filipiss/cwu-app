@@ -12,6 +12,7 @@ const processService = require('../services/processService');
 const monitorService = require('../services/monitorService');
 const startupService = require('../services/startupService');
 const tweaksService = require('../services/tweaksService');
+const securityService = require('../services/securityService');
 
 /**
  * Tabela de rotas da API
@@ -73,6 +74,9 @@ const routes = [
   { method: 'GET', path: '/api/tweaks', handler: async (req, res) => res.json({ success: true, data: await tweaksService.getStatus() }) },
   { method: 'POST', path: '/api/tweaks/set', handler: async (req, res) => res.json({ success: true, data: await tweaksService.set(req.body || {}) }) },
   { method: 'GET', path: '/api/ram-diagnostic', handler: async (req, res) => res.json({ success: true, data: await tweaksService.ramDiagnostic() }) },
+
+  // Segurança: triagem de processos suspeitos
+  { method: 'GET', path: '/api/security/scan', handler: async (req, res) => res.json({ success: true, data: await securityService.scanProcesses() }) },
 
   // Versioning
   { method: 'GET', path: '/api/version', handler: (req, res) => versionController.getInfo(req, res) },

@@ -19,6 +19,7 @@ const App = {
     WingetModule.init();
     ProcessesModule.init();
     PerfModule.init();
+    SecurityModule.init();
     document.getElementById('btn-export-report')?.addEventListener('click', () => {
       App.showToast('Gerando relatório… o download começa em alguns segundos.', 'info', 6000);
     });
@@ -35,7 +36,7 @@ const App = {
 
     // Suporte a rotas por hash (#boost, #scan, #softs, etc.)
     const initialHash = window.location.hash.replace('#', '');
-    if (initialHash && ['specs', 'scan', 'softs', 'boost', 'perf', 'logs', 'settings', 'versions'].includes(initialHash)) {
+    if (initialHash && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions'].includes(initialHash)) {
       this.switchTab(initialHash);
     }
   },
@@ -51,7 +52,7 @@ const App = {
 
     window.addEventListener('hashchange', () => {
       const tab = window.location.hash.replace('#', '');
-      if (tab && ['specs', 'scan', 'softs', 'boost', 'perf', 'logs', 'settings', 'versions'].includes(tab)) {
+      if (tab && ['specs', 'scan', 'softs', 'boost', 'perf', 'security', 'logs', 'settings', 'versions'].includes(tab)) {
         this.switchTab(tab);
       }
     });
@@ -85,6 +86,7 @@ const App = {
         scan: { title: 'Scannear Drivers', desc: 'Leitura de dispositivos PnP, links oficiais e download direto de drivers' },
         softs: { title: 'Softwares Pós-Format', desc: 'Runtimes C++, DirectX, .NET e programas essenciais' },
         boost: { title: 'Boost Gamer', desc: 'Memória, energia, latência de GPU e prioridade de processos' },
+        security: { title: 'Segurança', desc: 'Triagem de processos com sinais de programas maliciosos' },
         perf: { title: 'Performance', desc: 'Monitor em tempo real, inicialização, ajustes de jogos e diagnóstico de RAM' },
         logs: { title: 'Logs de Atualizações', desc: 'Histórico exclusivo do que foi atualizado e configurado na máquina com opção de reversão' },
         settings: { title: 'Configurações', desc: 'Temas visuais, preferências e idioma' },
