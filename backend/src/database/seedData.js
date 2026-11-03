@@ -192,30 +192,6 @@ const ESSENTIAL_SOFTWARES = [
     downloadUrl: 'https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=pt-BR',
     description: 'Navegador de código aberto, independente de Chromium, com excelente proteção contra rastreamento.'
   },
-  {
-    id: 'opera-gx',
-    name: 'Opera GX (Gaming Browser)',
-    category: 'navegadores',
-    categoryLabel: 'Navegadores',
-    size: '~3.2 MB',
-    mustHave: false,
-    tags: ['opera', 'gx', 'gamer', 'jogos', 'browser', 'limitador ram', 'rgb'],
-    officialUrl: 'https://www.opera.com/gx',
-    downloadUrl: 'https://net.geo.opera.com/opera_gx/stable/windows',
-    description: 'Navegador focado no público gamer com limitadores embutidos de CPU, RAM e uso de banda de internet.'
-  },
-  {
-    id: 'tor-browser',
-    name: 'Tor Browser',
-    category: 'navegadores',
-    categoryLabel: 'Navegadores',
-    size: '~95 MB',
-    mustHave: false,
-    tags: ['tor', 'privacidade', 'onion', 'anonimato', 'darkweb', 'criptografia'],
-    officialUrl: 'https://www.torproject.org/',
-    downloadUrl: 'https://www.torproject.org/download/',
-    description: 'Navegador projetado para anonimato máximo e navegação através da rede criptografada Tor.'
-  },
 
   // --- GAMES & PLATAFORMAS ---
   {
@@ -242,66 +218,6 @@ const ESSENTIAL_SOFTWARES = [
     downloadUrl: 'https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi',
     description: 'Launcher da Epic Games, famosa pela distribuição de jogos gratuitos semanais e casa do Fortnite e Unreal Engine.'
   },
-  {
-    id: 'gog-galaxy',
-    name: 'GOG Galaxy 2.0',
-    category: 'games',
-    categoryLabel: 'Games & Launchers',
-    size: '~240 MB',
-    mustHave: false,
-    tags: ['gog', 'cd projekt', 'drm-free', 'witcher', 'cyberpunk', 'integrador'],
-    officialUrl: 'https://www.gog.com/galaxy',
-    downloadUrl: 'https://www.gog.com/galaxy',
-    description: 'Plataforma para jogos livres de DRM que permite unificar bibliotecas de outras plataformas (Steam, Epic, Xbox).'
-  },
-  {
-    id: 'ea-app',
-    name: 'EA App (Eletronic Arts)',
-    category: 'games',
-    categoryLabel: 'Games & Launchers',
-    size: '~15 MB',
-    mustHave: false,
-    tags: ['ea', 'origin', 'fifa', 'ea fc', 'battlefield', 'the sims', 'apex'],
-    officialUrl: 'https://www.ea.com/ea-app',
-    downloadUrl: 'https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe',
-    description: 'Novo launcher oficial da Electronic Arts para jogos como EA FC (FIFA), Battlefield, Apex Legends e The Sims.'
-  },
-  {
-    id: 'battle-net',
-    name: 'Battle.net (Blizzard)',
-    category: 'games',
-    categoryLabel: 'Games & Launchers',
-    size: '~5 MB',
-    mustHave: false,
-    tags: ['blizzard', 'battlenet', 'warzone', 'call of duty', 'world of warcraft', 'diablo', 'overwatch'],
-    officialUrl: 'https://www.blizzard.com/apps/battle.net/desktop',
-    downloadUrl: 'https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=Live',
-    description: 'Launcher oficial da Blizzard e Activision para Call of Duty Warzone, World of Warcraft, Diablo IV e Overwatch.'
-  },
-  {
-    id: 'riot-client',
-    name: 'Riot Games Client',
-    category: 'games',
-    categoryLabel: 'Games & Launchers',
-    size: '~60 MB',
-    mustHave: false,
-    tags: ['riot', 'league of legends', 'lol', 'valorant', 'tft', 'vanguard'],
-    officialUrl: 'https://www.riotgames.com/',
-    downloadUrl: 'https://playvalorant.com/pt-br/download/',
-    description: 'Gerenciador e inicializador dos títulos da Riot Games: League of Legends, VALORANT e Teamfight Tactics.'
-  },
-  {
-    id: 'ubisoft-connect',
-    name: 'Ubisoft Connect',
-    category: 'games',
-    categoryLabel: 'Games & Launchers',
-    size: '~220 MB',
-    mustHave: false,
-    tags: ['ubisoft', 'uplay', 'assassins creed', 'rainbow six', 'far cry'],
-    officialUrl: 'https://ubisoftconnect.com/',
-    downloadUrl: 'https://ubisoftconnect.com/',
-    description: 'Plataforma oficial da Ubisoft para gerenciamento de jogos como Rainbow Six Siege, Assassin\'s Creed e Far Cry.'
-  },
 
   // --- UTILITÁRIOS & DESCOMPACTADORES ---
   {
@@ -315,18 +231,6 @@ const ESSENTIAL_SOFTWARES = [
     officialUrl: 'https://www.7-zip.org/',
     downloadUrl: 'https://www.7-zip.org/download.html',
     description: 'O descompactador mais leve, seguro e sem propagandas do mundo. Suporta 7z, RAR, ZIP, TAR, GZ e ISO.'
-  },
-  {
-    id: 'winrar',
-    name: 'WinRAR (64-bit)',
-    category: 'utilitarios',
-    categoryLabel: 'Utilitários & Sistema',
-    size: '~3.5 MB',
-    mustHave: false,
-    tags: ['winrar', 'rar', 'zip', 'descompactador', 'rarlab'],
-    officialUrl: 'https://www.win-rar.com/',
-    downloadUrl: 'https://www.win-rar.com/download.html',
-    description: 'Famoso compactador e descompactador de arquivos com alta taxa de compressão e recuperação de arquivos corrompidos.'
   },
   {
     id: 'rufus',
@@ -362,18 +266,6 @@ const ESSENTIAL_SOFTWARES = [
     downloadUrl: 'https://www.voidtools.com/downloads/',
     description: 'Motor de busca local instantâneo que localiza qualquer arquivo no seu computador em milissegundos.'
   },
-  {
-    id: 'bleachbit',
-    name: 'BleachBit',
-    category: 'utilitarios',
-    categoryLabel: 'Utilitários & Sistema',
-    size: '~12 MB',
-    mustHave: false,
-    tags: ['bleachbit', 'limpeza', 'privacidade', 'cache', 'temporarios', 'open source'],
-    officialUrl: 'https://www.bleachbit.org/',
-    downloadUrl: 'https://www.bleachbit.org/download/windows',
-    description: 'Limpador de sistema de código aberto que apaga rastros de navegação, caches ocultos e libera gigabytes de espaço em disco.'
-  },
 
   // --- HARDWARE & DIAGNÓSTICO ---
   {
@@ -386,51 +278,6 @@ const ESSENTIAL_SOFTWARES = [
     officialUrl: 'https://www.msi.com/Landing/afterburner/graphics-cards',
     downloadUrl: 'https://www.msi.com/Landing/afterburner/graphics-cards',
     description: 'O utilitário definitivo para monitorar FPS, temperatura e uso de CPU/GPU na tela durante jogos, além de controle de ventoinhas.'
-  },
-  {
-    id: 'cpu-z',
-    name: 'CPU-Z (CPUID)',
-    category: 'hardware',
-    categoryLabel: 'Hardware & Diagnóstico',
-    size: '~3.5 MB',
-    tags: ['cpuz', 'cpu-z', 'processador', 'memoria', 'clock', 'placa-mae', 'ram'],
-    officialUrl: 'https://www.cpuid.com/softwares/cpu-z.html',
-    downloadUrl: 'https://www.cpuid.com/softwares/cpu-z.html',
-    description: 'Informa com máxima precisão o modelo exato da CPU, frequência em tempo real, timings de memória RAM e modelo da placa-mãe.'
-  },
-  {
-    id: 'gpu-z',
-    name: 'GPU-Z (TechPowerUp)',
-    category: 'hardware',
-    categoryLabel: 'Hardware & Diagnóstico',
-    size: '~10 MB',
-    tags: ['gpuz', 'gpu-z', 'placa de video', 'vram', 'temperatura', 'nvidia', 'amd'],
-    officialUrl: 'https://www.techpowerup.com/gpuz/',
-    downloadUrl: 'https://www.techpowerup.com/download/techpowerup-gpu-z/',
-    description: 'Utilitário leve para identificar todos os detalhes da sua placa de vídeo: VRAM, clock de GPU, versão do BIOS e sensores térmicos.'
-  },
-  {
-    id: 'hwmonitor',
-    name: 'HWMonitor (CPUID)',
-    category: 'hardware',
-    categoryLabel: 'Hardware & Diagnóstico',
-    size: '~2.8 MB',
-    mustHave: false,
-    tags: ['hwmonitor', 'temperaturas', 'voltagens', 'fans', 'sensores', 'consumo'],
-    officialUrl: 'https://www.cpuid.com/softwares/hwmonitor.html',
-    downloadUrl: 'https://www.cpuid.com/softwares/hwmonitor.html',
-    description: 'Monitora em tempo real as voltagens da fonte, rotação das ventoinhas e temperaturas de todos os núcleos de CPU e GPU.'
-  },
-  {
-    id: 'crystaldiskinfo',
-    name: 'CrystalDiskInfo (Saúde do SSD/HD)',
-    category: 'hardware',
-    categoryLabel: 'Hardware & Diagnóstico',
-    size: '~6.0 MB',
-    tags: ['crystaldisk', 'ssd', 'nvme', 'hd', 'saude', 'smart', 'temperatura disco'],
-    officialUrl: 'https://crystalmark.info/en/software/crystaldiskinfo/',
-    downloadUrl: 'https://crystalmark.info/en/software/crystaldiskinfo/',
-    description: 'Monitor de saúde S.M.A.R.T. para SSDs e HDDs. Alerta sobre setores defeituosos, temperatura e porcentagem de vida útil restante.'
   },
   {
     id: 'furmark',
@@ -482,18 +329,6 @@ const ESSENTIAL_SOFTWARES = [
     downloadUrl: 'https://www.whatsapp.com/download',
     description: 'Aplicativo nativo para Windows do mensageiro mais popular do Brasil, com chamadas de voz e vídeo.'
   },
-  {
-    id: 'teamspeak',
-    name: 'TeamSpeak 3 Client',
-    category: 'comunicacao',
-    categoryLabel: 'Comunicação',
-    size: '~90 MB',
-    mustHave: false,
-    tags: ['teamspeak', 'ts3', 'voz', 'baixa latencia', 'jogos antigos', 'rpg'],
-    officialUrl: 'https://www.teamspeak.com/',
-    downloadUrl: 'https://www.teamspeak.com/en/downloads/',
-    description: 'Cliente de comunicação por voz de latência ultrabaixa com controle de permissões avançado por servidores privados.'
-  },
 
   // --- MÍDIA, STREAMING & GRAVAÇÃO ---
   {
@@ -531,18 +366,6 @@ const ESSENTIAL_SOFTWARES = [
     officialUrl: 'https://www.spotify.com/',
     downloadUrl: 'https://download.scdn.co/SpotifySetup.exe',
     description: 'O maior serviço de streaming de músicas e podcasts do mundo com suporte a atalhos de mídia no teclado.'
-  },
-  {
-    id: 'k-lite-codec-pack',
-    name: 'K-Lite Mega Codec Pack',
-    category: 'midia',
-    categoryLabel: 'Mídia & Áudio/Vídeo',
-    size: '~60 MB',
-    mustHave: false,
-    tags: ['klite', 'codecs', 'media player classic', 'mpc', 'audio', 'video'],
-    officialUrl: 'https://codecguide.com/download_k-lite_codec_pack_mega.htm',
-    downloadUrl: 'https://codecguide.com/download_k-lite_codec_pack_mega.htm',
-    description: 'Coleção completa de filtros DirectShow e codecs VFW/ACM para reprodução e edição de qualquer arquivo de áudio e vídeo.'
   },
   {
     id: 'handbrake',
@@ -616,18 +439,6 @@ const ESSENTIAL_SOFTWARES = [
     officialUrl: 'https://notepad-plus-plus.org/',
     downloadUrl: 'https://notepad-plus-plus.org/downloads/',
     description: 'Editor de texto e notas ultraleve que substitui com folga o Bloco de Notas padrão, com suporte a realce de sintaxe.'
-  },
-  {
-    id: 'dbeaver',
-    name: 'DBeaver Community',
-    category: 'dev',
-    categoryLabel: 'Desenvolvimento & Código',
-    size: '~115 MB',
-    mustHave: false,
-    tags: ['dbeaver', 'sql', 'banco de dados', 'postgres', 'mysql', 'sqlite', 'database'],
-    officialUrl: 'https://dbeaver.io/',
-    downloadUrl: 'https://dbeaver.io/files/dbeaver-ce-latest-x86_64-setup.exe',
-    description: 'Gerenciador universal de banco de dados com suporte nativo a SQLite, PostgreSQL, MySQL, SQL Server e Oracle.'
   },
 
   // --- SEGURANÇA, DOWNLOADS & REDE ---
