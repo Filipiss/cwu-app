@@ -1,12 +1,27 @@
+<div align="center">
+
 # CWU App — Clean Windows Utility
 
-> Assistente pós-formatação para Windows: diagnóstico de hardware, verificação de drivers, análise de telas azuis e otimizações reversíveis. Sem anúncios, sem telemetria, só links oficiais.
+**Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
-O CWU App junta num único executável portátil as tarefas que todo mundo faz depois de formatar um PC: descobrir o hardware, achar os drivers certos, instalar runtimes e entender por que o computador desligou sozinho.
+[![Testes](https://github.com/SEU-USUARIO/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/SEU-USUARIO/cwu-app/actions/workflows/tests.yml)
+![Versão](https://img.shields.io/badge/versão-1.1.0-blue)
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
+![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
----
+[**⬇️ Baixar para Windows**](https://github.com/SEU-USUARIO/cwu-app/releases/latest)
 
-## ✨ Funcionalidades
+<img src="docs/media/demo.gif" alt="CWU App em funcionamento" width="860">
+
+</div>
+
+## Por que existe
+
+Depois de formatar um PC, você perde horas instalando drivers e programas e caçando "otimizações" na internet. Metade delas não faz nada e algumas pioram o sistema. O CWU App junta o que **realmente funciona** num só lugar: lê o hardware de verdade, instala o essencial em lote e aplica ajustes de jogo explicando o que cada um faz. Toda alteração é registrada e pode ser desfeita.
+
+**Princípios:** nenhum dado inventado (se uma leitura falha, o app diz que falhou), nenhuma promessa de "FPS mágico", e tudo reversível.
+
+## Funcionalidades
 
 | Módulo | Status | O que faz |
 | :--- | :---: | :--- |
@@ -27,53 +42,43 @@ O CWU App junta num único executável portátil as tarefas que todo mundo faz d
 | **Ponto de restauração** | ✅ | Criado automaticamente antes da primeira alteração de sistema da sessão, ou manualmente pela aba Logs. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
-| **Temas e preferências** | ✅ | Futurista, Clássico e Light. |
+| **Temas e preferências** | ✅ | Futurista, Grafite e Light, com menu lateral recolhível (Ctrl+B). |
 
----
 
-## 🏛 Arquitetura
+## Arquitetura
 
 ```
-┌──────────────────────────────────────────────┐
-│  Electron (janela nativa, executável portátil)│
-│  └─ Frontend: HTML + JS puro + CSS em BEMIT   │
-└───────────────┬──────────────────────────────┘
-                │ HTTP local (127.0.0.1:4321)
-┌───────────────▼──────────────────────────────┐
-│  Backend Node.js (módulo http nativo)         │
-│  routes → controllers → services              │
-│  ├─ specsService   (CIM/WMI + registro)       │
-│  ├─ driverService  (Win32_PnPSignedDriver)    │
-│  ├─ logsService    (Get-WinEvent + minidumps) │
-│  ├─ boostService   (powercfg, registro, Win32)│
-│  ├─ wingetService  (fila de instalação)       │
-│  ├─ restorePointService / reportService       │
-│  └─ scoreCalculator                           │
-└───────────────┬──────────────────────────────┘
-                │ PowerShell via stdin (JSON)
-┌───────────────▼──────────────────────────────┐
-│  Windows: WMI/CIM, Registro, Event Log        │
-│  Persistência: JSON em %APPDATA%\CWU-App      │
-└──────────────────────────────────────────────┘
+┌──────────────── Electron (janela) ────────────────┐
+│  Frontend: HTML + CSS (BEMIT) + JavaScript puro   │
+└──────────────┬────────────────────────────────────┘
+               │ HTTP em 127.0.0.1 (cookie de sessão)
+┌──────────────▼────────────────────────────────────┐
+│  Servidor Node.js nativo (http, sem frameworks)    │
+│  rotas → controllers → services                    │
+└──────────────┬────────────────────────────────────┘
+               │ PowerShell / WMI / CIM / registro / winget
+            Windows
 ```
 
-**Decisões de projeto**
+- **Zero dependências em produção:** o servidor usa só módulos nativos do Node.
+- **Monitor eficiente:** um único processo PowerShell contínuo envia as métricas, em vez de abrir um processo por leitura.
+- **Carregamento sob demanda:** cada aba só busca dados quando é aberta.
+- **55 testes automatizados** (`node:test`) rodando no GitHub Actions a cada push.
 
-- **Zero dependências em runtime.** O servidor usa o módulo `http` nativo do Node; só Electron e electron-builder são dependências de desenvolvimento.
-- **Uma chamada de PowerShell por tela.** Cada `powershell.exe` custa ~0,5 s, então cada serviço coleta tudo num único script que devolve JSON.
-- **Dados honestos.** Se uma leitura falha, a interface mostra "Não detectado" e o componente sai da média da nota. Nada é inventado.
+## Segurança
 
-### Segurança da API local
+O app roda como administrador, então a API local foi tratada como superfície de ataque:
 
-Um servidor em `localhost` pode ser chamado por qualquer site aberto no navegador. Para impedir que uma página externa dispare ações como encerrar processos:
+| Ameaça | Proteção |
+| :--- | :--- |
+| Outro programa do PC usar o app elevado | Token aleatório por execução, entregue à janela num cookie `HttpOnly` + `SameSite=Strict` e comparado em tempo constante |
+| Site malicioso chamando a API (CSRF / DNS rebinding) | Servidor só em `127.0.0.1`, listas de `Host` e `Origin` permitidos, POST exige JSON |
+| Injeção de script na interface | Content-Security-Policy sem scripts inline; dados externos inseridos como texto |
+| Injeção de comandos no PowerShell | Ações por lista fechada, parâmetros validados (booleanos, GUIDs, IDs do catálogo) |
+| Links e arquivos | Apenas `http/https` abrem no navegador; bloqueio de *path traversal* nos arquivos estáticos |
+| Abuso da janela | `contextIsolation`, sem `nodeIntegration`, DevTools desativado na versão distribuída |
 
-- o servidor escuta somente em `127.0.0.1`;
-- os cabeçalhos `Host` e `Origin` são validados (o que também protege contra DNS rebinding);
-- não há CORS liberado e as requisições POST exigem `application/json` (força um preflight, que é recusado);
-- as ações do Boost são validadas por lista de permissão, o corpo tem limite de 1 MB e as configurações aceitam só valores simples;
-- arquivos estáticos têm proteção contra path traversal.
-
-### Como a nota é calculada
+## Como a nota do PC é calculada
 
 | Componente | Peso | Critério |
 | :--- | :---: | :--- |
@@ -84,59 +89,33 @@ Um servidor em `localhost` pode ser chamado por qualquer site aberto no navegado
 
 É uma heurística para orientar o usuário, não um benchmark.
 
----
+## Como usar
 
-## 🎨 CSS em BEMIT
+**Usuário:** baixe o `.exe` em [Releases](https://github.com/SEU-USUARIO/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
 
-O frontend segue BEMIT (BEM + camadas do ITCSS): `1-settings` (tokens e temas) → `2-tools` → `3-generic` → `4-elements` → `5-objects` (`o-`) → `6-components` (`c-`) → `7-utilities` (`u-`).
-
----
-
-## 🚀 Como usar
-
-### Usuário final
-Baixe o `CWU-App-Portable-x.y.z.exe` na página de Releases e execute. Algumas funções (minidumps, plano de energia, latência da GPU, telemetria) precisam que o app seja **executado como administrador**.
-
-### Desenvolvimento
-Requisitos: Windows 10/11 64-bit e Node.js 18+.
+**Desenvolvimento:**
 
 ```bash
 cd backend
 npm install
-npm run app            # abre a janela Electron
-npm start              # apenas o servidor: http://127.0.0.1:4321
-npm run dist:portable  # gera o .exe portátil em /release
-npm test               # 55 testes (nota, parsers, eventos, winget, segurança, performance)
-npm run check-winget   # valida no Windows se todos os IDs do winget existem
+npm run app            # abre o app (Electron)
+npm start              # só o servidor, em http://127.0.0.1:4321
+npm test               # testes
+npm run dist:portable  # gera o .exe em release/
 ```
 
+## Roadmap
 
----
+- [ ] Contas de usuário com Supabase (salvar perfis e preferências)
+- [ ] Análise de frame time com PresentMon
+- [ ] Perfil gamer de um clique
+- [ ] Encerrar programas em segundo plano antes de jogar
+- [ ] Assinatura digital do executável
 
-## 🗺 Roadmap
+## Histórico
 
-- [x] Specs com VRAM real, todos os discos e saúde SMART básica
-- [x] Varredura de drivers por data, código de erro e Hardware ID
-- [x] Diagnóstico de BSOD e eventos com agrupamento
-- [x] Boost com registro e reversão
-- [x] API local protegida
-- [x] Instalação em lote de softwares via `winget`
-- [x] Ponto de restauração automático antes de otimizações
-- [ ] Leitura do código de parada dentro dos minidumps
-- [x] Relatório exportável (HTML)
-- [x] Testes automatizados (node:test) e CI no GitHub Actions
-- [ ] Alterar a baixa latência da NVIDIA direto pela NVAPI
-- [ ] Análise de frame time e latência do PC com o PresentMon (Intel, MIT)
-- [ ] Migrar a comunicação HTTP para IPC do Electron
+Veja o [CHANGELOG](CHANGELOG.md).
 
----
+## Autor
 
-## 📝 Histórico
-
-Veja o [CHANGELOG.md](CHANGELOG.md). A aba Novas Versões do app lê esse mesmo arquivo.
-
-## 📄 Licença
-
-MIT.
-
-Ícones: [Lucide](https://lucide.dev) (licença ISC), embutidos como sprite SVG no `index.html` para o app funcionar offline.
+Feito por **Filipi Soares Silva** — [LinkedIn](https://www.linkedin.com/in/SEU-LINKEDIN)
