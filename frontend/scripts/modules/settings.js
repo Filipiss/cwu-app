@@ -32,7 +32,7 @@ const SettingsModule = {
       langSelect.addEventListener('change', (e) => {
         this.settings.language = e.target.value;
         this.saveSettings();
-        App.showToast('Idioma alterado com sucesso!', 'info');
+        I18N.set(e.target.value); // recarrega a interface no idioma escolhido
       });
     }
 
@@ -86,7 +86,7 @@ const SettingsModule = {
     this.setTheme(savedTheme);
 
     const langSelect = document.getElementById('setting-language-select');
-    if (langSelect) langSelect.value = this.settings.language;
+    if (langSelect) langSelect.value = I18N.lang;
 
     const autoScanToggle = document.getElementById('setting-auto-scan');
     if (autoScanToggle) autoScanToggle.checked = this.settings.autoScanOnStart;
