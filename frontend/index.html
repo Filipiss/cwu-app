@@ -369,10 +369,10 @@
               <table class="c-table">
                 <thead class="c-table__head">
                   <tr>
-                    <th class="c-table__th">Dispositivo</th>
-                    <th class="c-table__th">Fabricante</th>
-                    <th class="c-table__th">Versão Instalada</th>
-                    <th class="c-table__th">Situação</th>
+                    <th class="c-table__th" aria-sort="none"><button type="button" class="c-sort js-driver-sort" data-sort="name">Dispositivo <span class="c-sort__arrow" aria-hidden="true"></span></button></th>
+                    <th class="c-table__th" aria-sort="none"><button type="button" class="c-sort js-driver-sort" data-sort="manufacturer">Fabricante <span class="c-sort__arrow" aria-hidden="true"></span></button></th>
+                    <th class="c-table__th" aria-sort="none"><button type="button" class="c-sort js-driver-sort" data-sort="version">Versão Instalada <span class="c-sort__arrow" aria-hidden="true"></span></button></th>
+                    <th class="c-table__th" aria-sort="none"><button type="button" class="c-sort js-driver-sort" data-sort="status">Situação <span class="c-sort__arrow" aria-hidden="true"></span></button></th>
                     <th class="c-table__th u-text-right" style="min-width: 220px;">Atualização & Ação</th>
                   </tr>
                 </thead>
@@ -1074,6 +1074,7 @@
   <!-- SCRIPTS DOS MÓDULOS E APLICAÇÃO -->
   <script src="scripts/config.js"></script>
   <script src="scripts/api.js"></script>
+  <script src="scripts/modules/confirm.js"></script>
   <script src="scripts/modules/subtabs.js"></script>
   <script src="scripts/modules/sidebar.js"></script>
   <script src="scripts/modules/elevation.js"></script>

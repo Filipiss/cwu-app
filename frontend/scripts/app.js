@@ -23,6 +23,7 @@ const App = {
       if (el.dataset.action === 'tab') App.switchTab(arg);
       else if (el.dataset.action === 'driver-download') ScanModule.onDownloadDriver(arg);
       else if (el.dataset.action === 'soft-download') SoftsModule.onDownloadSoftware(arg, el.dataset.arg2);
+      else if (el.dataset.action === 'driver-wu') API.runBoost('open_windows_update').then(r => App.showToast((r.data && r.data.message) || 'Windows Update aberto.', 'info', 8000)).catch(() => {});
       else if (el.dataset.action === 'softs-clear') SoftsModule.clearSearch();
     });
     Sidebar.init();

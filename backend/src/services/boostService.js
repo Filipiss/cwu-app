@@ -389,6 +389,13 @@ class BoostService {
       return { success: true, actionId, message: 'Pasta de Arquivos Temporários (%TEMP%) aberta no Explorer!', freedMemoryMb: 0 };
     }
 
+    if (actionId === 'open_windows_update') {
+      if (process.platform === 'win32') {
+        spawn('cmd.exe', ['/c', 'start ms-settings:windowsupdate-optionalupdates'], { detached: true, stdio: 'ignore' }).unref();
+      }
+      return { success: true, actionId, message: 'Windows Update aberto em "Atualizações opcionais": marque o driver e clique em Baixar e instalar.', freedMemoryMb: 0 };
+    }
+
     if (actionId === 'open_taskmgr') {
       if (process.platform === 'win32') {
         spawn('taskmgr.exe', [], { detached: true, stdio: 'ignore' }).unref();

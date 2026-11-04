@@ -1,6 +1,7 @@
 // backend/src/services/driverService.js
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
+const driverUpdates = require('./driverUpdates');
 
 // Idade (em anos) a partir da qual sugerimos procurar um driver mais novo.
 // Vídeo muda rápido; chipset/sistema raramente precisam de atualização.
@@ -42,6 +43,10 @@ function parseWmiDate(value) {
 class DriverService {
   async scanDrivers() {
     const catalog = db.getDriverCatalog();
+    // Consultas online em paralelo com a leitura local (Windows Update é a mais lenta)
+    const online = process.platform === 'win32'
+      ? Promise.all([driverUpdates.windowsUpdateDrivers(), driverUpdates.nvidiaLatest()])
+      : Promise.resolve([{ ok: false, updates: [] }, { ok: false }]);
     let detectedDrivers = [];
     let systemContext = {
       cpuName: '',
@@ -149,6 +154,13 @@ class DriverService {
     // Sem leitura real não inventamos resultados: a interface mostra o aviso
     const scanAvailable = process.platform === 'win32' && detectedDrivers.length > 0;
 
+    let updateCheck = { windowsUpdate: false, nvidia: false };
+    if (detectedDrivers.length) {
+      const [wu, nvidia] = await online;
+      detectedDrivers = driverUpdates.applyUpdateInfo(detectedDrivers, { wu, nvidia });
+      updateCheck = { windowsUpdate: wu.ok, nvidia: nvidia.ok, nvidiaLatest: nvidia.version || null };
+    }
+
     const outdated = detectedDrivers.filter(d => d.status === 'outdated' || d.status === 'generic');
     const updated = detectedDrivers.filter(d => d.status === 'updated');
 
@@ -160,7 +172,8 @@ class DriverService {
       items: detectedDrivers,
       scanAvailable,
       message: scanAvailable ? null : 'Não foi possível ler os drivers deste computador (a varredura exige Windows).',
-      systemContext
+      systemContext,
+      updateCheck
     };
 
     if (scanAvailable) db.addScanRecord({

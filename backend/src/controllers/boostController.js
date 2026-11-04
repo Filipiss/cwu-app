@@ -8,7 +8,7 @@ const ALLOWED_ACTIONS = new Set([
   'nvidia_ultra', 'amd_antilag',
   'telemetry_services', 'telemetry_restore',
   'open_temp_folder', 'open_taskmgr', 'open_power_settings',
-  'open_telemetry_settings', 'open_nvidia_settings', 'open_amd_settings'
+  'open_telemetry_settings', 'open_nvidia_settings', 'open_amd_settings', 'open_windows_update'
 ]);
 
 class BoostController {

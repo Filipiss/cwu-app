@@ -137,6 +137,13 @@ const ProcessesModule = {
     const persistent = document.getElementById('proc-persist')?.checked;
     const btn = document.getElementById('btn-proc-apply');
     if (!name) return;
+    const label = document.getElementById('proc-priority')?.selectedOptions[0]?.textContent || priority;
+    const ok = await Confirm.ask({
+      title: 'Alterar prioridade?',
+      message: `${name} passará a rodar com prioridade "${label}"${persistent ? ' toda vez que for aberto (permanente)' : ' até ser fechado'}.\n\nPrioridade muito alta pode deixar o resto do sistema menos responsivo.`,
+      confirmLabel: 'Aplicar'
+    });
+    if (!ok) return;
     btn.disabled = true;
     try {
       const res = await API.setProcessPriority(name, priority, persistent);

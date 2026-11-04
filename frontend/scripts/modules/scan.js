@@ -5,9 +5,45 @@
 const ScanModule = {
   scanResult: null,
   expandedRows: new Set(),
+  // Padrão: problemas primeiro (ausentes, depois desatualizados, depois atualizados)
+  sortKey: 'status',
+  sortDir: 1,
+  STATUS_ORDER: { generic: 0, outdated: 1, unknown: 2, updated: 3 },
+
+  esc(v) { return String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); },
+
+  /** Ordena conforme a coluna clicada; o desempate é sempre o nome do dispositivo (A-Z). */
+  sortItems(items) {
+    const byName = (a, b) => a.name.localeCompare(b.name, 'pt-BR');
+    const notInstalled = (d) => (d.status === 'generic' || /não instalado|desconhecida/i.test(d.currentVersion) ? 0 : 1);
+    const cmp = {
+      name: byName,
+      manufacturer: (a, b) => a.manufacturer.localeCompare(b.manufacturer, 'pt-BR') || byName(a, b),
+      version: (a, b) => (notInstalled(a) - notInstalled(b)) || byName(a, b),
+      status: (a, b) => ((this.STATUS_ORDER[a.status] ?? 9) - (this.STATUS_ORDER[b.status] ?? 9)) || byName(a, b)
+    }[this.sortKey] || byName;
+    return [...items].sort((a, b) => cmp(a, b) * this.sortDir);
+  },
+
+  setSort(key) {
+    if (this.sortKey === key) this.sortDir *= -1; else { this.sortKey = key; this.sortDir = 1; }
+    this.updateSortHeaders();
+    if (this.scanResult && this.scanResult.items) this.renderTable(this.scanResult.items);
+  },
+
+  updateSortHeaders() {
+    document.querySelectorAll('.js-driver-sort').forEach(b => {
+      const active = b.dataset.sort === this.sortKey;
+      b.classList.toggle('c-sort--active', active);
+      b.querySelector('.c-sort__arrow').textContent = active ? (this.sortDir === 1 ? '▲' : '▼') : '';
+      b.closest('th').setAttribute('aria-sort', active ? (this.sortDir === 1 ? 'ascending' : 'descending') : 'none');
+    });
+  },
 
   init() {
     this.bindEvents();
+    document.querySelectorAll('.js-driver-sort').forEach(b => b.addEventListener('click', () => this.setSort(b.dataset.sort)));
+    this.updateSortHeaders();
   },
 
   bindEvents() {
@@ -48,7 +84,7 @@ const ScanModule = {
         scanBtn.innerHTML = '<span>Escaneando Drivers...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
       }
       if (radarSweep) radarSweep.classList.remove('u-hidden');
-      if (statusMsg) statusMsg.textContent = 'Examinando barramento PCI-e, controladores e assinaturas digitais do Windows...';
+      if (statusMsg) statusMsg.textContent = 'Lendo os drivers instalados e consultando o Windows Update e a NVIDIA por versões novas… pode levar até 2 minutos.';
 
       this.expandedRows.clear();
       const res = await API.scanDrivers();
@@ -73,7 +109,10 @@ const ScanModule = {
         }
 
         if (statusMsg) {
-          statusMsg.innerHTML = `Escaneamento concluído: <strong>${res.data.totalScanned}</strong> dispositivos examinados. <span class="u-text-danger">${res.data.outdatedCount} pendentes de atenção</span>. <span class="u-text-muted" style="margin-left: 8px;">(Dica: clique em qualquer dispositivo para entender o que ele faz)</span>`;
+          const uc = res.data.updateCheck || {};
+          const sources = [uc.windowsUpdate ? 'Windows Update' : null, uc.nvidia ? `NVIDIA (mais recente: ${uc.nvidiaLatest})` : null].filter(Boolean);
+          statusMsg.innerHTML = `Escaneamento concluído: <strong>${res.data.totalScanned}</strong> dispositivos examinados. <span class="u-text-danger">${res.data.outdatedCount} pendentes de atenção</span>.`
+            + `<br><span class="u-text-muted">${sources.length ? 'Atualizações verificadas em: ' + sources.join(' e ') + '.' : 'Não foi possível consultar atualizações online (sem internet?). Os resultados usam só a data dos drivers.'} Clique em um dispositivo para ver o que ele faz.</span>`;
         }
 
         App.showToast(`Escaneamento de drivers finalizado! ${res.data.totalScanned} dispositivos verificados.`, 'info');
@@ -99,23 +138,22 @@ const ScanModule = {
       return;
     }
 
-    tbody.innerHTML = items.map(item => `
+    const esc = (v) => this.esc(v);
+    tbody.innerHTML = this.sortItems(items).map(item => `
       <tr class="c-table__row c-table__row--clickable js-driver-row" data-id="${item.id}" title="Clique para ver o que este componente faz">
         <td class="c-table__td">
           <div class="c-driver-device">
             <span class="c-driver-device__chevron"><svg class=c-icon aria-hidden=true><use href=#i-chevron-right></use></svg></span>
             <div class="c-driver-device__info">
-              <span class="c-driver-device__name">${item.name}</span>
-              <span class="c-driver-device__category">${item.category}</span>
+              <span class="c-driver-device__name">${esc(item.name)}</span>
+              <span class="c-driver-device__category">${esc(item.category)}</span>
             </div>
           </div>
         </td>
-        <td class="c-table__td u-text-muted">${item.manufacturer}</td>
-        <td class="c-table__td u-font-mono">${item.currentVersion}</td>
+        <td class="c-table__td u-text-muted">${esc(item.manufacturer)}</td>
+        <td class="c-table__td u-font-mono">${esc(item.currentVersion)}</td>
         <td class="c-table__td">
-          <span class="c-badge c-badge--${item.statusBadge}">
-            ${item.status === 'updated' ? '' : ''} ${item.statusText}
-          </span>
+          <span class="c-badge c-badge--${esc(item.statusBadge)}">${esc(item.statusText)}</span>
         </td>
         <td class="c-table__td u-text-right">
           <div class="o-flex o-flex--gap-sm" style="justify-content: flex-end; flex-wrap: nowrap;">
@@ -124,9 +162,14 @@ const ScanModule = {
                 <span>Portal Oficial</span> <svg class=c-icon aria-hidden=true><use href=#i-arrow-up-right></use></svg>
               </a>
             ` : ''}
-            ${(item.status !== 'updated' && item.directDownload) ? `
+            ${item.updateSource === 'windows-update' && item.status === 'outdated' ? `
+              <button type="button" class="c-btn c-btn--primary c-btn--xs" data-action="driver-wu" title="${esc(item.updateTitle || 'Abrir o Windows Update')}">
+                <span>Instalar pelo Windows Update</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
+              </button>
+            ` : ''}
+            ${(item.status !== 'updated' && item.updateSource !== 'windows-update' && item.directDownload) ? `
               <a href="${item.directDownload}" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--xs" data-action="driver-download" data-arg="${item.id}" title="Download direto do instalador/driver oficial">
-                <span>Download Direto</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
+                <span>${item.updateSource === 'nvidia' ? 'Baixar driver NVIDIA' : 'Download Direto'}</span> <svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
               </a>
             ` : ''}
           </div>

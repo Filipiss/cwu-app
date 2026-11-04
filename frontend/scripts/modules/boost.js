@@ -13,8 +13,13 @@ const BoostModule = {
   bindEvents() {
     const mainBoostBtn = document.getElementById('btn-main-boost');
     if (mainBoostBtn) {
-      mainBoostBtn.addEventListener('click', () => {
-        this.runFullBoost();
+      mainBoostBtn.addEventListener('click', async () => {
+        const ok = await Confirm.ask({
+          title: 'Ativar Boost Gamer?',
+          message: 'O app vai liberar a memória em cache (Standby List) para sobrar mais RAM para o jogo.\nNão fecha programas nem apaga arquivos.',
+          confirmLabel: 'Ativar Boost'
+        });
+        if (ok) this.runFullBoost();
       });
     }
   },
@@ -119,6 +124,13 @@ const BoostModule = {
     grid.querySelectorAll('.js-btn-opt').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
+        const title = btn.closest('.c-card')?.querySelector('.c-card__title')?.textContent.trim() || 'esta otimização';
+        const ok = await Confirm.ask({
+          title: `${btn.textContent.trim()}?`,
+          message: `${title}\n\nAlterações de sistema ficam registradas em Logs e podem ser desfeitas. Antes da primeira alteração da sessão, o app cria um ponto de restauração do Windows.`,
+          confirmLabel: 'Confirmar'
+        });
+        if (!ok) return;
         const originalText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span>Aplicando...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';

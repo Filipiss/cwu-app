@@ -1,0 +1,25 @@
+/* 6-components/_modal.css — Janela de confirmação */
+.c-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  opacity: 0; transition: opacity 150ms ease;
+}
+.c-modal--open { opacity: 1; }
+.c-modal__box {
+  width: 100%; max-width: 440px;
+  padding: 22px 22px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-bright);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  transform: translateY(6px) scale(0.98); transition: transform 150ms ease;
+}
+.c-modal--open .c-modal__box { transform: none; }
+.c-modal__title { margin: 0 0 8px; font-size: 1.05rem; font-weight: 600; color: var(--color-text-primary); }
+.c-modal__msg { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--color-text-secondary); white-space: pre-line; }
+.c-modal__actions { display: flex; justify-content: flex-end; gap: var(--spacing-sm); margin-top: 20px; }
+.c-btn--danger { background: var(--color-danger); border-color: var(--color-danger); color: #fff; }
+.c-btn--danger:hover:not(:disabled) { filter: brightness(1.08); }
+@media (prefers-reduced-motion: reduce) { .c-modal, .c-modal__box { transition: none; } }

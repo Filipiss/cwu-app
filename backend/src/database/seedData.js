@@ -41,7 +41,7 @@ const DRIVER_CATALOG = [
     name: 'AMD Chipset Drivers (AM4 / AM5)',
     officialUrl: 'https://www.amd.com/pt/support/download/drivers.html',
     autoDetectUrl: 'https://www.amd.com/pt/support/download/drivers.html',
-    directDownload: 'https://www.amd.com/pt/support/chipsets/amd-socket-am5/x670e.html',
+    directDownload: 'https://www.amd.com/pt/support/download/drivers.html',
     description: 'Gerencia o barramento PCI Express, plano de energia AMD Ryzen Balanced e portas USB da placa-mãe.',
     matchKeywords: ['amd chipset', 'ryzen chipset', 'b450', 'b550', 'x570', 'b650', 'x670', 'a320', 'a520']
   },
@@ -61,9 +61,9 @@ const DRIVER_CATALOG = [
     category: 'Áudio',
     manufacturer: 'Realtek',
     name: 'Realtek High Definition Audio Codecs',
-    officialUrl: 'https://www.realtek.com/en/component/zoo/category/pc-audio-codecs-high-definition-audio-codecs-software',
-    autoDetectUrl: 'https://www.realtek.com/en/downloads',
-    directDownload: 'https://www.realtek.com/en/component/zoo/category/pc-audio-codecs-high-definition-audio-codecs-software',
+    officialUrl: 'https://www.realtek.com/',
+    autoDetectUrl: 'https://www.realtek.com/',
+    directDownload: null, // Realtek não tem link fixo por modelo: o app oferece o Windows Update / Catálogo da Microsoft
     description: 'Driver para o chip de áudio integrado na maioria das placas-mãe. Resolve chiados e falta de som.',
     matchKeywords: ['realtek audio', 'high definition audio', 'alc897', 'alc1220', 'alc887']
   },
@@ -72,9 +72,9 @@ const DRIVER_CATALOG = [
     category: 'Rede Cabeada (LAN)',
     manufacturer: 'Realtek',
     name: 'Realtek PCIe GbE / 2.5GbE Ethernet Controller',
-    officialUrl: 'https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software',
-    autoDetectUrl: 'https://www.realtek.com/en/downloads',
-    directDownload: 'https://www.realtek.com/en/component/zoo/category/network-interface-controllers-10-100-1000m-gigabit-ethernet-pci-express-software',
+    officialUrl: 'https://www.realtek.com/',
+    autoDetectUrl: 'https://www.realtek.com/',
+    directDownload: null, // Realtek não tem link fixo por modelo: o app oferece o Windows Update / Catálogo da Microsoft
     description: 'Garante a velocidade máxima (1Gbps / 2.5Gbps) e estabilidade de ping na porta de rede Ethernet.',
     matchKeywords: ['realtek pcie', 'realtek ethernet', 'gbe family controller', '2.5gbe']
   },

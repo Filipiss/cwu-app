@@ -195,6 +195,13 @@ const CompetitiveModule = {
 
   async act(btn) {
     const { action, ...params } = btn.dataset;
+    const title = btn.closest('.c-setting-row')?.querySelector('.c-setting-row__title')?.textContent.trim();
+    const ok = await Confirm.ask({
+      title: `${btn.textContent.trim()}?`,
+      message: `${title ? title + '\n\n' : ''}A alteração fica registrada em Logs e pode ser desfeita pelo mesmo botão.`,
+      confirmLabel: 'Confirmar'
+    });
+    if (!ok) return;
     const body = {};
     for (const [k, v] of Object.entries(params)) body[k] = v === 'true' ? true : v === 'false' ? false : (/^\d+$/.test(v) ? Number(v) : v);
     btn.disabled = true;
