@@ -32,6 +32,7 @@ function createWindow() {
     title: 'CWU App - Clean Windows Utility',
     backgroundColor: '#0a0d14',
     autoHideMenuBar: true,
+    icon: path.join(__dirname, 'build', 'icon.png'),
     show: true,
     webPreferences: {
       nodeIntegration: false,

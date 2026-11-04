@@ -32,7 +32,8 @@
     "win": {
       "target": [
         "portable"
-      ]
+      ],
+      "icon": "build/icon.ico"
     },
     "portable": {
       "artifactName": "CWU-App-Portable-${version}.${ext}"
@@ -41,6 +42,7 @@
       "electron-main.js",
       "server.js",
       "src/**/*",
+      "build/icon.png",
       "!tests",
       "!scripts"
     ],
