@@ -279,8 +279,16 @@ class SecurityService {
     const res = await runPowerShell(COLLECT_SCRIPT, 120000);
     if (!res.success || !res.data) return { available: false, message: 'Não foi possível ler os processos: ' + (res.error || 'sem resposta') };
 
-    const raw = Array.isArray(res.data.processes) ? res.data.processes : [];
-    let results = analyzeProcesses(raw.filter(p => p && p.pid), res.data.env || {});
+    const raw = (Array.isArray(res.data.processes) ? res.data.processes : []).filter(p => p && p.pid);
+    // O próprio CWU App (Electron sem assinatura digital, PowerShell que ele abre etc.) não entra na análise
+    const own = ownProcessIds(raw, {
+      pid: process.pid,
+      ppid: process.ppid,
+      // Pasta do app só no Electron (com Node puro seria a pasta do Node, que outros programas usam)
+      appDir: process.versions.electron ? require('path').dirname(process.execPath) : null,
+      portableExe: process.env.PORTABLE_EXECUTABLE_FILE || null
+    });
+    let results = analyzeProcesses(raw.filter(p => !own.has(p.pid)), res.data.env || {});
 
     this.lastScan = { at: Date.now(), results };
     const count = (lvl) => results.filter(r => r.level === lvl).length;
@@ -296,7 +304,33 @@ class SecurityService {
   }
 }
 
+/**
+ * PIDs que pertencem ao próprio CWU App: o processo principal, tudo o que ele abriu
+ * (janelas do Electron, PowerShell…), executáveis da pasta do app e o .exe portátil
+ * que o iniciou. Nunca inclui o pai genérico (Explorer, VS Code, terminal).
+ */
+function ownProcessIds(processes, self) {
+  const lower = (s) => String(s || '').toLowerCase();
+  const own = new Set([self.pid]);
+  const children = new Map();
+  processes.forEach(p => { if (!children.has(p.ppid)) children.set(p.ppid, []); children.get(p.ppid).push(p.pid); });
+  const queue = [self.pid];
+  while (queue.length) {
+    for (const c of children.get(queue.shift()) || []) if (!own.has(c)) { own.add(c); queue.push(c); }
+  }
+  const appDir = lower(self.appDir);
+  const portable = lower(self.portableExe);
+  processes.forEach(p => {
+    const path = lower(p.path);
+    if (!path) return;
+    if ((appDir && path.startsWith(appDir + '\\')) || (portable && path === portable)) own.add(p.pid);
+    if (p.pid === self.ppid && (portable && path === portable || /cwu/i.test(p.name || ''))) own.add(p.pid);
+  });
+  return own;
+}
+
 module.exports = new SecurityService();
+module.exports.ownProcessIds = ownProcessIds;
 module.exports.analyzeProcesses = analyzeProcesses;
 module.exports.levenshtein = levenshtein;
 module.exports.detectMinerSignals = detectMinerSignals;
