@@ -6,6 +6,8 @@ const App = {
   currentTab: 'specs',
 
   async init() {
+    // Idioma primeiro: a interface já aparece traduzida, sem esperar a leitura do hardware
+    I18N.init();
     this.bindNavigation();
     this.bindHeaderActions();
 
@@ -14,7 +16,6 @@ const App = {
 
     // Inicializa módulos principais
     await SpecsModule.init();
-    I18N.init();
     SubTabs.init();
     // Ações de botões gerados dinamicamente (sem onclick inline, compatível com a CSP)
     document.addEventListener('click', (e) => {
