@@ -1,7 +1,7 @@
 @echo off
-title CWU App - Clean Windows Utility
+title CWU App
 echo ========================================================
-echo   Iniciando CWU App Desktop (Clean Windows Utility)
+echo   Iniciando CWU App
 echo ========================================================
 echo.
 

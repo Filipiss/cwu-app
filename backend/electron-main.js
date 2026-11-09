@@ -29,7 +29,7 @@ function createWindow() {
     height: 820,
     minWidth: 980,
     minHeight: 640,
-    title: 'CWU App - Clean Windows Utility',
+    title: 'CWU App',
     backgroundColor: '#0a0d14',
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'build', 'icon.png'),

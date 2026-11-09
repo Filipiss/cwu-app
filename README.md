@@ -1,6 +1,6 @@
 <div align="center">
 
-# CWU App — Clean Windows Utility
+# CWU App
 
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 

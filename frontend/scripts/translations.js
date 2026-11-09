@@ -1,7 +1,7 @@
 // frontend/scripts/translations.js — dicionário PT → EN (gerado a partir da interface)
 window.CWU_TRANSLATIONS = {
   "en-US": {
-    "CWU App - Clean Windows Utility (Pós-Formatação)": "CWU App - Clean Windows Utility (Post-Format)",
+    "Pós-formatação e jogos": "Post-format & gaming",
     "Menu principal": "Main menu",
     "Recolher menu (Ctrl+B)": "Collapse menu (Ctrl+B)",
     "Principal": "Main",

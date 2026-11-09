@@ -1,7 +1,7 @@
 {
   "name": "cwu-app-backend",
   "version": "1.0.0",
-  "description": "CWU App (Clean Windows Utility): servidor local + Electron para otimização do Windows",
+  "description": "CWU App: pós-formatação e otimização do Windows para jogos",
   "main": "electron-main.js",
   "scripts": {
     "start": "node server.js",
