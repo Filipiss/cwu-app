@@ -14,3 +14,6 @@ backend/data/cwu_local.db
 dist/
 release/
 backend/data/cwu_store.json
+
+# Material de divulgação (vídeos e prints)
+present video/
