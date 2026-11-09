@@ -28,3 +28,8 @@
 .u-glow {
   box-shadow: var(--glow-primary) !important;
 }
+
+/* Troca de idioma: leve esmaecida enquanto os textos mudam */
+.o-app { transition: opacity 120ms ease; }
+.u-lang-switching { opacity: 0.55; }
+@media (prefers-reduced-motion: reduce) { .o-app { transition: none; } }

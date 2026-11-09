@@ -32,7 +32,8 @@ const SettingsModule = {
       langSelect.addEventListener('change', (e) => {
         this.settings.language = e.target.value;
         this.saveSettings();
-        I18N.set(e.target.value); // recarrega a interface no idioma escolhido
+        I18N.set(e.target.value); // troca o idioma na hora, sem recarregar
+        App.showToast(I18N.t('Idioma alterado.'), 'success');
       });
     }
 

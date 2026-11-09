@@ -1,6 +1,7 @@
 // frontend/scripts/translations.js — dicionário PT → EN (gerado a partir da interface)
 window.CWU_TRANSLATIONS = {
   "en-US": {
+    "Idioma alterado.": "Language changed.",
     "Pós-formatação e jogos": "Post-format & gaming",
     "Menu principal": "Main menu",
     "Recolher menu (Ctrl+B)": "Collapse menu (Ctrl+B)",
