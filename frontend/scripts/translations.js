@@ -1,6 +1,12 @@
 // frontend/scripts/translations.js — dicionário PT → EN (gerado a partir da interface)
 window.CWU_TRANSLATIONS = {
   "en-US": {
+    "Você deseja criar um ponto de restauração?": "Do you want to create a restore point?",
+    "Criar ponto de restauração": "Create restore point",
+    "Agora não": "Not now",
+    "Ponto de restauração criado.": "Restore point created.",
+    "Não foi possível criar o ponto de restauração.": "Could not create the restore point.",
+    "A alteração fica registrada em Logs e pode ser desfeita.": "The change is recorded in Logs and can be undone.",
     "Idioma alterado.": "Language changed.",
     "Pós-formatação e jogos": "Post-format & gaming",
     "Menu principal": "Main menu",

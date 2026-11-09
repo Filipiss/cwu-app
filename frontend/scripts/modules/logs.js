@@ -4,6 +4,7 @@
  * Exibe EXCLUSIVAMENTE o que foi atualizado e permite reversão imediata.
  */
 const LogsModule = {
+  esc(v) { return v == null ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); },
   logsData: null,
   activeFilter: 'all',
 
@@ -361,7 +362,7 @@ const LogsModule = {
                 <div class="o-flex o-flex--gap-sm" style="flex-wrap: wrap; align-items: center;">
                   ${statusBadge}
                   ${typeBadge}
-                  ${item.category ? `<span class="c-badge c-badge--neutral">${item.category}</span>` : ''}
+                  ${item.category ? `<span class="c-badge c-badge--neutral">${LogsModule.esc(item.category)}</span>` : ''}
                   <span class="u-text-muted" style="font-size: 0.8rem;">Registrado: ${this.formatDate(item.timestamp)}</span>
                 </div>
                 <div>
@@ -371,17 +372,17 @@ const LogsModule = {
 
               <div class="c-card__body">
                 <h3 class="c-card__title u-mb-xs" style="font-size: 1.05rem;">
-                  ${item.title}
+                  ${LogsModule.esc(item.title)}
                 </h3>
                 <p class="u-text-secondary" style="font-size: 0.875rem;">
-                  ${item.details || 'Modificação aplicada pelo usuário através do CWU App.'}
+                  ${LogsModule.esc(item.details) || 'Modificação aplicada pelo usuário através do CWU App.'}
                 </p>
 
                 ${item.previousVersion && item.updatedVersion ? `
                   <div class="o-flex o-flex--gap-md u-mt-sm" style="font-size: 0.8rem; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 6px; width: fit-content;">
-                    <span class="u-text-muted">Versão Anterior: <strong style="color: var(--color-text-secondary);">${item.previousVersion}</strong></span>
+                    <span class="u-text-muted">Versão Anterior: <strong style="color: var(--color-text-secondary);">${LogsModule.esc(item.previousVersion)}</strong></span>
                     <span><svg class=c-icon aria-hidden=true><use href=#i-arrow-right></use></svg></span>
-                    <span class="u-text-success">Versão Instalada: <strong>${item.updatedVersion}</strong></span>
+                    <span class="u-text-success">Versão Instalada: <strong>${LogsModule.esc(item.updatedVersion)}</strong></span>
                   </div>
                 ` : ''}
               </div>

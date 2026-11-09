@@ -127,10 +127,11 @@ const BoostModule = {
         const title = btn.closest('.c-card')?.querySelector('.c-card__title')?.textContent.trim() || 'esta otimização';
         const ok = await Confirm.ask({
           title: `${btn.textContent.trim()}?`,
-          message: `${title}\n\nAlterações de sistema ficam registradas em Logs e podem ser desfeitas. Antes da primeira alteração da sessão, o app cria um ponto de restauração do Windows.`,
+          message: `${title}\n\nAlterações de sistema ficam registradas em Logs e podem ser desfeitas.`,
           confirmLabel: 'Confirmar'
         });
         if (!ok) return;
+        if (['power_plan', 'telemetry_services'].includes(id)) await RestorePoint.offer();
         const originalText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span>Aplicando...</span> <span class="u-spin"><svg class=c-icon aria-hidden=true><use href=#i-loader-circle></use></svg></span>';
@@ -138,8 +139,6 @@ const BoostModule = {
         try {
           const res = await API.runBoost(id);
           const ok = res.success && res.data && res.data.success !== false;
-          const rp = res.data && res.data.restorePoint;
-          if (rp && !rp.reused) App.showToast('' + rp.message, rp.ok ? 'info' : 'warning', 8000);
           App.showToast((res.data && res.data.message) || (ok ? 'Otimização executada.' : 'A otimização falhou.'), ok ? 'success' : (res.data && res.data.needsAdmin ? 'warning' : 'danger'), res.data && res.data.needsAdmin ? 9000 : null);
           // Atualiza status real na interface
           await this.loadStatus();

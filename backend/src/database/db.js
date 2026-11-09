@@ -19,7 +19,6 @@ class LocalDatabase {
         language: config.defaultLanguage,
         autoScanOnStart: true,
         notifyOutdatedDrivers: true,
-        autoRestorePoint: true
       },
       scanHistory: [],
       updateLogs: [],

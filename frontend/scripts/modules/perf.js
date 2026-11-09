@@ -265,10 +265,17 @@ const PerfModule = {
   },
 
   async setTweak(id, enabled, btn) {
+    const title = btn.closest('.c-setting-row, .c-perf-row, div')?.querySelector('strong, .c-setting-row__title')?.textContent.trim();
+    const ok = await Confirm.ask({
+      title: `${btn.textContent.trim()}${title ? ' ' + title : ''}?`,
+      message: 'A alteração fica registrada em Logs e pode ser desfeita.',
+      confirmLabel: 'Confirmar'
+    });
+    if (!ok) return;
+    await RestorePoint.offer();
     btn.disabled = true;
     try {
       const d = (await API.setTweak(id, enabled)).data || {};
-      if (d.restorePoint && !d.restorePoint.reused) App.showToast('' + d.restorePoint.message, d.restorePoint.ok ? 'info' : 'warning', 8000);
       App.showToast(d.message, d.success ? 'success' : (d.needsAdmin ? 'warning' : 'danger'), 7000);
       if (d.success) await this.loadTweaks();
     } finally {

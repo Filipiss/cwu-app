@@ -53,13 +53,6 @@ class RestorePointService {
       error: d.error
     };
   }
-
-  // Usado antes da primeira alteração de sistema de cada sessão
-  async ensureForSession(reason) {
-    if (this.sessionResult && this.sessionResult.ok) return { ...this.sessionResult, reused: true };
-    this.sessionResult = await this.create(reason);
-    return this.sessionResult;
-  }
 }
 
 module.exports = new RestorePointService();

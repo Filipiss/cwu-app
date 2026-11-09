@@ -202,6 +202,7 @@ const CompetitiveModule = {
       confirmLabel: 'Confirmar'
     });
     if (!ok) return;
+    await RestorePoint.offer();
     const body = {};
     for (const [k, v] of Object.entries(params)) body[k] = v === 'true' ? true : v === 'false' ? false : (/^\d+$/.test(v) ? Number(v) : v);
     btn.disabled = true;

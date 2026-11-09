@@ -3,7 +3,6 @@
 // e diagnóstico de memória RAM (XMP/EXPO, canais, pentes).
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
-const restorePointService = require('./restorePointService');
 
 const TWEAKS = {
   game_mode: {
@@ -133,10 +132,6 @@ class TweaksService {
     }
     const previous = (status.tweaks.find(t => t.id === id) || {}).enabled;
 
-    let restorePoint = null;
-    if (tweak.needsAdmin && db.getSettings().autoRestorePoint !== false) {
-      restorePoint = await restorePointService.ensureForSession('antes de ' + id);
-    }
 
     const on = enabled ? 1 : 0;
     const scripts = {
@@ -172,7 +167,6 @@ class TweaksService {
 
     return {
       success: true,
-      restorePoint,
       message: `${tweak.title} ${enabled ? 'ativado' : 'desativado'}.${tweak.needsReboot ? ' Reinicie o PC para valer.' : ''}`
     };
   }

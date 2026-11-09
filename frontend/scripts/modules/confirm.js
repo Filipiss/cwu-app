@@ -50,3 +50,29 @@ const Confirm = {
     });
   }
 };
+
+/**
+ * Antes da primeira alteração de sistema da sessão, pergunta se o usuário quer
+ * criar um ponto de restauração do Windows. Nunca cria sem perguntar.
+ */
+const RestorePoint = {
+  KEY: 'cwu_restore_asked',
+
+  async offer() {
+    try { if (sessionStorage.getItem(this.KEY)) return; sessionStorage.setItem(this.KEY, '1'); } catch (e) {}
+    const yes = await Confirm.ask({
+      title: 'Você deseja criar um ponto de restauração?',
+      message: 'Ele permite voltar o Windows ao estado de agora caso algo não saia como esperado. Leva até 1 minuto.\n\nVocê também pode criar um a qualquer momento em Logs › Histórico do CWU App.',
+      confirmLabel: 'Criar ponto de restauração',
+      cancelLabel: 'Agora não'
+    });
+    if (!yes) return;
+    App.showToast('Criando ponto de restauração… pode levar até 1 minuto.', 'info', 6000);
+    try {
+      const d = (await API.createRestorePoint()).data || {};
+      App.showToast(d.message || (d.ok ? 'Ponto de restauração criado.' : 'Não foi possível criar o ponto de restauração.'), d.ok ? 'success' : 'warning', 8000);
+    } catch (e) {
+      App.showToast('Erro ao criar ponto de restauração.', 'danger');
+    }
+  }
+};

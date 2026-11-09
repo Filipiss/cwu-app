@@ -2,7 +2,6 @@
 const os = require('os');
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
-const restorePointService = require('./restorePointService');
 
 // Script de memória: mede contadores, purga a Standby List e/ou esvazia working sets
 const MEMORY_SCRIPT = (doPurge, doTrim) => `
@@ -185,14 +184,8 @@ class BoostService {
     };
   }
 
-  // Ações que alteram configurações do Windows ganham um ponto de restauração antes
+  // O ponto de restauração agora é oferecido ao usuário pela interface, antes da ação
   async runBoostOptimization(actionId) {
-    const SYSTEM_CHANGING = ['power_plan', 'telemetry_services'];
-    if (SYSTEM_CHANGING.includes(actionId) && db.getSettings().autoRestorePoint !== false) {
-      const restorePoint = await restorePointService.ensureForSession('antes de ' + actionId);
-      const result = await this.applyOptimization(actionId);
-      return { ...result, restorePoint };
-    }
     return this.applyOptimization(actionId);
   }
 

@@ -53,7 +53,7 @@ const routes = [
   { method: 'POST', path: '/api/winget/cancel', handler: wingetController.cancel },
 
   // Ponto de restauração manual
-  { method: 'POST', path: '/api/system/restore-point', handler: async (req, res) => res.json({ success: true, data: await restorePointService.create('ponto manual') }) },
+  { method: 'POST', path: '/api/system/restore-point', handler: async (req, res) => res.json({ success: true, data: await restorePointService.create('CWU App') }) },
 
   // Relatório HTML para download
   { method: 'GET', path: '/api/report', handler: async (req, res) => {
