@@ -2,6 +2,8 @@
 
 # CWU App
 
+<sub>CWU = Chico Wagner Utility, em homenagem ao Chico Wagner, meu gato laranja 🐈</sub>
+
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
@@ -11,7 +13,7 @@
 
 [**⬇️ Baixar para Windows**](https://github.com/Filipiss/cwu-app/releases/latest)
 
-<img src="docs/media/demo.gif" alt="CWU App em funcionamento" width="860">
+<img src="docs/media/icon.svg" alt="Ícone do CWU App" width="128">
 
 </div>
 
@@ -27,7 +29,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | :--- | :---: | :--- |
 | **System Specs** | ✅ | Lê CPU, GPUs (VRAM real via registro), RAM (tipo, frequência, nº de pentes), todos os discos (NVMe/SSD/HDD + saúde), placa-mãe, BIOS e Windows. Dá uma nota de 0 a 10 por componente. |
 | **Vida útil dos discos** | ✅ | Para cada SSD, NVMe e HD: % de vida útil restante, temperatura, horas ligado e erros sem correção (contadores SMART do Windows), com alerta quando é hora de fazer backup ou trocar. |
-| **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e drivers antigos pela **data real do driver instalado**. |
+| **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e **verifica atualizações de verdade**: Windows Update para todos os dispositivos e o serviço oficial da NVIDIA para placas GeForce. Tabela ordenável por dispositivo, fabricante, versão ou situação. |
 | **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
 | **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 48 runtimes e programas essenciais e links oficiais. |
 | **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use as "Sugestões de programas pós-formatação") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
@@ -40,10 +42,11 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Ajustes de jogos do Windows** | ✅ | Modo de Jogo, HAGS, otimizações para jogos em janela e gravação em segundo plano do Game Bar. |
 | **Diagnóstico de RAM** | ✅ | Detecta XMP/EXPO desligado, canal simples e pentes diferentes. |
 | **Processos suspeitos** | ✅ | Escaneia todos os processos em execução e aponta os com sinais de malware (nome de processo do Windows fora do lugar, nomes disfarçados, pastas temporárias, sem assinatura, extensão dupla, padrão de minerador), explicando o que esse tipo de programa costuma fazer. Triagem, não antivírus. |
-| **Ponto de restauração** | ✅ | Criado automaticamente antes da primeira alteração de sistema da sessão, ou manualmente pela aba Logs. |
+| **Ponto de restauração** | ✅ | O app **pergunta** antes da primeira alteração de sistema da sessão se você quer criar um (nunca cria sozinho), ou cria manualmente pela aba Logs. Toda ação que altera o Windows pede confirmação. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
-| **Temas e preferências** | ✅ | Grafite (escuro) e Névoa (claro), com menu lateral recolhível (Ctrl+B). |
+| **Minha Conta** | ✅ | Login opcional (Supabase) para montar a sua lista pós-formatação e levá-la para qualquer PC. |
+| **Temas e idiomas** | ✅ | Grafite (escuro) e Névoa (claro); português e inglês com troca na hora; menu lateral recolhível (Ctrl+B) e layout que se adapta ao tamanho da janela. |
 
 
 ## Arquitetura
@@ -64,7 +67,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 - **Zero dependências em produção:** o servidor usa só módulos nativos do Node.
 - **Monitor eficiente:** um único processo PowerShell contínuo envia as métricas, em vez de abrir um processo por leitura.
 - **Carregamento sob demanda:** cada aba só busca dados quando é aberta.
-- **55 testes automatizados** (`node:test`) rodando no GitHub Actions a cada push.
+- **67 testes automatizados** (`node:test`) rodando no GitHub Actions a cada push.
 
 ## Segurança
 
@@ -102,7 +105,7 @@ O app fala com o Supabase direto pela API REST (sem bibliotecas). A senha só tr
 
 ## Como usar
 
-**Usuário:** baixe o `.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
+**Usuário:** baixe o `CWU-App.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
 
 **Desenvolvimento:**
 
@@ -129,4 +132,4 @@ Veja o [CHANGELOG](CHANGELOG.md).
 
 ## Autor
 
-Feito por **Filipi Soares Silva** — [LinkedIn](https://www.linkedin.com/in/SEU-LINKEDIN)
+Feito por **Filipi Soares Silva**
