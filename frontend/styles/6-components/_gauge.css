@@ -6,8 +6,9 @@
   align-items: center;
   gap: var(--spacing-xl);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.08), rgba(var(--color-accent-rgb), 0.04));
-  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  /* Fundo neutro do card (o degradê colorido deixava o bloco "sujo" no tema escuro) */
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
   position: relative;
@@ -21,7 +22,7 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(to bottom, var(--color-primary), var(--color-accent));
+  background: var(--color-primary);
 }
 
 .c-score-gauge {
@@ -40,23 +41,26 @@
   height: 100%;
 }
 
+.c-score-gauge__svg { shape-rendering: geometricPrecision; overflow: visible; }
+
+/* Trilha discreta e arco nítido: sem brilho/sombra (o drop-shadow deixava o anel borrado) */
 .c-score-gauge__bg {
   fill: none;
-  stroke: var(--color-border);
-  stroke-width: 8;
+  stroke: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+  stroke-width: 7;
 }
 
 .c-score-gauge__progress {
   fill: none;
   stroke: var(--color-primary);
-  stroke-width: 8;
+  stroke-width: 7;
   stroke-linecap: round;
-  transition: stroke-dashoffset 1s ease-out;
-  filter: drop-shadow(0 0 6px var(--color-primary));
+  transition: stroke-dashoffset 1s ease-out, stroke 0.3s ease;
 }
 
 .c-score-gauge__value {
   position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,17 +69,20 @@
 }
 
 .c-score-gauge__number {
-  font-size: var(--font-size-2xl);
-  font-weight: 800;
+  font-size: 1.9rem;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
 }
 
 .c-score-gauge__max {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--color-text-muted);
-  font-weight: 700;
-  margin-top: 2px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
 }
 
 .c-overall-score__info {
