@@ -94,13 +94,13 @@ test('o próprio CWU App (e o que ele abriu) fica fora da análise', () => {
   const { ownProcessIds } = require('../src/services/securityService');
   const procs = [
     { pid: 10, ppid: 1, name: 'explorer.exe', path: 'C:\\Windows\\explorer.exe' },
-    { pid: 20, ppid: 10, name: 'CWU-App-Portable-1.0.0.exe', path: 'C:\\Users\\a\\Downloads\\CWU-App-Portable-1.0.0.exe' },
+    { pid: 20, ppid: 10, name: 'CWU-App.exe', path: 'C:\\Users\\a\\Downloads\\CWU-App.exe' },
     { pid: 30, ppid: 20, name: 'CWU App.exe', path: 'C:\\Users\\a\\AppData\\Local\\Temp\\2abc\\CWU App.exe' },
     { pid: 31, ppid: 30, name: 'CWU App.exe', path: 'C:\\Users\\a\\AppData\\Local\\Temp\\2abc\\CWU App.exe' },
     { pid: 32, ppid: 30, name: 'powershell.exe', path: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' },
     { pid: 40, ppid: 10, name: 'evil.exe', path: 'C:\\Users\\a\\AppData\\Local\\Temp\\evil.exe' }
   ];
-  const own = ownProcessIds(procs, { pid: 30, ppid: 20, appDir: 'C:\\Users\\a\\AppData\\Local\\Temp\\2abc', portableExe: 'C:\\Users\\a\\Downloads\\CWU-App-Portable-1.0.0.exe' });
+  const own = ownProcessIds(procs, { pid: 30, ppid: 20, appDir: 'C:\\Users\\a\\AppData\\Local\\Temp\\2abc', portableExe: 'C:\\Users\\a\\Downloads\\CWU-App.exe' });
   assert.deepEqual([...own].sort(), [20, 30, 31, 32]);
   assert.ok(!own.has(10) && !own.has(40));
 });
