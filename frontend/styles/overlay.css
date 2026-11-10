@@ -1,0 +1,43 @@
+/* styles/overlay.css — sobreposição de desempenho (janela transparente sobre os jogos)
+ * --osd-scale (tamanho), --osd-opacity (transparência de tudo) e o layout vêm das Configurações. */
+html, body { margin: 0; background: transparent; overflow: hidden; user-select: none; }
+body { display: inline-block; }
+.c-osd {
+  --osd-scale: 1;
+  --osd-opacity: 0.85;
+  display: inline-flex; flex-direction: column; gap: calc(2px * var(--osd-scale));
+  padding: calc(7px * var(--osd-scale)) calc(10px * var(--osd-scale));
+  border-radius: calc(8px * var(--osd-scale));
+  background: rgba(10, 10, 12, 0.6);
+  /* Um único controle: fundo e textos ficam mais ou menos transparentes juntos */
+  opacity: var(--osd-opacity);
+  font: 600 calc(12px * var(--osd-scale)) / 1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color: #ededed;
+  /* Contorno no texto: continua legível mesmo com o fundo totalmente transparente */
+  text-shadow: 0 0 2px #000, 0 1px 2px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+.c-osd--horizontal { flex-direction: row; gap: calc(14px * var(--osd-scale)); }
+.c-osd__row { display: flex; gap: calc(7px * var(--osd-scale)); }
+.c-osd__label { color: #ff9142; font-weight: 700; }
+.c-osd--vertical .c-osd__label { min-width: 3.1ch; }
+.c-osd__value { display: flex; gap: calc(7px * var(--osd-scale)); }
+.c-osd__muted { color: #a9a9ae; font-weight: 500; }
+.c-osd--ok { color: #9fd3ae; }
+.c-osd--warn { color: #e8c57a; }
+.c-osd--hot { color: #f09a8f; }
+
+/* Modo de posicionamento: a caixa inteira arrasta a janela */
+.is-editing { padding: 6px; }
+.is-editing .c-osd { opacity: 1; outline: 2px dashed #ff9142; outline-offset: 2px; -webkit-app-region: drag; cursor: move; }
+.c-osd-edit {
+  display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  font: 600 12px/1.2 "Segoe UI", system-ui, sans-serif; color: #fff;
+  background: rgba(10, 10, 12, 0.92); padding: 6px 8px; border-radius: 8px;
+}
+.c-osd-edit span { color: #c9c9ce; font-weight: 500; margin-right: 4px; }
+.c-osd-edit button {
+  -webkit-app-region: no-drag; border: 0; border-radius: 6px; padding: 5px 10px; cursor: pointer;
+  font: inherit; background: #2a2a2e; color: #fff;
+}
+.c-osd-edit button.is-primary { background: #ff7a1a; color: #111; }

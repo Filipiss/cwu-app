@@ -46,6 +46,8 @@ const I18N = {
   },
 
   translateText(node) {
+    // Respostas da IA já vêm no idioma escolhido: não passam pelo dicionário
+    if (node.parentElement && node.parentElement.closest('[data-no-i18n]')) return;
     // Se o app escreveu um texto novo neste nó, ele passa a ser o original
     let original;
     if (this.originalText.has(node) && node.nodeValue === this.translatedOf(node)) original = this.originalText.get(node);

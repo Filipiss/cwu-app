@@ -1,0 +1,72 @@
+/* 6-components/_assistant.css — Assistente IA (chat). Só tokens do tema: Grafite e Névoa. */
+
+.c-chat { display: flex; flex-direction: column; gap: var(--spacing-md); padding: var(--spacing-md); }
+
+.c-chat__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-sm); flex-wrap: wrap; }
+.c-chat__bar-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.c-chat__quota { font-size: 0.8rem; color: var(--color-text-muted); }
+
+.c-chat__context {
+  margin: 0; padding: 12px 14px; max-height: 220px; overflow: auto;
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-text-primary) 3%, var(--color-bg-card));
+  color: var(--color-text-secondary); font: 0.78rem/1.6 ui-monospace, Consolas, monospace; white-space: pre-wrap;
+}
+
+.c-chat__body {
+  display: flex; flex-direction: column; gap: var(--spacing-md);
+  min-height: 340px; max-height: calc(100vh - 360px);
+  overflow: hidden;
+}
+.c-chat__messages { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; flex: 1; }
+.c-chat__messages:empty { display: none; }
+
+.c-chat__empty { text-align: center; margin: auto; max-width: 520px; padding: var(--spacing-lg) var(--spacing-md) 0; }
+.c-chat__empty-icon {
+  display: inline-flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 50%;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent); color: var(--color-primary); font-size: 1.4rem;
+}
+.c-chat__empty-title { margin: 12px 0 6px; font-weight: 600; color: var(--color-text-primary); font-size: 1.05rem; }
+.c-chat__empty-desc { margin: 0; color: var(--color-text-secondary); font-size: 0.85rem; line-height: 1.6; }
+
+.c-chat__suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.c-chip {
+  border: 1px solid var(--color-border); background: transparent; color: var(--color-text-secondary);
+  border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 0.82rem; cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+.c-chip:hover { border-color: var(--color-primary); color: var(--color-text-primary); background: color-mix(in srgb, var(--color-primary) 8%, transparent); }
+.c-chip:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+.c-chat__msg { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 0.88rem; line-height: 1.6; overflow-wrap: anywhere; }
+.c-chat__msg--user {
+  align-self: flex-end; border-bottom-right-radius: 4px;
+  background: var(--color-primary); color: var(--color-bg-main);
+}
+.c-chat__msg--bot {
+  align-self: flex-start; border-bottom-left-radius: 4px;
+  background: color-mix(in srgb, var(--color-text-primary) 5%, var(--color-bg-card));
+  border: 1px solid var(--color-border); color: var(--color-text-primary);
+}
+.c-chat__msg--thinking { color: var(--color-text-muted); display: inline-flex; align-items: center; gap: 8px; }
+.c-chat__msg--error {
+  align-self: flex-start; display: inline-flex; gap: 8px; align-items: flex-start;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent); color: var(--color-text-primary);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+.c-chat__msg p { margin: 0 0 8px; }
+.c-chat__msg p:last-child { margin-bottom: 0; }
+.c-chat__msg ul, .c-chat__msg ol { margin: 0 0 8px; padding-left: 20px; }
+.c-chat__msg li { margin: 2px 0; }
+.c-chat__msg code { font: 0.82rem ui-monospace, Consolas, monospace; padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--color-text-primary) 8%, transparent); }
+.c-chat__heading { font-weight: 600; margin-top: 4px; }
+
+.c-chat__form { display: flex; gap: 8px; align-items: flex-end; }
+.c-chat__input { height: auto; min-height: 44px; padding: 11px 12px; resize: none; line-height: 1.45; }
+.c-chat__form .c-btn { height: 44px; width: 44px; padding: 0; justify-content: center; flex-shrink: 0; }
+.c-chat__note { margin: 0; font-size: 0.75rem; color: var(--color-text-muted); text-align: center; }
+
+@container content (max-width: 640px) {
+  .c-chat__msg { max-width: 94%; }
+  .c-chat__body { max-height: none; }
+}

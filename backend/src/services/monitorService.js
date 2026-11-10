@@ -8,6 +8,23 @@ const os = require('os');
 const INTERVAL_MS = 1500;
 const IDLE_STOP_MS = 30000;
 const HISTORY_SIZE = 60; // ~90 s de histórico para os gráficos
+// Sensor ACPI "travado": em muitas placas (comum com AMD Ryzen) a zona térmica devolve
+// sempre o mesmo valor (ex.: 27,8 °C). Se não variar nada por ~60 s enquanto o uso da
+// CPU oscila, a leitura não é real e deixa de ser exibida.
+const STUCK_SAMPLES = 40;
+const STUCK_MIN_LOAD_SWING = 10;
+// Processador ligado nunca fica abaixo da temperatura ambiente: abaixo disso a zona ACPI
+// não está medindo a CPU (relatos de placas AMD travadas em 17 °C)
+const CPU_TEMP_MIN_PLAUSIBLE = 25;
+
+function isStuckSensor(samples) {
+  if (samples.length < STUCK_SAMPLES) return false;
+  const recent = samples.slice(-STUCK_SAMPLES);
+  const temps = new Set(recent.map(s => s.temp));
+  const loads = recent.map(s => s.cpu).filter(Number.isFinite);
+  const swing = loads.length ? Math.max(...loads) - Math.min(...loads) : 0;
+  return temps.size === 1 && swing >= STUCK_MIN_LOAD_SWING;
+}
 
 // Contadores via CIM (Win32_PerfFormattedData_*): nomes independentes do idioma do Windows
 const LOOP_SCRIPT = `
@@ -15,6 +32,54 @@ $ErrorActionPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $cores = [Environment]::ProcessorCount
 $nvsmi = @("$env:ProgramFiles\\NVIDIA Corporation\\NVSMI\\nvidia-smi.exe", "$env:SystemRoot\\System32\\nvidia-smi.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+# Temperatura de GPU de qualquer fabricante (AMD, NVIDIA, Intel) pela mesma API do
+# Gerenciador de Tarefas: D3DKMTQueryAdapterInfo(KMTQAITYPE_ADAPTERPERFDATA). Requer WDDM 2.4+.
+$gpuApi = $false
+try {
+  Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class CwuGpu {
+  [DllImport("gdi32.dll")] static extern int D3DKMTEnumAdapters2(ref ENUM e);
+  [DllImport("gdi32.dll")] static extern int D3DKMTQueryAdapterInfo(ref QUERY q);
+  [DllImport("gdi32.dll")] static extern int D3DKMTCloseAdapter(ref uint h);
+  [StructLayout(LayoutKind.Sequential)] struct ENUM { public uint Num; public IntPtr Adapters; }
+  [StructLayout(LayoutKind.Sequential)] struct QUERY { public uint Adapter; public int Type; public IntPtr Data; public uint Size; }
+  static int Query(uint h, int type, byte[] buf) {
+    var pin = GCHandle.Alloc(buf, GCHandleType.Pinned);
+    try { var q = new QUERY { Adapter = h, Type = type, Data = pin.AddrOfPinnedObject(), Size = (uint)buf.Length }; return D3DKMTQueryAdapterInfo(ref q); }
+    finally { pin.Free(); }
+  }
+  // Retorna "temperatura|nome" do adaptador mais quente (iGPUs costumam reportar 0)
+  public static string Read() {
+    var e = new ENUM();
+    if (D3DKMTEnumAdapters2(ref e) != 0 || e.Num == 0) return null;
+    const int SIZE = 20; // D3DKMT_ADAPTERINFO
+    IntPtr mem = Marshal.AllocHGlobal(SIZE * (int)e.Num);
+    try {
+      e.Adapters = mem;
+      if (D3DKMTEnumAdapters2(ref e) != 0) return null;
+      double best = 0; string name = null;
+      for (int i = 0; i < e.Num; i++) {
+        uint h = (uint)Marshal.ReadInt32(mem, i * SIZE);
+        var perf = new byte[64]; // D3DKMT_ADAPTER_PERFDATA; Temperature (décimos de °C) no offset 56
+        if (Query(h, 62, perf) == 0) {
+          double t = BitConverter.ToUInt32(perf, 56) / 10.0;
+          if (t > best && t < 150) {
+            best = t;
+            var reg = new byte[2080]; // D3DKMT_ADAPTERREGISTRYINFO; AdapterString é o 1º campo
+            name = Query(h, 8, reg) == 0 ? System.Text.Encoding.Unicode.GetString(reg, 0, 520).Split('\\0')[0] : null;
+          }
+        }
+        D3DKMTCloseAdapter(ref h);
+      }
+      return best > 0 ? best.ToString(System.Globalization.CultureInfo.InvariantCulture) + "|" + name : null;
+    } finally { Marshal.FreeHGlobal(mem); }
+  }
+}
+'@
+  $gpuApi = $true
+} catch {}
 $diskTemps = @(); $top = @(); $tick = 0
 $sw = [Diagnostics.Stopwatch]::new()
 while ($true) {
@@ -39,9 +104,15 @@ while ($true) {
       $nv = [PSCustomObject]@{ name = $p[0]; temp = [double]$p[1]; usage = [double]$p[2]; memUsedMb = [double]$p[3]; memTotalMb = [double]$p[4]; powerW = $(try { [double]$p[5] } catch { $null }); clockMhz = $(try { [double]$p[6] } catch { $null }) }
     }
   }
-  # Temperatura ACPI (aproximada; muitas placas não expõem) e de discos (a cada ~30 s)
-  $acpi = Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature | Select-Object -First 1
-  $cpuTemp = if ($acpi -and $acpi.CurrentTemperature) { [math]::Round($acpi.CurrentTemperature / 10 - 273.15, 1) } else { $null }
+  $gpuSensor = $null
+  if ($gpuApi) {
+    $g = try { [CwuGpu]::Read() } catch { $null }
+    if ($g) { $gp = $g -split '\\|', 2; $gpuSensor = [PSCustomObject]@{ temp = [double]::Parse($gp[0], [Globalization.CultureInfo]::InvariantCulture); name = $gp[1] } }
+  }
+  # Temperatura ACPI (aproximada; muitas placas não expõem). Usa a zona mais quente,
+  # já que a primeira costuma ser a do gabinete. O Node descarta leituras travadas.
+  $zones = @(Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature | Where-Object { $_.CurrentTemperature -gt 2732 })
+  $cpuTemp = if ($zones.Count) { [math]::Round((($zones | Measure-Object CurrentTemperature -Maximum).Maximum) / 10 - 273.15, 1) } else { $null }
   if ($tick % 20 -eq 1) {
     $diskTemps = @(Get-PhysicalDisk | ForEach-Object {
       $r = $_ | Get-StorageReliabilityCounter
@@ -60,6 +131,7 @@ while ($true) {
     diskWriteMBs = [math]::Round($disk.DiskWriteBytesPersec / 1MB, 1)
     gpuUsage = $gpuUsage
     nvidia = $nv
+    gpuSensor = $gpuSensor
     diskTemps = $diskTemps
     top = @($top)
   } | ConvertTo-Json -Depth 3 -Compress
@@ -81,6 +153,18 @@ class MonitorService {
     this.idleTimer = null;
     this.buffer = '';
     this.error = null;
+    this.cpuTempSamples = [];
+    this.cpuTempStuck = false;
+  }
+
+  // Acompanha a leitura ACPI; uma vez marcada como travada, fica assim até reiniciar o app
+  checkCpuTemp(temp, cpu) {
+    if (temp === null) return null;
+    if (this.cpuTempStuck) return null;
+    this.cpuTempSamples.push({ temp, cpu });
+    if (this.cpuTempSamples.length > STUCK_SAMPLES) this.cpuTempSamples.shift();
+    if (isStuckSensor(this.cpuTempSamples)) { this.cpuTempStuck = true; return null; }
+    return temp;
   }
 
   ensureRunning() {
@@ -140,16 +224,20 @@ class MonitorService {
     const total = os.totalmem();
     const free = os.freemem();
     const nv = raw.nvidia || null;
+    const gs = raw.gpuSensor && Number.isFinite(raw.gpuSensor.temp) && raw.gpuSensor.temp > 0 ? raw.gpuSensor : null;
+    const acpi = typeof raw.cpuTemp === 'number' && raw.cpuTemp >= CPU_TEMP_MIN_PLAUSIBLE && raw.cpuTemp < 120 ? raw.cpuTemp : null;
     const sample = {
       t: raw.t || Date.now(),
       cpu: round(raw.cpu),
-      cpuTemp: typeof raw.cpuTemp === 'number' && raw.cpuTemp > 0 && raw.cpuTemp < 120 ? raw.cpuTemp : null,
+      cpuTemp: this.checkCpuTemp(acpi, round(raw.cpu)),
+      cpuTempStuck: this.cpuTempStuck,
+      cpuIsAmd: /\bAMD\b|Ryzen|Threadripper|Athlon/i.test((os.cpus()[0] || {}).model || ''),
       ram: round(((total - free) / total) * 100),
       ramUsedGb: round((total - free) / 1024 ** 3, 1),
       ramTotalGb: round(total / 1024 ** 3, 1),
       gpu: nv && Number.isFinite(nv.usage) ? nv.usage : round(raw.gpuUsage),
-      gpuTemp: nv && Number.isFinite(nv.temp) ? nv.temp : null,
-      gpuName: nv ? nv.name : null,
+      gpuTemp: nv && Number.isFinite(nv.temp) ? nv.temp : (gs ? round(gs.temp, 1) : null),
+      gpuName: nv ? nv.name : (gs && gs.name ? gs.name : null),
       vramUsedMb: nv ? nv.memUsedMb : null,
       vramTotalMb: nv ? nv.memTotalMb : null,
       gpuPowerW: nv && Number.isFinite(nv.powerW) ? nv.powerW : null,
@@ -203,3 +291,4 @@ const instance = new MonitorService();
 process.on('exit', () => instance.stop());
 module.exports = instance;
 module.exports.MonitorService = MonitorService;
+module.exports.isStuckSensor = isStuckSensor;

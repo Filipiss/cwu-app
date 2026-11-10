@@ -2,6 +2,19 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.1.0] - 2026-11-10
+
+### Adicionado
+- Assistente IA: chat sobre hardware, software, configurações de jogos competitivos e periféricos custo-benefício, com respostas personalizadas pelo hardware lido em System Specs (exige login, 20 mensagens por dia)
+- Sobreposição de desempenho (Alt + I): FPS e 1% low do jogo em primeiro plano (PresentMon), uso e temperatura de CPU e GPU e uso de RAM
+- Sobreposição personalizável: 6 posições fixas ou posição livre arrastando na tela, layout vertical ou horizontal, tamanho e transparência
+- Ícones ocultos: o X mantém o app aberto na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair (opção desligável)
+
+### Corrigido
+- Temperatura de placas de vídeo AMD (e Intel): agora lida pela mesma fonte do Gerenciador de Tarefas
+- Temperatura de processadores AMD travada em valor fixo (ex.: 17 °C): leituras impossíveis ou paradas são descartadas, com explicação na tela
+- Notificações do Windows apareciam como "Electron" em vez de "CWU App"
+
 ## [1.0.0] - 2026-11-09
 
 ### Adicionado

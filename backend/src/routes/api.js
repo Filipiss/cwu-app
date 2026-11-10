@@ -72,6 +72,18 @@ const routes = [
   { method: 'POST', path: '/api/processes/priority/remove', handler: async (req, res) => res.json({ success: true, data: await processService.removePersistent((req.body || {}).exe) }) },
 
   // Performance: monitor, inicialização, ajustes do Windows e diagnóstico de RAM
+  // Sobreposição: o Electron escuta este evento e mostra/esconde a janela (mesmo que Alt+I)
+  // A sobreposição informa o próprio tamanho (depende de layout, escala e linhas) e pede para salvar a posição livre
+  { method: 'POST', path: '/api/overlay/size', handler: (req, res) => {
+    const w = Number(req.body && req.body.width); const h = Number(req.body && req.body.height);
+    if (w > 0 && w < 4000 && h > 0 && h < 4000) require('../database/db').events.emit('overlay-size', { width: w, height: h });
+    res.json({ success: true });
+  } },
+  { method: 'POST', path: '/api/overlay/edit', handler: (req, res) => { require('../database/db').events.emit('overlay-edit'); res.json({ success: true }); } },
+  { method: 'POST', path: '/api/overlay/save-position', handler: (req, res) => { require('../database/db').events.emit('overlay-save-position'); res.json({ success: true }); } },
+  { method: 'POST', path: '/api/overlay/cancel-edit', handler: (req, res) => { require('../database/db').events.emit('overlay-cancel-edit'); res.json({ success: true }); } },
+  { method: 'POST', path: '/api/overlay/toggle', handler: (req, res) => { require('../database/db').events.emit('overlay-toggle'); res.json({ success: true }); } },
+  { method: 'GET', path: '/api/fps', handler: async (req, res) => res.json({ success: true, data: await require('../services/fpsService').snapshot() }) },
   { method: 'GET', path: '/api/monitor', handler: (req, res) => res.json({ success: true, data: monitorService.snapshot() }) },
   { method: 'GET', path: '/api/startup', handler: async (req, res) => res.json({ success: true, data: await startupService.list() }) },
   { method: 'POST', path: '/api/startup/toggle', handler: async (req, res) => res.json({ success: true, data: await startupService.toggle(req.body || {}) }) },

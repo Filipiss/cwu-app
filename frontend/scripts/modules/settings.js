@@ -37,6 +37,28 @@ const SettingsModule = {
       });
     }
 
+    // Campos ligados direto a uma configuração (sobreposição e bandeja)
+    // Controles deslizantes salvam enquanto arrasta (com um pequeno atraso): a sobreposição muda ao vivo
+    let rangeTimer = null;
+    document.querySelectorAll('[data-setting]').forEach(el => {
+      const read = () => (el.type === 'checkbox' ? el.checked : el.type === 'range' ? Number(el.value) : el.value);
+      el.addEventListener('change', () => { this.settings[el.dataset.setting] = read(); this.saveSettings(); });
+      if (el.type === 'range') {
+        el.addEventListener('input', () => {
+          this.settings[el.dataset.setting] = read();
+          this.updateRangeLabel(el);
+          clearTimeout(rangeTimer);
+          rangeTimer = setTimeout(() => this.saveSettings(), 150);
+        });
+      }
+    });
+    document.getElementById('btn-overlay-toggle')?.addEventListener('click', () => API.toggleOverlay().catch(() => {}));
+    document.getElementById('btn-overlay-edit')?.addEventListener('click', () => {
+      API.startOverlayEdit().catch(() => {});
+      const sel = document.getElementById('setting-overlay-position');
+      if (sel) sel.value = 'custom';
+    });
+
     // Toggles de preferências
     const autoScanToggle = document.getElementById('setting-auto-scan');
     if (autoScanToggle) {
@@ -91,6 +113,19 @@ const SettingsModule = {
 
     const autoScanToggle = document.getElementById('setting-auto-scan');
     if (autoScanToggle) autoScanToggle.checked = this.settings.autoScanOnStart;
+
+    document.querySelectorAll('[data-setting]').forEach(el => {
+      const v = this.settings[el.dataset.setting];
+      if (v === undefined) return;
+      if (el.type === 'checkbox') el.checked = Boolean(v);
+      else el.value = v;
+      if (el.type === 'range') this.updateRangeLabel(el);
+    });
+  },
+
+  updateRangeLabel(el) {
+    const out = document.querySelector(`.c-range-value[data-for="${el.id}"]`);
+    if (out) out.textContent = `${el.value}${el.dataset.unit || ''}`;
   },
 
   async saveSettings() {

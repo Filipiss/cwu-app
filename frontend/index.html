@@ -84,6 +84,8 @@
     <symbol id="i-rotate-ccw" viewBox="0 0 24 24">  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />  <path d="M3 3v5h5" /></symbol>
     <symbol id="i-eye" viewBox="0 0 24 24">  <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />  <circle cx="12" cy="12" r="3" /></symbol>
     <symbol id="i-eye-off" viewBox="0 0 24 24">  <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />  <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />  <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143" />  <path d="m2 2 20 20" /></symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24">  <path d="M12 8V4H8" />  <rect width="16" height="12" x="4" y="8" rx="2" />  <path d="M2 14h2" />  <path d="M20 14h2" />  <path d="M15 13v2" />  <path d="M9 13v2" /></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24">  <path d="m22 2-7 20-4-9-9-4Z" />  <path d="M22 2 11 13" /></symbol>
     <symbol id="i-cloud" viewBox="0 0 24 24">  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></symbol>
   </svg>
 
@@ -119,6 +121,11 @@
         <div class="c-nav__item js-nav-item" data-tab="softs" data-label="Softwares Pós-Format" role="button" tabindex="0">
           <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-package></use></svg></span>
           <span class="c-nav__label">Softwares Pós-Format</span>
+        </div>
+
+        <div class="c-nav__item js-nav-item" data-tab="assistant" data-label="Assistente IA" role="button" tabindex="0">
+          <span class="c-nav__icon"><svg class=c-icon aria-hidden=true><use href=#i-bot></use></svg></span>
+          <span class="c-nav__label">Assistente IA</span>
         </div>
 
         <div class="c-nav__category">Diagnóstico & Boost</div>
@@ -463,6 +470,56 @@
           </section>
 
           <!-- ABA 5: BOOST GAMER (DEMO) -->
+          <section id="tab-assistant" class="c-tab-panel">
+            <div class="c-section-header">
+              <div class="c-section-header__title-group">
+                <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-bot></use></svg> Assistente IA</h2>
+                <p class="c-section-header__desc">Tire dúvidas sobre hardware, software e jogos com respostas baseadas no seu próprio PC.</p>
+              </div>
+            </div>
+
+            <!-- Sem login -->
+            <div id="assistant-login" class="c-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-lock></use></svg> Entre para usar o Assistente</h4>
+                  <p class="c-card__desc">O Assistente usa inteligência artificial (Google Gemini). Para evitar abuso, ele é liberado para contas do CWU App, com limite de 20 mensagens por dia.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--primary c-btn--sm" type="button" data-action="tab" data-arg="account"><svg class=c-icon aria-hidden=true><use href=#i-log-in></use></svg> <span>Entrar ou criar conta</span></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat -->
+            <div id="assistant-chat" class="c-card c-chat u-hidden">
+              <div class="c-chat__bar">
+                <span class="c-chat__quota" id="assistant-quota">Limite de 20 mensagens por dia</span>
+                <div class="c-chat__bar-actions">
+                  <button class="c-btn c-btn--ghost c-btn--sm" type="button" id="assistant-context-toggle" aria-expanded="false" aria-controls="assistant-context"><svg class=c-icon aria-hidden=true><use href=#i-eye></use></svg> <span>Dados enviados</span></button>
+                  <button class="c-btn c-btn--ghost c-btn--sm" type="button" id="assistant-clear"><svg class=c-icon aria-hidden=true><use href=#i-trash-2></use></svg> <span>Limpar conversa</span></button>
+                </div>
+              </div>
+              <pre id="assistant-context" class="c-chat__context u-hidden"></pre>
+
+              <div class="c-chat__body">
+                <div id="assistant-empty" class="c-chat__empty">
+                  <span class="c-chat__empty-icon"><svg class=c-icon aria-hidden=true><use href=#i-bot></use></svg></span>
+                  <p class="c-chat__empty-title">Como posso ajudar?</p>
+                  <p class="c-chat__empty-desc">Pergunte sobre o seu PC, upgrades, configurações de jogos competitivos ou periféricos custo-benefício. O resumo do hardware lido pelo app vai junto com a pergunta, para a resposta ser personalizada.</p>
+                </div>
+                <div id="assistant-messages" class="c-chat__messages" aria-live="polite"></div>
+                <div id="assistant-suggestions" class="c-chat__suggestions"></div>
+              </div>
+
+              <form id="assistant-form" class="c-chat__form">
+                <textarea id="assistant-input" class="c-input c-chat__input" rows="1" maxlength="1000" placeholder="Pergunte algo sobre hardware, software ou jogos…" aria-label="Mensagem para o Assistente"></textarea>
+                <button id="assistant-send" class="c-btn c-btn--primary" type="submit" aria-label="Enviar"><svg class=c-icon aria-hidden=true><use href=#i-send></use></svg></button>
+              </form>
+              <p class="c-chat__note">Respostas geradas por IA podem conter erros. Confira preços e compatibilidade antes de comprar.</p>
+            </div>
+          </section>
+
           <section id="tab-boost" class="c-tab-panel">
             <div class="c-section-header">
               <div class="c-section-header__title-group">
@@ -849,6 +906,7 @@
             <div class="c-subtabs" role="tablist" data-group="settings">
               <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="themes"><svg class=c-icon aria-hidden=true><use href=#i-palette></use></svg> Temas</button>
               <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="prefs"><svg class=c-icon aria-hidden=true><use href=#i-settings></use></svg> Preferências</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="settings" data-view="overlay"><svg class=c-icon aria-hidden=true><use href=#i-gauge></use></svg> Sobreposição</button>
             </div>
 
             <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="settings" data-view="themes">
@@ -901,6 +959,90 @@
                   <span class="c-check-row__text">
                     <span>Escanear drivers automaticamente ao abrir o CWU App</span>
                     <span class="c-field__hint">A varredura roda em segundo plano logo após o app iniciar.</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+            </div>
+
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="settings" data-view="overlay">
+            <div class="c-card u-mb-lg">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-gauge></use></svg> Sobreposição de desempenho</h4>
+                  <p class="c-card__desc">Números pequenos sempre visíveis sobre a tela, inclusive durante os jogos. Ligue e desligue a qualquer momento com <kbd class="c-kbd">Alt</kbd> + <kbd class="c-kbd">I</kbd>, mesmo com o CWU App nos ícones ocultos.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--primary c-btn--sm" type="button" id="btn-overlay-toggle"><svg class=c-icon aria-hidden=true><use href=#i-eye></use></svg> <span>Mostrar / ocultar agora</span></button>
+                </div>
+              </div>
+              <div class="c-form">
+                <div class="o-grid o-grid--2">
+                  <label class="c-field" for="setting-overlay-position">
+                    <span class="c-field__label">Posição na tela</span>
+                    <div class="c-select-wrapper">
+                      <select id="setting-overlay-position" class="c-select" data-setting="overlayPosition">
+                        <option value="top-left">Canto superior esquerdo</option>
+                        <option value="top-center">Centro superior</option>
+                        <option value="top-right">Canto superior direito</option>
+                        <option value="bottom-left">Canto inferior esquerdo</option>
+                        <option value="bottom-center">Centro inferior</option>
+                        <option value="bottom-right">Canto inferior direito</option>
+                        <option value="custom">Personalizada (arrastar na tela)</option>
+                      </select>
+                      <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
+                    </div>
+                  </label>
+                  <label class="c-field" for="setting-overlay-layout">
+                    <span class="c-field__label">Disposição</span>
+                    <div class="c-select-wrapper">
+                      <select id="setting-overlay-layout" class="c-select" data-setting="overlayLayout">
+                        <option value="vertical">Vertical (uma informação por linha)</option>
+                        <option value="horizontal">Horizontal (tudo em uma linha)</option>
+                      </select>
+                      <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
+                    </div>
+                  </label>
+                </div>
+                <div class="c-osd-custom">
+                  <button class="c-btn c-btn--secondary c-btn--sm" type="button" id="btn-overlay-edit"><svg class=c-icon aria-hidden=true><use href=#i-mouse-pointer-click></use></svg> <span>Posicionar arrastando na tela</span></button>
+                  <span class="c-field__hint">A sobreposição aparece com uma borda tracejada: arraste até o lugar desejado e clique em Salvar (ou Enter). Esc cancela.</span>
+                </div>
+                <div class="o-grid o-grid--2">
+                  <label class="c-field" for="setting-overlay-scale">
+                    <span class="c-field__label">Tamanho <output class="c-range-value" data-for="setting-overlay-scale"></output></span>
+                    <input type="range" id="setting-overlay-scale" class="c-range" min="60" max="200" step="5" data-setting="overlayScale" data-unit="%">
+                    <span class="c-range-scale"><span>Menor</span><span>Maior</span></span>
+                  </label>
+                  <label class="c-field" for="setting-overlay-opacity">
+                    <span class="c-field__label">Transparência <output class="c-range-value" data-for="setting-overlay-opacity"></output></span>
+                    <input type="range" id="setting-overlay-opacity" class="c-range" min="20" max="100" step="5" data-setting="overlayOpacity" data-unit="%">
+                    <span class="c-range-scale"><span>Mais transparente</span><span>Opaco</span></span>
+                  </label>
+                </div>
+                <span class="c-field__label">Informações exibidas</span>
+                <div class="o-grid o-grid--2">
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayFps"><span class="c-check-row__text"><span>FPS do jogo em primeiro plano</span><span class="c-field__hint">Com o "1% low". Medido pelo PresentMon (Intel), sem injetar nada no jogo. Requer o CWU App como administrador.</span></span></label>
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayCpu"><span class="c-check-row__text"><span>Uso da CPU</span></span></label>
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayCpuTemp"><span class="c-check-row__text"><span>Temperatura da CPU</span><span class="c-field__hint">Só quando a placa-mãe fornece uma leitura real.</span></span></label>
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayRam"><span class="c-check-row__text"><span>Uso da memória RAM</span></span></label>
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayGpu"><span class="c-check-row__text"><span>Uso da GPU</span></span></label>
+                  <label class="c-check-row"><input type="checkbox" data-setting="overlayGpuTemp"><span class="c-check-row__text"><span>Temperatura da GPU</span></span></label>
+                </div>
+                <p class="c-field__hint">Em jogos no modo "Tela cheia" exclusiva, o Windows pode esconder a sobreposição. Use "Janela sem bordas" (borderless) para ela aparecer.</p>
+              </div>
+            </div>
+
+            <div class="c-card">
+              <div class="c-card__header">
+                <h3 class="c-card__title">Ícones ocultos (bandeja)</h3>
+              </div>
+              <div class="c-form">
+                <label class="c-check-row">
+                  <input type="checkbox" data-setting="closeToTray">
+                  <span class="c-check-row__text">
+                    <span>Ao clicar no X, manter o CWU App aberto nos ícones ocultos</span>
+                    <span class="c-field__hint">Assim a sobreposição e o atalho Alt + I continuam funcionando. Para fechar de vez, clique com o botão direito no ícone e escolha "Sair".</span>
                   </span>
                 </label>
               </div>
@@ -1076,6 +1218,7 @@
   <script src="scripts/translations.js"></script>
   <script src="scripts/i18n.js"></script>
   <script src="scripts/api.js"></script>
+  <script src="scripts/chatTopic.js"></script>
   <script src="scripts/modules/confirm.js"></script>
   <script src="scripts/modules/subtabs.js"></script>
   <script src="scripts/modules/sidebar.js"></script>
@@ -1093,6 +1236,7 @@
   <script src="scripts/modules/settings.js"></script>
   <script src="scripts/modules/versions.js"></script>
   <script src="scripts/modules/account.js"></script>
+  <script src="scripts/modules/assistant.js"></script>
   <script src="scripts/app.js"></script>
 </body>
 </html>

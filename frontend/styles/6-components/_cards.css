@@ -268,3 +268,11 @@
 .c-card__actions { flex-wrap: wrap; min-width: 0; }
 .c-card__head > .c-card__actions { flex: 0 1 auto; justify-content: flex-end; }
 .c-section-header__title-group { flex: 1 1 320px; min-width: 0; }
+
+/* Tecla de atalho (ex.: Alt + I) */
+.c-kbd {
+  display: inline-block; min-width: 1.6em; padding: 1px 6px; border-radius: 5px; text-align: center;
+  border: 1px solid var(--color-border-bright); border-bottom-width: 2px;
+  background: color-mix(in srgb, var(--color-text-primary) 5%, var(--color-bg-card));
+  font: 600 0.78em/1.5 ui-monospace, Consolas, monospace; color: var(--color-text-primary);
+}

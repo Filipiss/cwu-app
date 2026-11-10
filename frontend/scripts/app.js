@@ -43,7 +43,9 @@ const App = {
     BoostModule.init();
     LogsModule.init();
     VersionsModule.init();
-    Account.init();
+    AssistantModule.init();
+    // O login é lido de forma assíncrona: atualiza o Assistente quando terminar
+    Promise.resolve(Account.init()).then(() => AssistantModule.refresh());
 
     // Auto-scan se estiver ativo nas configurações
     if (SettingsModule.settings.autoScanOnStart) {

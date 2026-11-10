@@ -137,6 +137,8 @@ const API = {
   },
 
   getMonitor() { return this.request('/api/monitor'); },
+  toggleOverlay() { return this.request('/api/overlay/toggle', { method: 'POST' }); },
+  startOverlayEdit() { return this.request('/api/overlay/edit', { method: 'POST' }); },
   getStartup() { return this.request('/api/startup'); },
   toggleStartup(id, enabled) { return this.request('/api/startup/toggle', { method: 'POST', body: JSON.stringify({ id, enabled }) }); },
   getTweaks() { return this.request('/api/tweaks'); },

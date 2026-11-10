@@ -65,3 +65,51 @@ test('monitor lê amostras entre marcadores, mesmo quebradas em vários pedaços
   assert.equal(m.history.length, 2);
   assert.equal(m.latest.cpu, 50);
 });
+
+// Sensor ACPI travado (comum em placas AMD Ryzen)
+const { isStuckSensor } = require('../src/services/monitorService');
+test('isStuckSensor: valor fixo com carga variando = travado', () => {
+  const s = Array.from({ length: 40 }, (_, i) => ({ temp: 27.8, cpu: i % 2 ? 5 : 60 }));
+  assert.equal(isStuckSensor(s), true);
+});
+test('isStuckSensor: valor fixo com CPU ociosa não é conclusivo', () => {
+  const s = Array.from({ length: 40 }, () => ({ temp: 45, cpu: 3 }));
+  assert.equal(isStuckSensor(s), false);
+});
+test('isStuckSensor: valor variando é real', () => {
+  const s = Array.from({ length: 40 }, (_, i) => ({ temp: 40 + (i % 5), cpu: i % 2 ? 5 : 60 }));
+  assert.equal(isStuckSensor(s), false);
+});
+test('push: usa temperatura da GPU via D3DKMT quando não há nvidia-smi', () => {
+  const m = new MonitorService();
+  m.push({ cpu: 10, gpuUsage: 30, gpuSensor: { temp: 61.5, name: 'AMD Radeon RX 7800 XT' } });
+  assert.equal(m.latest.gpuTemp, 61.5);
+  assert.equal(m.latest.gpuName, 'AMD Radeon RX 7800 XT');
+});
+test('push: descarta temperatura de CPU implausível (17 °C travado)', () => {
+  const m = new MonitorService();
+  m.push({ cpu: 10, cpuTemp: 17 });
+  assert.equal(m.latest.cpuTemp, null);
+  m.push({ cpu: 10, cpuTemp: 48.5 });
+  assert.equal(m.latest.cpuTemp, 48.5);
+});
+
+// Sobreposição: linhas e posição na tela
+const { overlayRows, overlayBounds } = require('../src/utils/overlayLayout');
+test('overlayRows: só mostra as linhas escolhidas', () => {
+  assert.deepEqual(overlayRows({ overlayCpu: true, overlayRam: false, overlayGpuTemp: true, overlayPower: false }), ['cpu', 'gpu']);
+  assert.deepEqual(overlayRows({ overlayFps: true, overlayRam: true }), ['fps', 'ram']);
+  assert.deepEqual(overlayRows({}), []);
+});
+test('overlayBounds: cantos, centro e posição livre dentro da área útil', () => {
+  const area = { x: 0, y: 0, width: 1920, height: 1040 };
+  const size = { width: 190, height: 108 };
+  assert.deepEqual(overlayBounds({ overlayPosition: 'top-right' }, area, size), { x: 1920 - 190 - 12, y: 12, width: 190, height: 108 });
+  assert.deepEqual(overlayBounds({ overlayPosition: 'bottom-left' }, area, size), { x: 12, y: 1040 - 108 - 12, width: 190, height: 108 });
+  assert.equal(overlayBounds({ overlayPosition: 'top-center' }, area, size).x, 865);
+  assert.deepEqual(overlayBounds({ overlayPosition: 'invalida' }, area, size), overlayBounds({ overlayPosition: 'top-right' }, area, size));
+  assert.deepEqual(overlayBounds({ overlayPosition: 'custom', overlayX: 300, overlayY: 200 }, area, size), { x: 300, y: 200, width: 190, height: 108 });
+  // fora da tela: volta para dentro
+  assert.deepEqual(overlayBounds({ overlayPosition: 'custom', overlayX: 5000, overlayY: -50 }, area, size), { x: 1920 - 190, y: 0, width: 190, height: 108 });
+});
+

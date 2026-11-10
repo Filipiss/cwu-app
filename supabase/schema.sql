@@ -27,3 +27,40 @@ alter table public.user_preferences
 
 -- Nenhuma outra função ou tabela fica exposta: só o dono altera a própria linha (RLS acima),
 -- e ninguém pode apagar linhas pela API (não há política de DELETE).
+
+-- ===== Assistente (chatbot): limite diário de mensagens por usuário =====
+create table if not exists public.chat_usage (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  day date not null,
+  count int not null default 0,
+  primary key (user_id, day)
+);
+alter table public.chat_usage enable row level security;
+-- O usuário pode ver o próprio uso; só a Edge Function (service role) grava
+drop policy if exists "ler o próprio uso do chat" on public.chat_usage;
+create policy "ler o próprio uso do chat" on public.chat_usage
+  for select using (auth.uid() = user_id);
+
+-- Soma 1 ao uso do dia (horário de Brasília) e devolve quantas mensagens restam.
+-- Devolve -1 quando o limite já foi atingido. Atômico: duas chamadas simultâneas não furam o limite.
+create or replace function public.cwu_chat_consume(p_user uuid, p_limit int)
+returns int
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_day date := (now() at time zone 'America/Sao_Paulo')::date;
+  v_count int;
+begin
+  insert into public.chat_usage (user_id, day, count) values (p_user, v_day, 1)
+  on conflict (user_id, day) do update set count = public.chat_usage.count + 1
+    where public.chat_usage.count < p_limit
+  returning count into v_count;
+  if v_count is null then return -1; end if;
+  return p_limit - v_count;
+end;
+$$;
+-- Ninguém chama pela API pública: só o servidor (service role) dentro da Edge Function
+revoke all on function public.cwu_chat_consume(uuid, int) from public, anon, authenticated;
+grant execute on function public.cwu_chat_consume(uuid, int) to service_role;

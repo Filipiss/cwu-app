@@ -100,11 +100,11 @@ const PerfModule = {
     this.history = history;
     const fmt = (v) => (v === null || v === undefined ? '—' : `${Math.round(v)}%`);
 
-    this.setTile('cpu', fmt(s.cpu), s.cpuTemp !== null ? this.tempHtml(s.cpuTemp, 'cpu') + ' <span>aprox.</span>' : 'Temperatura indisponível');
+    this.setTile('cpu', fmt(s.cpu), s.cpuTemp !== null ? this.tempHtml(s.cpuTemp, 'cpu') + ' <span>aprox.</span>' : (s.cpuIsAmd ? 'AMD sem leitura nativa no Windows' : s.cpuTempStuck ? 'Sensor travado (leitura ignorada)' : 'Temperatura indisponível'));
 
     const vram = s.vramUsedMb ? ` • VRAM ${(s.vramUsedMb / 1024).toFixed(1)}/${(s.vramTotalMb / 1024).toFixed(0)} GB` : '';
     const power = s.gpuPowerW ? ` • ${Math.round(s.gpuPowerW)} W` : '';
-    this.setTile('gpu', fmt(s.gpu), (s.gpuTemp !== null ? this.tempHtml(s.gpuTemp, 'gpu') : 'Temperatura só em GPUs NVIDIA') + vram + power);
+    this.setTile('gpu', fmt(s.gpu), (s.gpuTemp !== null ? this.tempHtml(s.gpuTemp, 'gpu') : 'Temperatura indisponível') + vram + power);
 
     this.setTile('ram', fmt(s.ram), `${s.ramUsedGb} de ${s.ramTotalGb} GB em uso`);
     this.setTile('disk', fmt(s.disk), `Leitura ${s.diskReadMBs} MB/s • Escrita ${s.diskWriteMBs} MB/s`);
@@ -200,8 +200,8 @@ const PerfModule = {
     const box = document.getElementById('perf-temps-list');
     if (!box) return;
     const rows = [
-      ['Processador (ACPI)', s.cpuTemp, 'cpu', 'Sensor não exposto pela placa-mãe'],
-      [s.gpuName || 'Placa de vídeo', s.gpuTemp, 'gpu', 'Disponível apenas em GPUs NVIDIA']
+      ['Processador (ACPI)', s.cpuTemp, 'cpu', s.cpuIsAmd ? 'Processadores AMD não informam a temperatura ao Windows. A leitura exigiria um driver de kernel, e o CWU App não instala nada invasivo no seu sistema.' : s.cpuTempStuck ? 'Sensor da placa-mãe travado em um valor fixo' : 'Sensor não exposto pela placa-mãe'],
+      [s.gpuName || 'Placa de vídeo', s.gpuTemp, 'gpu', 'Driver não informa a temperatura (requer WDDM 2.4+)']
     ];
     (s.diskTemps || []).forEach(d => rows.push([d.name, d.temp, d.hdd ? 'hdd' : 'ssd', 'Execute como administrador']));
 
@@ -216,6 +216,8 @@ const PerfModule = {
       if (temp === null || temp === undefined) {
         value.className = 'u-text-muted';
         value.style.fontSize = '0.8rem';
+        value.style.textAlign = 'right';
+        value.style.maxWidth = '62%';
         value.textContent = missing;
       } else {
         value.innerHTML = this.tempHtml(temp, kind);

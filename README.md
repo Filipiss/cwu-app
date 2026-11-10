@@ -7,7 +7,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.0.0-blue)
+![Versão](https://img.shields.io/badge/versão-1.1.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
@@ -37,7 +37,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
 | **Competitivo (input lag e consistência)** | ✅ | Monitor na taxa máxima (EnumDisplaySettings/ChangeDisplaySettingsEx), aceleração e velocidade 1:1 do mouse, teste de polling rate no navegador (pointerrawupdate), overlays em execução, plano Desempenho Máximo, suspensão seletiva de USB, teste de ping/jitter/perda com ajustes da placa de rede, guia de latência por GPU (Reflex/Anti-Lag/XeLL + limite de FPS para VRR) e uma seção de mitos de otimização. |
 | **Prioridade de processos** | ✅ | Escolha um programa em execução e defina a prioridade de CPU, na hora ou de forma permanente (Image File Execution Options). |
-| **Monitor em tempo real** | ✅ | Uso de CPU, GPU, RAM e disco com histórico, temperaturas (GPU NVIDIA, discos, ACPI) e processos que mais consomem. Um único PowerShell contínuo, para não pesar o PC. |
+| **Monitor em tempo real** | ✅ | Uso de CPU, GPU, RAM e disco com histórico, temperaturas (GPU de qualquer fabricante, discos, ACPI com detecção de sensor travado) e processos que mais consomem. Um único PowerShell contínuo, para não pesar o PC. |
 | **Programas na inicialização** | ✅ | Ativa/desativa pelo mesmo mecanismo do Gerenciador de Tarefas (StartupApproved), reversível. |
 | **Ajustes de jogos do Windows** | ✅ | Modo de Jogo, HAGS, otimizações para jogos em janela e gravação em segundo plano do Game Bar. |
 | **Diagnóstico de RAM** | ✅ | Detecta XMP/EXPO desligado, canal simples e pentes diferentes. |
@@ -45,6 +45,9 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Ponto de restauração** | ✅ | O app **pergunta** antes da primeira alteração de sistema da sessão se você quer criar um (nunca cria sozinho), ou cria manualmente pela aba Logs. Toda ação que altera o Windows pede confirmação. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
+| **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. |
+| **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
+| **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |
 | **Minha Conta** | ✅ | Login opcional (Supabase) para montar a sua lista pós-formatação e levá-la para qualquer PC. |
 | **Temas e idiomas** | ✅ | Grafite (escuro) e Névoa (claro); português e inglês com troca na hora; menu lateral recolhível (Ctrl+B) e layout que se adapta ao tamanho da janela. |
 
@@ -67,7 +70,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 - **Zero dependências em produção:** o servidor usa só módulos nativos do Node.
 - **Monitor eficiente:** um único processo PowerShell contínuo envia as métricas, em vez de abrir um processo por leitura.
 - **Carregamento sob demanda:** cada aba só busca dados quando é aberta.
-- **67 testes automatizados** (`node:test`) rodando no GitHub Actions a cada push.
+- **86 testes automatizados** (`node:test`) rodando no GitHub Actions a cada push.
 
 ## Segurança
 
@@ -129,6 +132,10 @@ npm run dist:portable  # gera o .exe em release/
 ## Histórico
 
 Veja o [CHANGELOG](CHANGELOG.md).
+
+## Créditos
+
+- [PresentMon](https://github.com/GameTechDev/PresentMon) (Intel, licença MIT): medição de FPS da sobreposição. Veja `backend/bin/README.md`.
 
 ## Autor
 

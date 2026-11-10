@@ -1,0 +1,4 @@
+# Só a configuração da função do assistente. O token do usuário é validado dentro
+# da própria função (/auth/v1/user), então a verificação automática fica desligada.
+[functions.cwu-chat]
+verify_jwt = false

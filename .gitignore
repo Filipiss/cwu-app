@@ -17,3 +17,6 @@ backend/data/cwu_store.json
 
 # Material de divulgação (vídeos e prints)
 present video/
+
+# PresentMon: baixado à parte (ver backend/bin/README.md) e incluído no build
+backend/bin/*.exe

@@ -97,3 +97,11 @@
 }
 .c-app-pick input { accent-color: var(--color-primary); width: 16px; height: 16px; margin: 0; flex-shrink: 0; }
 .c-app-pick__name { font-size: 0.86rem; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Controle deslizante (tamanho e transparência da sobreposição) */
+.c-range { width: 100%; accent-color: var(--color-primary); height: 22px; cursor: pointer; margin: 4px 0 0; }
+.c-range:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 4px; }
+.c-range-value { margin-left: 6px; font-weight: 500; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.c-range-scale { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--color-text-muted); }
+.c-osd-custom { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.c-osd-custom .c-field__hint { flex: 1; min-width: 240px; }

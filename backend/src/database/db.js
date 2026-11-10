@@ -1,11 +1,14 @@
 // backend/src/database/db.js
 const fs = require('fs');
 const path = require('path');
+const { EventEmitter } = require('events');
 const config = require('../config');
 const { DRIVER_CATALOG, ESSENTIAL_SOFTWARES, BSOD_ENCYCLOPEDIA } = require('./seedData');
 
 class LocalDatabase {
   constructor() {
+    // Avisa o processo do Electron quando as configurações mudam (bandeja e overlay)
+    this.events = new EventEmitter();
     const isPackaged = Boolean(process.resourcesPath) || __dirname.includes('app.asar');
     if (isPackaged && process.env.APPDATA) {
       this.dataDir = path.join(process.env.APPDATA, 'CWU-App');
@@ -19,6 +22,20 @@ class LocalDatabase {
         language: config.defaultLanguage,
         autoScanOnStart: true,
         notifyOutdatedDrivers: true,
+        // Bandeja e sobreposição (overlay) de desempenho
+        closeToTray: true,
+        overlayPosition: 'top-right',
+        overlayX: 40,
+        overlayY: 40,
+        overlayLayout: 'vertical',
+        overlayOpacity: 85, // opacidade da sobreposição inteira (fundo e textos)
+        overlayScale: 100,
+        overlayFps: true,
+        overlayCpu: true,
+        overlayCpuTemp: true,
+        overlayRam: true,
+        overlayGpu: true,
+        overlayGpuTemp: true,
       },
       scanHistory: [],
       updateLogs: [],
@@ -41,6 +58,8 @@ class LocalDatabase {
         this.state = {
           ...this.state,
           ...parsed,
+          // Mantém os padrões de configurações novas que ainda não existem no arquivo salvo
+          settings: { ...this.state.settings, ...(parsed.settings || {}) },
           // Sempre mantém o catálogo de drivers e softwares atualizado com a versão mais recente
           driversCatalog: DRIVER_CATALOG,
           essentialSoftwares: ESSENTIAL_SOFTWARES,
@@ -88,6 +107,7 @@ class LocalDatabase {
   updateSettings(newSettings) {
     this.state.settings = { ...this.state.settings, ...newSettings };
     this.save();
+    this.events.emit('settings', this.getSettings());
     return this.state.settings;
   }
 
