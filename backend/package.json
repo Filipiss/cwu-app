@@ -1,6 +1,6 @@
 {
   "name": "cwu-app-backend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "CWU App: pós-formatação e otimização do Windows para jogos",
   "main": "electron-main.js",
   "scripts": {
@@ -8,8 +8,7 @@
     "dev": "node --watch server.js",
     "electron": "electron electron-main.js",
     "app": "electron .",
-    "dist": "electron-builder --win",
-    "dist:portable": "electron-builder --win portable",
+    "dist": "electron-builder --win nsis --publish never",
     "check-winget": "node scripts/check-winget.js",
     "test": "node --test tests/*.test.js"
   },
@@ -27,7 +26,11 @@
       {
         "from": "bin",
         "to": "bin",
-        "filter": ["*.exe", "*.txt", "*.md"]
+        "filter": [
+          "*.exe",
+          "*.txt",
+          "*.md"
+        ]
       },
       {
         "from": "../CHANGELOG.md",
@@ -36,12 +39,9 @@
     ],
     "win": {
       "target": [
-        "portable"
+        "nsis"
       ],
       "icon": "build/icon.ico"
-    },
-    "portable": {
-      "artifactName": "CWU-App.${ext}"
     },
     "files": [
       "electron-main.js",
@@ -51,7 +51,25 @@
       "!tests",
       "!scripts"
     ],
-    "asar": true
+    "asar": true,
+    "nsis": {
+      "artifactName": "CWU-App-Setup.${ext}",
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CWU App",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Filipiss",
+        "repo": "cwu-app"
+      }
+    ]
   },
   "keywords": [
     "cwu",
@@ -62,7 +80,9 @@
   ],
   "author": "Filipi Soares",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
   "devDependencies": {
     "electron": "^45.1.0",
     "electron-builder": "^26.18.0"

@@ -1,23 +1,34 @@
 @echo off
-title CWU App - Gerar Executavel Portatil (.exe)
+title CWU App - Gerar Instalador
 echo ========================================================
-echo   Compilando CWU App em arquivo executavel (.exe)
+echo   Gerando o instalador do CWU App (CWU-App-Setup.exe)
 echo ========================================================
 echo.
 
 cd /d "%~dp0backend"
 
-echo [1/2] Empacotando com Electron Builder...
-npm run dist:portable
+echo [1/2] Instalando dependencias...
+call npm install
+if %errorlevel% neq 0 goto erro
 
-if %errorlevel% equ 0 (
-    echo.
-    echo ========================================================
-    echo   SUCESSO! O executavel foi gerado na pasta: release/
-    echo ========================================================
-    explorer "%~dp0release"
-) else (
-    echo.
-    echo Ocorreu um erro ao gerar o executavel.
-)
+echo [2/2] Empacotando com Electron Builder...
+call npm run dist
+if %errorlevel% neq 0 goto erro
+
+echo.
+echo ========================================================
+echo   SUCESSO! Arquivos gerados na pasta release/
+echo   Envie para a release do GitHub estes 3 arquivos:
+echo     - CWU-App-Setup.exe
+echo     - CWU-App-Setup.exe.blockmap
+echo     - latest.yml
+echo ========================================================
+explorer "%~dp0release"
+goto fim
+
+:erro
+echo.
+echo Ocorreu um erro ao gerar o instalador.
+
+:fim
 pause

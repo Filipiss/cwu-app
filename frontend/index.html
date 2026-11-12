@@ -1071,6 +1071,9 @@
                   <p class="c-card__desc" id="app-release-date">Carregando…</p>
                 </div>
                 <div class="c-card__actions">
+                  <button type="button" class="c-btn c-btn--primary c-btn--sm u-hidden" id="btn-apply-update">
+                    <span>Atualizar agora</span><svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
+                  </button>
                   <a href="#" target="_blank" rel="noopener noreferrer" class="c-btn c-btn--primary c-btn--sm u-hidden" id="btn-download-update">
                     <span>Baixar atualização</span><svg class=c-icon aria-hidden=true><use href=#i-download></use></svg>
                   </a>
@@ -1080,7 +1083,31 @@
                 <span class="c-update-status__icon"><svg class=c-icon aria-hidden=true><use href=#i-info></use></svg></span>
                 <span class="c-update-status__text">Ainda não verificado. Clique em "Verificar atualizações".</span>
               </div>
+              <div class="c-update-progress u-hidden" id="update-progress" role="status" aria-live="polite">
+                <div class="c-update-progress__head"><span id="update-progress-text">Baixando atualização…</span><span id="update-progress-pct">0%</span></div>
+                <div class="c-progress-bar"><div class="c-progress-bar__fill" id="update-progress-fill" style="width:0%"></div></div>
+              </div>
               <div class="c-callout u-hidden" id="update-release-notes"></div>
+            </div>
+
+            <!-- VOLTAR PARA UMA VERSÃO ANTERIOR (só na versão instalada) -->
+            <div class="c-card u-mt-lg u-hidden" id="rollback-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-history></use></svg> Voltar para uma versão anterior</h4>
+                  <p class="c-card__desc">Se algo parou de funcionar depois de atualizar, escolha uma versão anterior. O app baixa o instalador dela do GitHub, confere a integridade e reabre na versão escolhida. Suas configurações são mantidas.</p>
+                </div>
+              </div>
+              <div class="c-rollback">
+                <div class="c-select-wrapper">
+                  <select id="rollback-select" class="c-select" aria-label="Versão para instalar">
+                    <option value="">Carregando versões…</option>
+                  </select>
+                  <span class="c-select-arrow"><svg class=c-icon aria-hidden=true><use href=#i-chevron-down></use></svg></span>
+                </div>
+                <button type="button" class="c-btn c-btn--secondary" id="btn-rollback" disabled><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> <span>Instalar esta versão</span></button>
+              </div>
+              <p class="c-field__hint" id="rollback-hint">Só aparecem versões publicadas com instalador (a partir da 1.2.0). Depois de voltar, o app continua avisando quando houver versão nova.</p>
             </div>
 
             <!-- HISTÓRICO (gerado a partir do CHANGELOG.md) -->

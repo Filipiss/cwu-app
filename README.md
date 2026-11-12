@@ -7,7 +7,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.1.0-blue)
+![Versão](https://img.shields.io/badge/versão-1.2.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
@@ -44,7 +44,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Processos suspeitos** | ✅ | Escaneia todos os processos em execução e aponta os com sinais de malware (nome de processo do Windows fora do lugar, nomes disfarçados, pastas temporárias, sem assinatura, extensão dupla, padrão de minerador), explicando o que esse tipo de programa costuma fazer. Triagem, não antivírus. |
 | **Ponto de restauração** | ✅ | O app **pergunta** antes da primeira alteração de sistema da sessão se você quer criar um (nunca cria sozinho), ou cria manualmente pela aba Logs. Toda ação que altera o Windows pede confirmação. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
-| **Atualizações do app** | ✅ | Consulta a última release no GitHub. |
+| **Atualizações do app** | ✅ | Consulta a última release no GitHub e, na versão instalada, baixa, confere (SHA-512) e aplica a atualização com um clique. |
 | **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. |
 | **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
 | **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |

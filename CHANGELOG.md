@@ -2,6 +2,14 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.2.0] - 2026-11-12
+
+### Adicionado
+- Atualização automática: em "Novas Versões", o botão "Atualizar" baixa a versão nova, confere a integridade e aplica com "Reiniciar e aplicar"
+
+### Alterado
+- O CWU App agora é distribuído como instalador (CWU-App-Setup.exe): instala na pasta do usuário sem pedir administrador, com atalhos no menu Iniciar e na área de trabalho e desinstalação pelo Windows. As configurações do exe portátil anterior são mantidas
+
 ## [1.1.0] - 2026-11-10
 
 ### Adicionado

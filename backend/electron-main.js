@@ -13,6 +13,7 @@ process.env.CWU_SESSION_TOKEN = require('crypto').randomBytes(32).toString('hex'
 require('./server.js');
 const db = require('./src/database/db');
 const { overlayBounds } = require('./src/utils/overlayLayout');
+const updateState = require('./src/utils/updateState');
 
 const APP_ORIGIN = 'http://127.0.0.1:4321';
 const APP_ID = 'com.cwuapp.utility'; // mesmo appId do package.json
@@ -237,6 +238,62 @@ function finishOverlayEdit(save) {
   refreshTrayMenu();
 }
 
+// ===== Atualização automática =====
+// Usa o electron-updater com as releases do GitHub (latest.yml + instalador + .blockmap).
+// O arquivo baixado é conferido pelo SHA-512 publicado no latest.yml antes de instalar.
+// Só funciona na versão instalada; no modo de desenvolvimento a aba mostra o link de download.
+function setupAutoUpdater() {
+  if (!app.isPackaged || process.env.PORTABLE_EXECUTABLE_FILE) return;
+  let autoUpdater;
+  try { ({ autoUpdater } = require('electron-updater')); } catch (e) { return; }
+  autoUpdater.autoDownload = false;        // só baixa quando o usuário clicar em "Atualizar agora"
+  autoUpdater.autoInstallOnAppQuit = true; // se ele não reiniciar na hora, aplica ao sair
+  updateState.set({ supported: true });
+
+  autoUpdater.on('update-available', (info) => updateState.set({ version: info.version }));
+  autoUpdater.on('update-not-available', () => updateState.set({ status: 'none' }));
+  autoUpdater.on('download-progress', (p) => updateState.set({ status: 'downloading', percent: Math.round(p.percent || 0) }));
+  autoUpdater.on('update-downloaded', (info) => updateState.set({ status: 'downloaded', percent: 100, version: info.version }));
+  autoUpdater.on('error', (err) => updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) }));
+
+  db.events.on('update-download', async () => {
+    const { status } = updateState.get();
+    if (status === 'checking' || status === 'downloading' || status === 'downloaded') return;
+    updateState.set({ status: 'checking', percent: 0, error: null });
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      if (!result || !result.isUpdateAvailable) { updateState.set({ status: 'none' }); return; }
+      updateState.set({ status: 'downloading' });
+      await autoUpdater.downloadUpdate();
+    } catch (err) {
+      updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) });
+    }
+  });
+
+  // Versão anterior: baixa e confere o instalador, roda em silêncio e fecha o app (ele reabre na versão escolhida)
+  db.events.on('rollback-install', async (version) => {
+    const { status } = updateState.get();
+    if (['checking', 'downloading', 'rollback'].includes(status)) return;
+    updateState.set({ status: 'rollback', percent: 0, version, error: null });
+    try {
+      const file = await require('./src/services/rollbackService').prepare(version, (pct) => updateState.set({ percent: pct }));
+      updateState.set({ status: 'rollback-ready', percent: 100 });
+      const { spawn } = require('child_process');
+      spawn(file, ['/S', '--force-run'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+      isQuitting = true;
+      setTimeout(() => app.quit(), 500);
+    } catch (err) {
+      updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) });
+    }
+  });
+
+  db.events.on('update-install', () => {
+    if (updateState.get().status !== 'downloaded') return;
+    isQuitting = true; // não manda para os ícones ocultos ao fechar
+    setImmediate(() => autoUpdater.quitAndInstall(true, true)); // instala em silêncio e reabre
+  });
+}
+
 // Previne abrir múltiplas instâncias simultâneas
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -246,6 +303,7 @@ if (!gotTheLock) {
 
   app.whenReady().then(() => {
     registerNotificationIdentity();
+    setupAutoUpdater();
     createWindow();
     createTray();
     if (!globalShortcut.register(OVERLAY_HOTKEY, toggleOverlay)) {

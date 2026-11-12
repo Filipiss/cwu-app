@@ -83,6 +83,21 @@ const routes = [
   { method: 'POST', path: '/api/overlay/save-position', handler: (req, res) => { require('../database/db').events.emit('overlay-save-position'); res.json({ success: true }); } },
   { method: 'POST', path: '/api/overlay/cancel-edit', handler: (req, res) => { require('../database/db').events.emit('overlay-cancel-edit'); res.json({ success: true }); } },
   { method: 'POST', path: '/api/overlay/toggle', handler: (req, res) => { require('../database/db').events.emit('overlay-toggle'); res.json({ success: true }); } },
+  // Atualização automática (versão instalada): o Electron baixa e aplica; aqui só repassa
+  { method: 'GET', path: '/api/update/status', handler: (req, res) => res.json({ success: true, data: require('../utils/updateState').get() }) },
+  { method: 'POST', path: '/api/update/download', handler: (req, res) => { require('../database/db').events.emit('update-download'); res.json({ success: true }); } },
+  { method: 'POST', path: '/api/update/install', handler: (req, res) => { require('../database/db').events.emit('update-install'); res.json({ success: true }); } },
+  // Voltar para uma versão anterior (lista vem do GitHub; quem instala é o Electron)
+  { method: 'GET', path: '/api/update/versions', handler: async (req, res) => {
+    try { res.json({ success: true, data: await require('../services/rollbackService').listVersions() }); }
+    catch (e) { res.json({ success: false, error: 'Não foi possível consultar as versões no GitHub.' }); }
+  } },
+  { method: 'POST', path: '/api/update/rollback', handler: (req, res) => {
+    const version = String((req.body && req.body.version) || '');
+    if (!/^\d+\.\d+\.\d+$/.test(version)) return res.json({ success: false, error: 'Versão inválida.' });
+    require('../database/db').events.emit('rollback-install', version);
+    res.json({ success: true });
+  } },
   { method: 'GET', path: '/api/fps', handler: async (req, res) => res.json({ success: true, data: await require('../services/fpsService').snapshot() }) },
   { method: 'GET', path: '/api/monitor', handler: (req, res) => res.json({ success: true, data: monitorService.snapshot() }) },
   { method: 'GET', path: '/api/startup', handler: async (req, res) => res.json({ success: true, data: await startupService.list() }) },

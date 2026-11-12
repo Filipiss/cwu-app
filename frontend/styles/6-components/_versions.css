@@ -44,3 +44,12 @@
 .c-changelog__section-title { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
 .c-changelog__section-title .c-icon { color: var(--color-primary); }
 .c-changelog__list { margin: 0; padding-left: 18px; color: var(--color-text-secondary); font-size: 0.86rem; line-height: 1.65; }
+
+/* Atualização automática: progresso do download */
+.c-update-progress { margin-top: var(--spacing-md); }
+.c-update-progress__head { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-secondary); }
+.c-update-progress .c-progress-bar__fill { transition: width 0.3s ease; }
+
+/* Voltar para uma versão anterior */
+.c-rollback { display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap; margin-bottom: var(--spacing-sm); }
+.c-rollback .c-select-wrapper { flex: 1; min-width: 220px; max-width: 360px; }

@@ -138,6 +138,11 @@ const API = {
 
   getMonitor() { return this.request('/api/monitor'); },
   toggleOverlay() { return this.request('/api/overlay/toggle', { method: 'POST' }); },
+  getUpdateStatus() { return this.request('/api/update/status'); },
+  downloadUpdate() { return this.request('/api/update/download', { method: 'POST' }); },
+  listVersions() { return this.request('/api/update/versions'); },
+  rollbackTo(version) { return this.request('/api/update/rollback', { method: 'POST', body: JSON.stringify({ version }) }); },
+  installUpdate() { return this.request('/api/update/install', { method: 'POST' }); },
   startOverlayEdit() { return this.request('/api/overlay/edit', { method: 'POST' }); },
   getStartup() { return this.request('/api/startup'); },
   toggleStartup(id, enabled) { return this.request('/api/startup/toggle', { method: 'POST', body: JSON.stringify({ id, enabled }) }); },
