@@ -1,5 +1,5 @@
 /* frontend/styles/1-settings/_themes.css */
-/* Settings: Temas Visuais (Grafite e Névoa) */
+/* Settings: Temas Visuais (Grafite, Névoa e Índigo) */
 
 /* 1. Tema Grafite (padrão) (painel técnico: preto neutro, um único acento laranja, números em mono) */
 :root,
@@ -89,4 +89,46 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+}
+
+/* 3. Tema Índigo (azul-marinho profundo com degradês, vidro azulado e acento azul vibrante) */
+[data-theme="indigo"] {
+  --color-bg-main: #0f1533;
+  --color-bg-surface: #141b3f;
+  --color-bg-card: #172150;
+  --color-bg-card-hover: #1c2860;
+  --color-bg-sidebar: #0c112b;
+  --color-border: rgba(128, 150, 255, 0.14);
+  --color-border-bright: rgba(140, 165, 255, 0.28);
+
+  --color-text-primary: #f2f4ff;
+  --color-text-secondary: #a9b2da;
+  --color-text-muted: #6f7aab;
+
+  --color-primary: #3f6dff;
+  --color-primary-rgb: 63, 109, 255;
+  --color-primary-hover: #5f86ff;
+
+  --color-accent: #6b8cff;
+  --color-accent-rgb: 107, 140, 255;
+
+  --color-success: #6fd3a0;
+  --color-success-rgb: 111, 211, 160;
+
+  --color-warning: #f2c46d;
+  --color-warning-rgb: 242, 196, 109;
+
+  --color-danger: #ff8191;
+  --color-danger-rgb: 255, 129, 145;
+
+  --glow-primary: 0 6px 20px rgba(63, 109, 255, 0.35);
+  --glow-card: 0 10px 30px rgba(3, 6, 25, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(128, 150, 255, 0.12);
+
+  --font-family-base: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-family-mono: 'Cascadia Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
 }

@@ -140,7 +140,9 @@ const App = {
     if (quickThemeBtn) {
       quickThemeBtn.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'frost' ? 'graphite' : 'frost';
+        // Alterna em ciclo: Grafite → Névoa → Índigo
+        const order = ['graphite', 'frost', 'indigo'];
+        const nextTheme = order[(order.indexOf(currentTheme) + 1) % order.length];
 
         SettingsModule.setTheme(nextTheme);
         SettingsModule.saveSettings();

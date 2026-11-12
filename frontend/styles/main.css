@@ -42,6 +42,7 @@
 @import url('./6-components/_subtabs.css');
 @import url('./6-components/_theme-graphite.css');
 @import url('./6-components/_theme-frost.css');
+@import url('./6-components/_theme-indigo.css');
 
 /* 7. Utilities */
 @import url('./7-utilities/_utilities.css');

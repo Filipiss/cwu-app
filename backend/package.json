@@ -1,6 +1,6 @@
 {
   "name": "cwu-app-backend",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CWU App: pós-formatação e otimização do Windows para jogos",
   "main": "electron-main.js",
   "scripts": {

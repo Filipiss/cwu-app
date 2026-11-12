@@ -2,6 +2,12 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.2.1] - 2026-11-12
+
+### Adicionado
+- Tema Índigo: azul-marinho profundo com degradês, cartões de vidro azulado e acento azul vibrante
+- O botão "Tema" do cabeçalho alterna entre os três temas
+
 ## [1.2.0] - 2026-11-12
 
 ### Adicionado

@@ -7,7 +7,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.2.0-blue)
+![Versão](https://img.shields.io/badge/versão-1.2.1-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
@@ -49,7 +49,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
 | **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |
 | **Minha Conta** | ✅ | Login opcional (Supabase) para montar a sua lista pós-formatação e levá-la para qualquer PC. |
-| **Temas e idiomas** | ✅ | Grafite (escuro) e Névoa (claro); português e inglês com troca na hora; menu lateral recolhível (Ctrl+B) e layout que se adapta ao tamanho da janela. |
+| **Temas e idiomas** | ✅ | Grafite (escuro), Névoa (claro) e Índigo (azul-marinho); português e inglês com troca na hora; menu lateral recolhível (Ctrl+B) e layout que se adapta ao tamanho da janela. |
 
 
 ## Arquitetura

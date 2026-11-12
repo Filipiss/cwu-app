@@ -1,6 +1,9 @@
 // frontend/scripts/translations.js — dicionário PT → EN (gerado a partir da interface)
 window.CWU_TRANSLATIONS = {
   "en-US": {
+    "Índigo": "Indigo",
+    "Azul-marinho profundo com degradês, cartões de vidro azulado e acento azul vibrante.": "Deep navy with gradients, bluish glass cards and a vibrant blue accent.",
+    "Tema alterado para:": "Theme changed to:",
     "Voltar para uma versão anterior": "Go back to a previous version",
     "Se algo parou de funcionar depois de atualizar, escolha uma versão anterior. O app baixa o instalador dela do GitHub, confere a integridade e reabre na versão escolhida. Suas configurações são mantidas.": "If something stopped working after updating, pick a previous version. The app downloads its installer from GitHub, verifies its integrity and reopens on the chosen version. Your settings are kept.",
     "Carregando versões…": "Loading versions…",

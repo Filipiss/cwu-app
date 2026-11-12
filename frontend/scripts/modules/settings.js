@@ -99,13 +99,14 @@ const SettingsModule = {
       }
     });
 
-    App.showToast(`Tema alterado para: ${theme}`, 'success');
+    const names = { graphite: 'Grafite', frost: 'Névoa', indigo: 'Índigo' };
+    App.showToast(`${I18N.t('Tema alterado para:')} ${names[theme] || theme}`, 'success');
   },
 
   applySettingsToUI() {
     let savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'graphite';
     // Temas antigos (Futurista, Clássico, Light) caem no Grafite
-    if (!['graphite', 'frost'].includes(savedTheme)) savedTheme = 'graphite';
+    if (!['graphite', 'frost', 'indigo'].includes(savedTheme)) savedTheme = 'graphite';
     this.setTheme(savedTheme);
 
     const langSelect = document.getElementById('setting-language-select');
