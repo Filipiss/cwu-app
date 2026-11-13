@@ -1,43 +1,103 @@
 /* styles/overlay.css — sobreposição de desempenho (janela transparente sobre os jogos)
- * --osd-scale (tamanho), --osd-opacity (transparência de tudo) e o layout vêm das Configurações. */
+ * --osd-scale (tamanho), --osd-opacity (transparência de tudo) e o layout vêm das Configurações.
+ * As cores seguem o tema do app (Grafite, Névoa ou Índigo), via data-theme no <html>. */
 html, body { margin: 0; background: transparent; overflow: hidden; user-select: none; }
 body { display: inline-block; }
+
+/* ---------- Paletas por tema ---------- */
+/* Grafite (padrão): preto neutro com acento laranja */
+:root {
+  --osd-bg: rgba(10, 10, 12, 0.6);
+  --osd-border: transparent;
+  --osd-text: #ededed;
+  --osd-label: #ff9142;
+  --osd-muted: #a9a9ae;
+  --osd-ok: #9fd3ae;
+  --osd-warn: #e8c57a;
+  --osd-hot: #f09a8f;
+  /* Contorno no texto: continua legível mesmo com o fundo bem transparente */
+  --osd-shadow: 0 0 2px #000, 0 1px 2px rgba(0, 0, 0, 0.9);
+  --osd-accent: #ff7a1a;
+  --osd-accent-text: #111;
+  --osd-bar-bg: rgba(10, 10, 12, 0.92);
+  --osd-bar-text: #fff;
+  --osd-bar-btn: #2a2a2e;
+}
+
+/* Névoa: claro acinzentado com acento grafite (halo claro no lugar da sombra escura) */
+:root[data-theme="frost"] {
+  --osd-bg: rgba(239, 240, 242, 0.82);
+  --osd-border: rgba(255, 255, 255, 0.9);
+  --osd-text: #1d1e21;
+  --osd-label: #26272b;
+  --osd-muted: #6b6e75;
+  --osd-ok: #3f7355;
+  --osd-warn: #8a6524;
+  --osd-hot: #a8483f;
+  --osd-shadow: 0 0 2px rgba(255, 255, 255, 0.95), 0 1px 2px rgba(255, 255, 255, 0.8);
+  --osd-accent: #26272b;
+  --osd-accent-text: #fff;
+  --osd-bar-bg: rgba(244, 245, 246, 0.96);
+  --osd-bar-text: #1d1e21;
+  --osd-bar-btn: #dfe0e3;
+}
+
+/* Índigo: azul-marinho com vidro azulado e acento azul */
+:root[data-theme="indigo"] {
+  --osd-bg: linear-gradient(160deg, rgba(43, 62, 150, 0.72) 0%, rgba(15, 21, 51, 0.72) 100%);
+  --osd-border: rgba(128, 150, 255, 0.28);
+  --osd-text: #f2f4ff;
+  --osd-label: #8aa6ff;
+  --osd-muted: #a9b2da;
+  --osd-ok: #6fd3a0;
+  --osd-warn: #f2c46d;
+  --osd-hot: #ff8191;
+  --osd-shadow: 0 0 2px #050a24, 0 1px 2px rgba(5, 10, 36, 0.9);
+  --osd-accent: #3f6dff;
+  --osd-accent-text: #fff;
+  --osd-bar-bg: rgba(14, 20, 50, 0.95);
+  --osd-bar-text: #f2f4ff;
+  --osd-bar-btn: rgba(255, 255, 255, 0.10);
+}
+
+/* ---------- Caixa ---------- */
 .c-osd {
   --osd-scale: 1;
   --osd-opacity: 0.85;
   display: inline-flex; flex-direction: column; gap: calc(2px * var(--osd-scale));
   padding: calc(7px * var(--osd-scale)) calc(10px * var(--osd-scale));
   border-radius: calc(8px * var(--osd-scale));
-  background: rgba(10, 10, 12, 0.6);
+  background: var(--osd-bg);
+  border: 1px solid var(--osd-border);
   /* Um único controle: fundo e textos ficam mais ou menos transparentes juntos */
   opacity: var(--osd-opacity);
   font: 600 calc(12px * var(--osd-scale)) / 1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
-  color: #ededed;
-  /* Contorno no texto: continua legível mesmo com o fundo totalmente transparente */
-  text-shadow: 0 0 2px #000, 0 1px 2px rgba(0, 0, 0, 0.9);
+  color: var(--osd-text);
+  text-shadow: var(--osd-shadow);
   white-space: nowrap;
 }
+:root[data-theme="indigo"] .c-osd { border-radius: calc(12px * var(--osd-scale)); }
 .c-osd--horizontal { flex-direction: row; gap: calc(14px * var(--osd-scale)); }
 .c-osd__row { display: flex; gap: calc(7px * var(--osd-scale)); }
-.c-osd__label { color: #ff9142; font-weight: 700; }
+.c-osd__label { color: var(--osd-label); font-weight: 700; }
 .c-osd--vertical .c-osd__label { min-width: 3.1ch; }
 .c-osd__value { display: flex; gap: calc(7px * var(--osd-scale)); }
-.c-osd__muted { color: #a9a9ae; font-weight: 500; }
-.c-osd--ok { color: #9fd3ae; }
-.c-osd--warn { color: #e8c57a; }
-.c-osd--hot { color: #f09a8f; }
+.c-osd__muted { color: var(--osd-muted); font-weight: 500; }
+.c-osd--ok { color: var(--osd-ok); }
+.c-osd--warn { color: var(--osd-warn); }
+.c-osd--hot { color: var(--osd-hot); }
 
-/* Modo de posicionamento: a caixa inteira arrasta a janela */
+/* ---------- Modo de posicionamento: a caixa inteira arrasta a janela ---------- */
 .is-editing { padding: 6px; }
-.is-editing .c-osd { opacity: 1; outline: 2px dashed #ff9142; outline-offset: 2px; -webkit-app-region: drag; cursor: move; }
+.is-editing .c-osd { opacity: 1; outline: 2px dashed var(--osd-accent); outline-offset: 2px; -webkit-app-region: drag; cursor: move; }
 .c-osd-edit {
   display: flex; align-items: center; gap: 6px; margin-top: 8px;
-  font: 600 12px/1.2 "Segoe UI", system-ui, sans-serif; color: #fff;
-  background: rgba(10, 10, 12, 0.92); padding: 6px 8px; border-radius: 8px;
+  font: 600 12px/1.2 "Segoe UI", system-ui, sans-serif; color: var(--osd-bar-text);
+  background: var(--osd-bar-bg); padding: 6px 8px; border-radius: 8px;
 }
-.c-osd-edit span { color: #c9c9ce; font-weight: 500; margin-right: 4px; }
+.c-osd-edit span { color: var(--osd-muted); font-weight: 500; margin-right: 4px; }
 .c-osd-edit button {
   -webkit-app-region: no-drag; border: 0; border-radius: 6px; padding: 5px 10px; cursor: pointer;
-  font: inherit; background: #2a2a2e; color: #fff;
+  font: inherit; background: var(--osd-bar-btn); color: var(--osd-bar-text);
 }
-.c-osd-edit button.is-primary { background: #ff7a1a; color: #111; }
+.c-osd-edit button.is-primary { background: var(--osd-accent); color: var(--osd-accent-text); }

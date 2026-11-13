@@ -107,7 +107,10 @@ const SettingsModule = {
     let savedTheme = localStorage.getItem('cwu_theme') || this.settings.theme || 'graphite';
     // Temas antigos (Futurista, Clássico, Light) caem no Grafite
     if (!['graphite', 'frost', 'indigo'].includes(savedTheme)) savedTheme = 'graphite';
+    // A sobreposição lê o tema das configurações salvas: mantém as duas fontes iguais
+    const themeChanged = this.settings.theme !== savedTheme;
     this.setTheme(savedTheme);
+    if (themeChanged) this.saveSettings();
 
     const langSelect = document.getElementById('setting-language-select');
     if (langSelect) langSelect.value = I18N.lang;

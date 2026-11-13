@@ -29,6 +29,9 @@
     box.style.setProperty('--osd-opacity', opacity);
     box.classList.toggle('c-osd--horizontal', s.overlayLayout === 'horizontal');
     box.classList.toggle('c-osd--vertical', s.overlayLayout !== 'horizontal');
+    // Cores do tema escolhido no app (Grafite, Névoa ou Índigo)
+    const theme = ['graphite', 'frost', 'indigo'].includes(s.theme) ? s.theme : 'graphite';
+    if (document.documentElement.dataset.theme !== theme) document.documentElement.dataset.theme = theme;
   }
 
   function render(m) {
