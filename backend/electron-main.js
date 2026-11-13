@@ -294,6 +294,18 @@ function setupAutoUpdater() {
   });
 }
 
+// Instaladores baixados para voltar de versão ficam na pasta temporária: quando o app abre,
+// a instalação já terminou, então eles podem ser apagados
+function cleanupRollbackInstallers() {
+  try {
+    const fs = require('fs');
+    const dir = require('os').tmpdir();
+    fs.readdirSync(dir)
+      .filter(f => /^CWU-App-Setup-\d+\.\d+\.\d+\.exe$/.test(f))
+      .forEach(f => { try { fs.unlinkSync(path.join(dir, f)); } catch (e) { /* em uso: fica para a próxima */ } });
+  } catch (e) { /* pasta temporária inacessível */ }
+}
+
 // Previne abrir múltiplas instâncias simultâneas
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -304,6 +316,7 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
     registerNotificationIdentity();
     setupAutoUpdater();
+    cleanupRollbackInstallers();
     createWindow();
     createTray();
     if (!globalShortcut.register(OVERLAY_HOTKEY, toggleOverlay)) {
