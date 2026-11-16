@@ -24,6 +24,9 @@ const routes = [
   // System Specs
   { method: 'GET', path: '/api/specs', handler: (req, res) => specsController.getSpecs(req, res) },
   { method: 'GET', path: '/api/specs/disks', handler: async (req, res) => res.json({ success: true, data: await diskHealthService.getDiskHealth() }) },
+  { method: 'GET', path: '/api/cleanup/analyze', handler: async (req, res) => res.json({ success: true, data: await require('../services/cleanupService').analyze() }) },
+  { method: 'POST', path: '/api/cleanup/run', handler: async (req, res) => res.json({ success: true, data: await require('../services/cleanupService').clean(req.body || {}) }) },
+  { method: 'GET', path: '/api/specs/volumes', handler: async (req, res) => res.json({ success: true, data: await diskHealthService.getVolumes() }) },
 
   // Driver Scanner & Catalogs
   { method: 'GET', path: '/api/drivers/scan', handler: (req, res) => driverController.scan(req, res) },
@@ -98,7 +101,12 @@ const routes = [
     require('../database/db').events.emit('rollback-install', version);
     res.json({ success: true });
   } },
-  { method: 'GET', path: '/api/fps', handler: async (req, res) => res.json({ success: true, data: await require('../services/fpsService').snapshot() }) },
+  { method: 'GET', path: '/api/fps', handler: async (req, res) => {
+    const data = await require('../services/fpsService').snapshot();
+    // Jogo em tela cheia exclusiva: a sobreposição não aparece por cima; o app avisa o usuário
+    if (data.exclusive && data.app) require('../database/db').events.emit('overlay-exclusive', data.app);
+    res.json({ success: true, data });
+  } },
   { method: 'GET', path: '/api/monitor', handler: (req, res) => res.json({ success: true, data: monitorService.snapshot() }) },
   { method: 'GET', path: '/api/startup', handler: async (req, res) => res.json({ success: true, data: await startupService.list() }) },
   { method: 'POST', path: '/api/startup/toggle', handler: async (req, res) => res.json({ success: true, data: await startupService.toggle(req.body || {}) }) },

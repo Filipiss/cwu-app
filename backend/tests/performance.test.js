@@ -113,3 +113,14 @@ test('overlayBounds: cantos, centro e posição livre dentro da área útil', ()
   assert.deepEqual(overlayBounds({ overlayPosition: 'custom', overlayX: 5000, overlayY: -50 }, area, size), { x: 1920 - 190, y: 0, width: 190, height: 108 });
 });
 
+
+test('SysMain e inicialização rápida: leitura do serviço e do registro', () => {
+  assert.equal(tweaks.interpretStatus({ sysmain: 'Disabled' }).sysmain, false);
+  assert.equal(tweaks.interpretStatus({ sysmain: 'Automatic' }).sysmain, true);
+  assert.equal(tweaks.interpretStatus({ sysmain: 'Manual' }).sysmain, true);
+  assert.equal(tweaks.interpretStatus({ sysmain: '' }).sysmain, null, 'serviço ausente');
+  assert.equal(tweaks.interpretStatus({ hiberboot: 1, hibernate: 1 }).fast_startup, true);
+  assert.equal(tweaks.interpretStatus({ hiberboot: 0, hibernate: 1 }).fast_startup, false);
+  assert.equal(tweaks.interpretStatus({ hiberboot: 1, hibernate: 0 }).fast_startup, false, 'sem hibernação não há inicialização rápida');
+  assert.equal(tweaks.interpretStatus({}).fast_startup, null);
+});

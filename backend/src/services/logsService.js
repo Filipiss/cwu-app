@@ -26,6 +26,10 @@ class LogsService {
     }
 
     // Executa a reversão real no sistema
+    if (item.type === 'cleanup') {
+      return { success: false, message: 'Arquivos apagados pela limpeza de disco não podem ser restaurados.' };
+    }
+
     if (item.type === 'boost' && item.revertAction) {
       const boostService = require('./boostService');
       await boostService.runBoostOptimization(item.revertAction);

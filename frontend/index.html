@@ -317,17 +317,6 @@
               </div>
             </div>
 
-            <!-- VIDA ÚTIL DOS DISCOS -->
-            <div class="c-card">
-              <div class="c-card__head">
-                <div class="c-card__head-text">
-                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-hard-drive></use></svg> Vida útil dos discos</h4>
-                  <p class="c-card__desc">Desgaste, temperatura, horas ligado e erros lidos do SMART de cada SSD, NVMe e HD.</p>
-                </div>
-              </div>
-              <div id="disk-health-list" class="c-disk-list"><p class="c-card__desc">Lendo os discos…</p></div>
-            </div>
-
             <!-- DETALHES DE PLACA-MÃE E WINDOWS -->
             <div class="c-card">
               <div class="c-card__header">
@@ -761,15 +750,16 @@
             <div class="c-section-header">
               <div class="c-section-header__title-group">
                 <h2 class="c-section-header__title"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg> Performance</h2>
-                <p class="c-section-header__desc">Uso e temperatura em tempo real, programas da inicialização, ajustes de jogos do Windows e diagnóstico de RAM.</p>
+                <p class="c-section-header__desc">Uso e temperatura em tempo real, ajustes do Windows, diagnóstico de RAM, discos e programas da inicialização.</p>
               </div>
               <span class="c-badge c-badge--neutral" id="perf-monitor-status">Monitor parado</span>
             </div>
 
             <div class="c-subtabs" role="tablist" data-group="perf">
               <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="monitor"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg> Monitor</button>
-              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="tweaks"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajustes de jogos</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="tweaks"><svg class=c-icon aria-hidden=true><use href=#i-wrench></use></svg> Ajustes do Windows</button>
               <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="ram"><svg class=c-icon aria-hidden=true><use href=#i-memory-stick></use></svg> Memória RAM</button>
+              <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="disks"><svg class=c-icon aria-hidden=true><use href=#i-hard-drive></use></svg> Discos</button>
               <button class="c-subtabs__tab js-subtab" role="tab" data-group="perf" data-view="startup"><svg class=c-icon aria-hidden=true><use href=#i-timer></use></svg> Inicialização</button>
             </div>
 
@@ -832,8 +822,8 @@
             <div class="c-card">
               <div class="c-card__head">
                 <div class="c-card__head-text">
-                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajustes de jogos do Windows</h4>
-                  <p class="c-card__desc">Configurações reais do Windows que afetam jogos. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-wrench></use></svg> Ajustes do Windows</h4>
+                  <p class="c-card__desc">Configurações reais do Windows que afetam jogos e o desempenho do PC. Cada alteração fica registrada na aba Logs e pode ser revertida.</p>
                 </div>
                 <div class="c-card__actions">
                   <button class="c-btn c-btn--secondary c-btn--sm" id="btn-tweaks-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
@@ -856,6 +846,50 @@
                 </div>
               </div>
               <div id="perf-ram-result" class="u-mt-sm"></div>
+            </div>
+            </div>
+
+            <div class="c-subtab-panel js-subtab-panel" role="tabpanel" data-group="perf" data-view="disks">
+            <!-- ESPAÇO NAS UNIDADES -->
+            <div class="c-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-hard-drive></use></svg> Espaço nas unidades</h4>
+                  <p class="c-card__desc">Espaço livre de cada unidade. Com menos de 15% livres, SSDs ficam mais lentos e o Windows demora mais para ligar.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-volumes-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                </div>
+              </div>
+              <div id="volume-list" class="c-disk-list"><p class="c-card__desc">Lendo as unidades…</p></div>
+            </div>
+
+            <!-- LIMPEZA DE DISCO -->
+            <div class="c-card" id="cleanup-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-trash-2></use></svg> Limpeza de disco</h4>
+                  <p class="c-card__desc">Caches de shaders, temporários, downloads do Windows Update e outros arquivos que o Windows e os drivers recriam sozinhos. Primeiro o app mede, depois você escolhe o que apagar.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-cleanup-analyze"><span>Analisar</span> <svg class=c-icon aria-hidden=true><use href=#i-search></use></svg></button>
+                </div>
+              </div>
+              <div id="cleanup-list"><p class="c-card__desc">Clique em Analisar para ver quanto espaço dá para liberar.</p></div>
+            </div>
+
+            <!-- VIDA ÚTIL DOS DISCOS -->
+            <div class="c-card">
+              <div class="c-card__head">
+                <div class="c-card__head-text">
+                  <h4 class="c-card__title"><svg class=c-icon aria-hidden=true><use href=#i-activity></use></svg> Vida útil dos discos</h4>
+                  <p class="c-card__desc">Desgaste, temperatura, horas ligado e erros lidos do SMART de cada SSD, NVMe e HD.</p>
+                </div>
+                <div class="c-card__actions">
+                  <button class="c-btn c-btn--secondary c-btn--sm" id="btn-disk-health-refresh"><span>Atualizar</span> <svg class=c-icon aria-hidden=true><use href=#i-refresh-cw></use></svg></button>
+                </div>
+              </div>
+              <div id="disk-health-list" class="c-disk-list"><p class="c-card__desc">Lendo os discos…</p></div>
             </div>
             </div>
 
@@ -1039,7 +1073,7 @@
                   <label class="c-check-row"><input type="checkbox" data-setting="overlayGpu"><span class="c-check-row__text"><span>Uso da GPU</span></span></label>
                   <label class="c-check-row"><input type="checkbox" data-setting="overlayGpuTemp"><span class="c-check-row__text"><span>Temperatura da GPU</span></span></label>
                 </div>
-                <p class="c-field__hint">Em jogos no modo "Tela cheia" exclusiva, o Windows pode esconder a sobreposição. Use "Janela sem bordas" (borderless) para ela aparecer.</p>
+                <p class="c-field__hint">Funciona em tela cheia, janela e janela sem bordas. Só a tela cheia exclusiva de verdade (jogos antigos ou com "Desabilitar otimizações de tela cheia" marcado no .exe) não deixa nada aparecer por cima: nesse caso o app avisa e explica o que fazer.</p>
               </div>
             </div>
 
@@ -1267,6 +1301,7 @@
   <script src="scripts/modules/boost.js"></script>
   <script src="scripts/modules/processes.js"></script>
   <script src="scripts/modules/competitive.js"></script>
+  <script src="scripts/modules/disks.js"></script>
   <script src="scripts/modules/perf.js"></script>
   <script src="scripts/modules/security.js"></script>
   <script src="scripts/modules/logs.js"></script>

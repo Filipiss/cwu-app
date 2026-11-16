@@ -84,4 +84,60 @@ async function getDiskHealth() {
   return { supported: true, isAdmin: Boolean(d.isAdmin), disks: list.map(evaluateDisk) };
 }
 
-module.exports = { getDiskHealth, evaluateDisk };
+// ===== Espaço livre nas unidades (C:, D:, ...) =====
+// SSD quase cheio fica bem mais lento para gravar, e no boot o Windows grava muito
+// (paginação, logs, atualizações). Por isso o alerta é mais rígido na unidade do Windows.
+const VOLUMES_SCRIPT = `
+$ErrorActionPreference = 'SilentlyContinue'
+$sys = $env:SystemDrive.TrimEnd(':')
+$vols = @(Get-Volume | Where-Object { $_.DriveLetter -and $_.DriveType -eq 'Fixed' -and $_.Size -gt 0 } | Sort-Object DriveLetter | ForEach-Object {
+  [PSCustomObject]@{ letter = [string]$_.DriveLetter; label = $_.FileSystemLabel; sizeBytes = [int64]$_.Size; freeBytes = [int64]$_.SizeRemaining; system = ([string]$_.DriveLetter -eq $sys) }
+})
+[PSCustomObject]@{ volumes = $vols } | ConvertTo-Json -Depth 3 -Compress
+`;
+
+const FREE_WARN_PCT = 15;
+const FREE_BAD_PCT = 10;
+
+/** Avalia o espaço livre de uma unidade (pura, testável). */
+function evaluateVolume(raw) {
+  const size = num(raw.sizeBytes) || 0;
+  const free = Math.max(0, Math.min(size, num(raw.freeBytes) || 0));
+  const freePct = size ? Math.round((free / size) * 1000) / 10 : null;
+  const freeGb = Math.round((free / 1024 ** 3) * 10) / 10;
+  const system = Boolean(raw.system);
+  let status = 'good';
+  const notes = [];
+  if (freePct !== null && freePct < FREE_BAD_PCT) {
+    status = 'bad';
+    notes.push(system
+      ? 'Unidade do Windows quase cheia: o PC fica lento para ligar e abrir programas, e as atualizações podem falhar. Libere espaço para ter pelo menos 15% livres.'
+      : 'Unidade quase cheia: libere espaço para ter pelo menos 15% livres.');
+  } else if (freePct !== null && freePct < FREE_WARN_PCT) {
+    status = 'warn';
+    notes.push(system
+      ? 'Pouco espaço na unidade do Windows: SSDs ficam mais lentos para gravar quando estão quase cheios.'
+      : 'Pouco espaço livre nesta unidade.');
+  }
+  return {
+    letter: String(raw.letter || '').slice(0, 1).toUpperCase(),
+    label: raw.label || '',
+    system,
+    sizeGb: Math.round((size / 1024 ** 3) * 10) / 10,
+    freeGb,
+    freePct,
+    status,
+    notes
+  };
+}
+
+async function getVolumes() {
+  if (process.platform !== 'win32') return { supported: false, volumes: [] };
+  const res = await runPowerShell(VOLUMES_SCRIPT, 20000);
+  const d = res.success && res.data ? res.data : null;
+  if (!d) return { supported: true, volumes: [], error: res.error || 'Sem resposta do PowerShell' };
+  const list = Array.isArray(d.volumes) ? d.volumes : (d.volumes ? [d.volumes] : []);
+  return { supported: true, volumes: list.filter(v => v && v.letter).map(evaluateVolume) };
+}
+
+module.exports = { getDiskHealth, evaluateDisk, getVolumes, evaluateVolume };

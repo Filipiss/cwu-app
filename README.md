@@ -7,7 +7,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.2.2-blue)
+![Versão](https://img.shields.io/badge/versão-1.3.0-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
@@ -28,7 +28,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | Módulo | Status | O que faz |
 | :--- | :---: | :--- |
 | **System Specs** | ✅ | Lê CPU, GPUs (VRAM real via registro), RAM (tipo, frequência, nº de pentes), todos os discos (NVMe/SSD/HDD + saúde), placa-mãe, BIOS e Windows. Dá uma nota de 0 a 10 por componente. |
-| **Vida útil dos discos** | ✅ | Para cada SSD, NVMe e HD: % de vida útil restante, temperatura, horas ligado e erros sem correção (contadores SMART do Windows), com alerta quando é hora de fazer backup ou trocar. |
+| **Discos (Performance)** | ✅ | Sub-aba com vida útil, espaço e limpeza. Vida útil: para cada SSD, NVMe e HD: % de vida útil restante, temperatura, horas ligado e erros sem correção (contadores SMART do Windows), com alerta quando é hora de fazer backup ou trocar. |
 | **Driver Scan** | ✅ | Lista dispositivos com erro no Gerenciador de Dispositivos (com explicação do código de erro), drivers genéricos da Microsoft e **verifica atualizações de verdade**: Windows Update para todos os dispositivos e o serviço oficial da NVIDIA para placas GeForce. Tabela ordenável por dispositivo, fabricante, versão ou situação. |
 | **Driver Update** | ✅ | Atalhos para as páginas oficiais (NVIDIA, AMD, Intel, Realtek), filtrados pelo hardware real (ex.: não sugere driver de vídeo Intel para CPU linha F). |
 | **Softwares pós-formatação** | ✅ | Catálogo pesquisável com 48 runtimes e programas essenciais e links oficiais. |
@@ -39,13 +39,15 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Prioridade de processos** | ✅ | Escolha um programa em execução e defina a prioridade de CPU, na hora ou de forma permanente (Image File Execution Options). |
 | **Monitor em tempo real** | ✅ | Uso de CPU, GPU, RAM e disco com histórico, temperaturas (GPU de qualquer fabricante, discos, ACPI com detecção de sensor travado) e processos que mais consomem. Um único PowerShell contínuo, para não pesar o PC. |
 | **Programas na inicialização** | ✅ | Ativa/desativa pelo mesmo mecanismo do Gerenciador de Tarefas (StartupApproved), reversível. |
-| **Ajustes de jogos do Windows** | ✅ | Modo de Jogo, HAGS, otimizações para jogos em janela e gravação em segundo plano do Game Bar. |
+| **Ajustes do Windows** | ✅ | Modo de Jogo, HAGS, otimizações para jogos em janela, gravação em segundo plano do Game Bar, SysMain e inicialização rápida. |
+| **Espaço nas unidades** | ✅ | Espaço livre de cada unidade, com alerta abaixo de 15% (mais rígido na unidade do Windows) e atalho para o Armazenamento. |
+| **Limpeza de disco** | ✅ | Mede e apaga só pastas conhecidas que se recriam sozinhas: caches de shaders (NVIDIA, AMD, Intel, DirectX), temporários, despejos de travamento, downloads do Windows Update, Otimização de Entrega, relatórios de erro, Lixeira e Windows.old, além do arquivo de hibernação sem uso. Mostra o tamanho de cada item antes e o total liberado depois. |
 | **Diagnóstico de RAM** | ✅ | Detecta XMP/EXPO desligado, canal simples e pentes diferentes. |
 | **Processos suspeitos** | ✅ | Escaneia todos os processos em execução e aponta os com sinais de malware (nome de processo do Windows fora do lugar, nomes disfarçados, pastas temporárias, sem assinatura, extensão dupla, padrão de minerador), explicando o que esse tipo de programa costuma fazer. Triagem, não antivírus. |
 | **Ponto de restauração** | ✅ | O app **pergunta** antes da primeira alteração de sistema da sessão se você quer criar um (nunca cria sozinho), ou cria manualmente pela aba Logs. Toda ação que altera o Windows pede confirmação. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub e, na versão instalada, baixa, confere (SHA-512) e aplica a atualização com um clique. |
-| **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. |
+| **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. Funciona em tela cheia, janela e janela sem bordas; em tela cheia exclusiva de verdade, o app avisa o que fazer. |
 | **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
 | **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |
 | **Minha Conta** | ✅ | Login opcional (Supabase) para montar a sua lista pós-formatação e levá-la para qualquer PC. |

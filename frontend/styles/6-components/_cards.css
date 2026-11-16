@@ -261,6 +261,11 @@
 .c-disk__stats span { display: block; font-size: 0.72rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .c-disk__stats strong { font-size: 0.95rem; font-variant-numeric: tabular-nums; color: var(--color-text-primary); }
 .c-disk__notes { margin: 0; padding-left: 18px; font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.5; }
+.c-disk__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.c-clean-row .c-check-row__text { flex: 1; min-width: 0; }
+.c-clean-row__size { margin-left: auto; padding-left: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--color-text-primary); }
+.c-clean-row--blocked { opacity: 0.6; cursor: default; }
+.c-clean-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--color-border); }
 
 /* Cabeçalhos de card e de seção: ações descem para a linha de baixo quando falta espaço */
 .c-card__head, .c-card__header { flex-wrap: wrap; }

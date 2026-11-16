@@ -35,6 +35,7 @@ const App = {
     WingetModule.init();
     ProcessesModule.init();
     CompetitiveModule.init();
+    DisksModule.init();
     PerfModule.init();
     SecurityModule.init();
     document.getElementById('btn-export-report')?.addEventListener('click', () => {
@@ -107,7 +108,7 @@ const App = {
         softs: { title: 'Softwares Pós-Format', desc: 'Runtimes C++, DirectX, .NET e programas essenciais' },
         boost: { title: 'Boost Gamer', desc: 'Memória, energia, latência de GPU e prioridade de processos' },
         security: { title: 'Segurança', desc: 'Triagem de processos com sinais de programas maliciosos' },
-        perf: { title: 'Performance', desc: 'Monitor em tempo real, inicialização, ajustes de jogos e diagnóstico de RAM' },
+        perf: { title: 'Performance', desc: 'Monitor em tempo real, ajustes, RAM, discos e inicialização' },
         logs: { title: 'Logs', desc: 'Erros do Windows e histórico de alterações do CWU App' },
         settings: { title: 'Configurações', desc: 'Temas visuais, preferências e idioma' },
         versions: { title: 'Novas Versões', desc: 'Histórico de versões e atualizações do CWU App' },

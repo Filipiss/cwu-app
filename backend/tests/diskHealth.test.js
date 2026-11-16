@@ -33,3 +33,28 @@ test('SSD sem desgaste informado e com RPM 0 não é tratado como HD', () => {
   assert.equal(d.type, 'SSD');
   assert.equal(d.status, 'good');
 });
+
+const { evaluateVolume } = require('../src/services/diskHealthService');
+const GB = 1024 ** 3;
+
+test('unidade do Windows com 5% livres fica crítica, com aviso de lentidão', () => {
+  const v = evaluateVolume({ letter: 'C', sizeBytes: 222.6 * GB, freeBytes: 11.6 * GB, system: true });
+  assert.equal(v.status, 'bad');
+  assert.equal(v.freeGb, 11.6);
+  assert.equal(v.freePct, 5.2);
+  assert.match(v.notes[0], /Unidade do Windows quase cheia/);
+});
+
+test('espaço livre: entre 10% e 15% é atenção, acima de 15% está ok', () => {
+  assert.equal(evaluateVolume({ letter: 'd', sizeBytes: 1000 * GB, freeBytes: 120 * GB }).status, 'warn');
+  const ok = evaluateVolume({ letter: 'd', sizeBytes: 1000 * GB, freeBytes: 400 * GB });
+  assert.equal(ok.status, 'good');
+  assert.equal(ok.letter, 'D');
+  assert.equal(ok.notes.length, 0);
+});
+
+test('espaço livre: valores ausentes não quebram a avaliação', () => {
+  const v = evaluateVolume({ letter: 'E', sizeBytes: 0, freeBytes: null });
+  assert.equal(v.freePct, null);
+  assert.equal(v.status, 'good');
+});

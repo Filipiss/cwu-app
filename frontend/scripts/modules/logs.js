@@ -311,7 +311,7 @@ const LogsModule = {
     } else if (this.activeFilter === 'software') {
       list = list.filter(l => l.type === 'software');
     } else if (this.activeFilter === 'windows') {
-      list = list.filter(l => ['tweak', 'startup', 'priority'].includes(l.type));
+      list = list.filter(l => ['tweak', 'startup', 'priority', 'cleanup'].includes(l.type));
     }
 
     if (list.length === 0) {
@@ -342,6 +342,8 @@ const LogsModule = {
             typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-crosshair></use></svg> Prioridade</span>`;
           } else if (item.type === 'tweak') {
             typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-gamepad-2></use></svg> Ajuste do Windows</span>`;
+          } else if (item.type === 'cleanup') {
+            typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-hard-drive></use></svg> Limpeza</span>`;
           } else {
             typeBadge = `<span class="c-badge c-badge--neutral"><svg class=c-icon aria-hidden=true><use href=#i-wrench></use></svg> Sistema</span>`;
           }
@@ -350,7 +352,9 @@ const LogsModule = {
             ? `<span class="c-badge c-badge--warning"><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> Revertido</span>`
             : `<span class="c-badge c-badge--success"><svg class=c-icon aria-hidden=true><use href=#i-check></use></svg> Atualizado</span>`;
 
-          const revertBtn = isReverted
+          const revertBtn = item.type === 'cleanup'
+            ? `<span class="u-text-muted" style="font-size: 0.8rem;">Não reversível</span>`
+            : isReverted
             ? `<span class="c-badge c-badge--warning" style="font-size: 0.8rem; padding: 5px 12px;"><svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg> Revertido em ${this.formatDate(item.revertedAt)}</span>`
             : `<button class="c-btn c-btn--secondary c-btn--sm js-btn-revert" data-id="${item.id}" title="Desfazer ou restaurar estado anterior desta alteração">
                 <span>Reverter</span> <svg class=c-icon aria-hidden=true><use href=#i-undo-2></use></svg>

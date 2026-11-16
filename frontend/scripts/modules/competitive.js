@@ -184,7 +184,7 @@ const CompetitiveModule = {
       ]
     };
     const common = [
-      'Jogue em <strong>tela cheia exclusiva</strong> ou em janela sem bordas com as "Otimizações para jogos em janela" ligadas (aba Performance › Ajustes de jogos).',
+      'Jogue em <strong>tela cheia exclusiva</strong> ou em janela sem bordas com as "Otimizações para jogos em janela" ligadas (aba Performance › Ajustes do Windows).',
       'Use <strong>cabo de rede</strong> em vez de Wi-Fi e feche downloads (Steam, Windows Update) durante partidas online.'
     ];
     const label = { nvidia: 'NVIDIA', amd: 'AMD Radeon', intel: 'Intel', other: 'sua placa' }[vendor];

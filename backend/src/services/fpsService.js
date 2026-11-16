@@ -14,6 +14,10 @@ const LOW_WINDOW_MS = 10000;  // 1% low = pior 1% dos frames dos últimos 10 s
 const SESSION = 'CWU_FPS';
 // Processos que apresentam frames mas não são o "jogo": o compositor do Windows e o próprio app
 const EXCLUDE = ['dwm.exe', 'CWU-App.exe', 'CWU App.exe', 'electron.exe', 'explorer.exe', 'PresentMon.exe'];
+// Tela cheia exclusiva de verdade ("Legacy Flip"/"Legacy Copy"): o jogo desenha direto na tela,
+// sem passar pelo compositor do Windows, e nenhuma janela consegue aparecer por cima dele.
+// Com as otimizações de tela cheia (padrão no Windows 10/11) o modo é "Independent Flip" e a sobreposição aparece.
+const isExclusiveMode = (mode) => /^Hardware:\s*Legacy/i.test(String(mode || ''));
 
 // Procura o PresentMon (qualquer nome PresentMon*.exe) na pasta bin
 function findPresentMon() {
@@ -42,8 +46,10 @@ function computeFps(frames, now) {
   const window = frames.filter(f => f.pid === pid && now - f.at <= LOW_WINDOW_MS).map(f => f.ms).sort((a, b) => b - a);
   const worst = window.slice(0, Math.max(1, Math.ceil(window.length * 0.01)));
   const worstAvg = worst.reduce((s, v) => s + v, 0) / worst.length;
+  const exclusive = mine.filter(f => isExclusiveMode(f.mode)).length > mine.length / 2;
   return {
     app: mine[mine.length - 1].app,
+    exclusive,
     fps: avgMs > 0 ? Math.round(1000 / avgMs) : null,
     low1: window.length >= 100 && worstAvg > 0 ? Math.round(1000 / worstAvg) : null
   };
@@ -55,7 +61,9 @@ function parseLine(line, cols, at) {
   const ms = parseFloat(p[cols.ms]);
   const pid = Number(p[cols.pid]);
   if (!Number.isFinite(ms) || ms <= 0 || ms > 1000 || !pid) return null;
-  return { app: p[cols.app], pid, ms, at };
+  const f = { app: p[cols.app], pid, ms, at };
+  if (cols.mode >= 0) f.mode = p[cols.mode];
+  return f;
 }
 
 class FpsService {
@@ -80,7 +88,7 @@ class FpsService {
     if (this.error) return { available: false, reason: 'error', message: this.error };
     const now = Date.now();
     this.frames = this.frames.filter(f => now - f.at <= LOW_WINDOW_MS);
-    return { available: true, ...(computeFps(this.frames, now) || { fps: null, low1: null, app: null }) };
+    return { available: true, ...(computeFps(this.frames, now) || { fps: null, low1: null, app: null, exclusive: false }) };
   }
 
   ensureRunning(exe) {
@@ -116,7 +124,7 @@ class FpsService {
         const h = line.split(',');
         const idx = (n) => h.indexOf(n);
         if (idx('Application') >= 0 && idx('MsBetweenPresents') >= 0) {
-          this.cols = { app: idx('Application'), pid: idx('ProcessID'), ms: idx('MsBetweenPresents') };
+          this.cols = { app: idx('Application'), pid: idx('ProcessID'), ms: idx('MsBetweenPresents'), mode: idx('PresentMode') };
         }
         continue;
       }
@@ -142,3 +150,4 @@ module.exports = instance;
 module.exports.computeFps = computeFps;
 module.exports.parseLine = parseLine;
 module.exports.findPresentMon = findPresentMon;
+module.exports.isExclusiveMode = isExclusiveMode;

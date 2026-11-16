@@ -1,5 +1,5 @@
 // backend/src/services/tweaksService.js
-// Ajustes reais de jogos do Windows (os mesmos de Configurações › Jogos / Vídeo)
+// Ajustes reais do Windows: jogos (os mesmos de Configurações › Jogos / Vídeo), SysMain e inicialização rápida,
 // e diagnóstico de memória RAM (XMP/EXPO, canais, pentes).
 const { runPowerShell } = require('../utils/powershell');
 const db = require('../database/db');
@@ -24,6 +24,16 @@ const TWEAKS = {
     title: 'Gravação em segundo plano (Xbox Game Bar)',
     description: 'Grava continuamente os últimos minutos de jogo para o recurso "gravar o que aconteceu". Consome GPU e disco o tempo todo; desligue se não usa.',
     recommended: false, needsAdmin: false, needsReboot: false
+  },
+  sysmain: {
+    title: 'SysMain (pré-carregamento de programas)',
+    description: 'Serviço do Windows que deixa na memória os programas que você mais usa, para eles abrirem mais rápido. Desligar não deixa jogos mais rápidos em SSD (é um mito de otimização comum) e faz o PC demorar mais para ficar responsivo depois de ligar.',
+    recommended: true, needsAdmin: true, needsReboot: false
+  },
+  fast_startup: {
+    title: 'Inicialização rápida do Windows',
+    description: 'Ao desligar, o Windows salva o núcleo do sistema no disco para ligar mais rápido da próxima vez (não afeta o Reiniciar). Usa um arquivo de hibernação reduzido no disco. Desligue se usa dual boot ou se algum dispositivo falha ao ligar o PC. Vale a partir do próximo desligamento.',
+    recommended: true, needsAdmin: true, needsReboot: false
   }
 };
 
@@ -37,6 +47,9 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
   hags = (Get-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers').HwSchMode
   dxSettings = (Get-ItemProperty 'HKCU:\\Software\\Microsoft\\DirectX\\UserGpuPreferences').DirectXUserGlobalSettings
   historical = (Get-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR').HistoricalCaptureEnabled
+  sysmain = [string](Get-Service SysMain).StartType
+  hiberboot = (Get-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power').HiberbootEnabled
+  hibernate = (Get-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power').HibernateEnabled
 } | ConvertTo-Json -Compress
 `;
 
@@ -64,7 +77,11 @@ function interpretStatus(raw) {
     hags: raw.hags === 2 ? true : (raw.hags === 1 ? false : null),
     windowed_opt: dx.SwapEffectUpgradeEnable === '1',
     // Sem valor = desligado no Windows 11 atual
-    game_dvr: raw.historical === 1
+    game_dvr: raw.historical === 1,
+    // Desativado = desligado; Automático/Manual = o Windows usa. Serviço ausente = desconhecido
+    sysmain: !raw.sysmain ? null : raw.sysmain !== 'Disabled',
+    // Precisa da hibernação ligada; sem o valor, fica o padrão do sistema
+    fast_startup: raw.hibernate === 0 || raw.hiberboot === 0 ? false : (raw.hiberboot === 1 ? true : null)
   };
 }
 
@@ -137,7 +154,14 @@ class TweaksService {
     const scripts = {
       game_mode: `$k='HKCU:\\Software\\Microsoft\\GameBar'; if(!(Test-Path $k)){New-Item $k -Force|Out-Null}; New-ItemProperty $k -Name AutoGameModeEnabled -Value ${on} -PropertyType DWord -Force|Out-Null`,
       hags: `New-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers' -Name HwSchMode -Value ${enabled ? 2 : 1} -PropertyType DWord -Force|Out-Null`,
-      game_dvr: `$k='HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR'; if(!(Test-Path $k)){New-Item $k -Force|Out-Null}; New-ItemProperty $k -Name HistoricalCaptureEnabled -Value ${on} -PropertyType DWord -Force|Out-Null`
+      game_dvr: `$k='HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR'; if(!(Test-Path $k)){New-Item $k -Force|Out-Null}; New-ItemProperty $k -Name HistoricalCaptureEnabled -Value ${on} -PropertyType DWord -Force|Out-Null`,
+      sysmain: enabled
+        ? `Set-Service -Name SysMain -StartupType Automatic; Start-Service -Name SysMain`
+        : `Stop-Service -Name SysMain -Force; Set-Service -Name SysMain -StartupType Disabled`,
+      // A inicialização rápida usa a hibernação: se ela estiver desligada, liga no tipo reduzido (arquivo menor)
+      fast_startup: enabled
+        ? `if ((Get-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power' -ErrorAction SilentlyContinue).HibernateEnabled -eq 0) { powercfg /hibernate on; if ($LASTEXITCODE) { throw 'powercfg não conseguiu ligar a hibernação' }; powercfg /h /type reduced | Out-Null }; New-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power' -Name HiberbootEnabled -Value 1 -PropertyType DWord -Force|Out-Null`
+        : `New-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power' -Name HiberbootEnabled -Value 0 -PropertyType DWord -Force|Out-Null`
     };
 
     let script;
@@ -159,7 +183,7 @@ class TweaksService {
     db.addUpdateLog({
       type: 'tweak',
       title: `${tweak.title}: ${enabled ? 'ativado' : 'desativado'}`,
-      category: 'Ajustes de jogos do Windows',
+      category: 'Ajustes do Windows',
       details: tweak.needsReboot ? 'Requer reinicialização para valer.' : 'Aplicado imediatamente.',
       tweakId: id,
       tweakPrevious: previous

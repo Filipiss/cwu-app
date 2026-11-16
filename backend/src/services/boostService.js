@@ -389,6 +389,13 @@ class BoostService {
       return { success: true, actionId, message: 'Windows Update aberto em "Atualizações opcionais": marque o driver e clique em Baixar e instalar.', freedMemoryMb: 0 };
     }
 
+    if (actionId === 'open_storage_settings') {
+      if (process.platform === 'win32') {
+        spawn('cmd.exe', ['/c', 'start ms-settings:storagesense'], { detached: true, stdio: 'ignore' }).unref();
+      }
+      return { success: true, actionId, message: 'Configurações de Armazenamento abertas: veja o que mais ocupa espaço em cada categoria.', freedMemoryMb: 0 };
+    }
+
     if (actionId === 'open_taskmgr') {
       if (process.platform === 'win32') {
         spawn('taskmgr.exe', [], { detached: true, stdio: 'ignore' }).unref();

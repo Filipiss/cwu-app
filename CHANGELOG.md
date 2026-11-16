@@ -2,6 +2,19 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.3.0] - 2026-11-16
+
+### Adicionado
+- Nova sub-aba Performance › Discos, que reúne espaço nas unidades, limpeza de disco e vida útil dos discos (que saiu do System Specs)
+- Espaço nas unidades: espaço livre de cada unidade, com alerta abaixo de 15% e atalho para as configurações de Armazenamento
+- Limpeza de disco: mede e apaga caches de shaders (NVIDIA, AMD, Intel e DirectX), temporários, despejos de travamento, downloads do Windows Update, cache da Otimização de Entrega, relatórios de erro, Lixeira e Windows.old. Também oferece desligar ou reduzir o arquivo de hibernação quando ele ocupa espaço sem uso. Você escolhe o que apagar e vê quanto foi liberado
+- SysMain nos ajustes do Windows: mostra quando o serviço está desligado e permite reativar (desligar não acelera jogos em SSD e deixa o PC mais lento depois de ligar)
+- Inicialização rápida do Windows nos ajustes: mostra se está ligada e permite ligar ou desligar
+- Aviso quando um jogo está em tela cheia exclusiva de verdade, modo em que o Windows não mostra nada por cima do jogo
+
+### Corrigido
+- A sobreposição de desempenho (Alt + I) sumia em jogos em tela cheia: agora ela volta para cima do jogo sozinha, sem tirar o foco dele
+
 ## [1.2.2] - 2026-11-12
 
 ### Alterado

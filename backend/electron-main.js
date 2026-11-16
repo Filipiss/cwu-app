@@ -1,5 +1,5 @@
 // backend/electron-main.js
-const { app, BrowserWindow, shell, Tray, Menu, nativeImage, globalShortcut, screen } = require('electron');
+const { app, BrowserWindow, shell, Tray, Menu, nativeImage, globalShortcut, screen, Notification } = require('electron');
 const path = require('path');
 
 // Permite execução estável como Administrador no Windows (evita crashes de sandbox com privilégio elevado)
@@ -160,6 +160,38 @@ function refreshTrayMenu() {
 // No modo de posicionamento ela passa a aceitar o mouse para ser arrastada.
 let overlaySize = { width: 190, height: 108 };
 let overlayEditing = false;
+let overlayTopTimer = null;
+const exclusiveWarned = new Set();
+
+// Jogos em tela cheia (com as otimizações de tela cheia do Windows, o padrão) também ficam
+// "sempre no topo" e passam na frente da sobreposição quando ganham o foco ou trocam de resolução.
+// Enquanto ela estiver visível, volta para o topo a cada segundo. A janela não é focável,
+// então isso não tira o foco do jogo nem o minimiza.
+function keepOverlayOnTop(on) {
+  clearInterval(overlayTopTimer);
+  overlayTopTimer = null;
+  if (!on) return;
+  overlayTopTimer = setInterval(() => {
+    if (!overlayWindow || overlayWindow.isDestroyed() || !overlayWindow.isVisible() || overlayEditing) return;
+    overlayWindow.setAlwaysOnTop(true, 'screen-saver');
+    overlayWindow.moveTop();
+  }, 1000);
+}
+
+// Tela cheia exclusiva de verdade: o jogo desenha direto na tela e o Windows não mostra nenhuma
+// janela por cima. Não há como contornar sem injetar código no jogo (o que anticheats bloqueiam),
+// então o app explica o que fazer, uma vez por jogo.
+function warnExclusiveFullscreen(appName) {
+  const name = String(appName || '').slice(0, 80);
+  if (!name || exclusiveWarned.has(name) || !overlayWindow || !overlayWindow.isVisible()) return;
+  exclusiveWarned.add(name);
+  if (!Notification.isSupported()) return;
+  new Notification({
+    title: 'Sobreposição escondida pelo jogo',
+    body: `${name} está em tela cheia exclusiva, e nesse modo o Windows não mostra nada por cima do jogo. Use "Janela sem bordas" nas opções de vídeo, ou desmarque "Desabilitar otimizações de tela cheia" nas propriedades do .exe do jogo.`,
+    icon: ICON
+  }).show();
+}
 
 function createOverlay() {
   overlayWindow = new BrowserWindow({
@@ -184,7 +216,7 @@ function createOverlay() {
   loadOverlay();
   overlayWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   overlayWindow.webContents.on('will-navigate', (e) => e.preventDefault());
-  overlayWindow.on('closed', () => { overlayWindow = null; overlayEditing = false; });
+  overlayWindow.on('closed', () => { overlayWindow = null; overlayEditing = false; keepOverlayOnTop(false); });
   positionOverlay();
 }
 
@@ -202,9 +234,12 @@ function toggleOverlay() {
   if (overlayEditing) return finishOverlayEdit(false);
   if (overlayWindow.isVisible()) {
     overlayWindow.hide();
+    keepOverlayOnTop(false);
   } else {
     positionOverlay();
     overlayWindow.showInactive();
+    overlayWindow.moveTop();
+    keepOverlayOnTop(true);
   }
   refreshTrayMenu();
 }
@@ -235,6 +270,7 @@ function finishOverlayEdit(save) {
   loadOverlay();
   positionOverlay();
   overlayWindow.showInactive();
+  keepOverlayOnTop(true);
   refreshTrayMenu();
 }
 
@@ -333,6 +369,7 @@ if (!gotTheLock) {
     db.events.on('overlay-edit', startOverlayEdit);
     db.events.on('overlay-save-position', () => finishOverlayEdit(true));
     db.events.on('overlay-cancel-edit', () => finishOverlayEdit(false));
+    db.events.on('overlay-exclusive', warnExclusiveFullscreen);
     screen.on('display-metrics-changed', positionOverlay);
   });
 

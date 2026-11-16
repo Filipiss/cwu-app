@@ -1,7 +1,7 @@
 // frontend/scripts/modules/perf.js
 /**
  * Aba Performance: monitor em tempo real (CPU/GPU/RAM/disco + temperaturas),
- * ajustes de jogos do Windows, diagnóstico de RAM e programas da inicialização.
+ * ajustes do Windows, diagnóstico de RAM, discos (em disks.js) e programas da inicialização.
  */
 const PerfModule = {
   timer: null,
@@ -35,6 +35,7 @@ const PerfModule = {
     this.loaded[view] = true;
     if (view === 'tweaks') this.loadTweaks();
     else if (view === 'ram') this.loadRam();
+    else if (view === 'disks') DisksModule.load();
     else if (view === 'startup') this.loadStartup();
   },
 
@@ -227,7 +228,7 @@ const PerfModule = {
     });
   },
 
-  // ===== Ajustes de jogos =====
+  // ===== Ajustes do Windows =====
   async loadTweaks() {
     const box = document.getElementById('perf-tweaks-list');
     if (!box) return;
