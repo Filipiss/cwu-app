@@ -46,7 +46,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Processos suspeitos** | ✅ | Escaneia todos os processos em execução e aponta os com sinais de malware (nome de processo do Windows fora do lugar, nomes disfarçados, pastas temporárias, sem assinatura, extensão dupla, padrão de minerador), explicando o que esse tipo de programa costuma fazer. Triagem, não antivírus. |
 | **Ponto de restauração** | ✅ | O app **pergunta** antes da primeira alteração de sistema da sessão se você quer criar um (nunca cria sozinho), ou cria manualmente pela aba Logs. Toda ação que altera o Windows pede confirmação. |
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
-| **Atualizações do app** | ✅ | Consulta a última release no GitHub e, na versão instalada, baixa, confere (SHA-512) e aplica a atualização com um clique. |
+| **Atualizações do app** | ✅ | Consulta a última release no GitHub e, na versão instalada, baixa com barra de progresso, velocidade e tempo restante, com pausar, parar e retomar (continua de onde parou). Confere o SHA-512 e aplica com um clique. |
 | **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. Funciona em tela cheia, janela e janela sem bordas; em tela cheia exclusiva de verdade, o app avisa o que fazer. |
 | **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
 | **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |
@@ -110,7 +110,7 @@ O app fala com o Supabase direto pela API REST (sem bibliotecas). A senha só tr
 
 ## Como usar
 
-**Usuário:** baixe o `CWU-App.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. Ele é portátil, não precisa instalar. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
+**Usuário:** baixe o `CWU-App-Setup.exe` em [Releases](https://github.com/Filipiss/cwu-app/releases/latest) e execute. O instalador deixa escolher se instala só para você ou para todos os usuários, a pasta, os atalhos (área de trabalho e menu Iniciar) e se o app inicia com o Windows. Depois, as atualizações são feitas pelo próprio app. Algumas funções pedem administrador, e o próprio app oferece reabrir com permissão.
 
 **Desenvolvimento:**
 

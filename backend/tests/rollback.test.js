@@ -35,3 +35,28 @@ releaseDate: '2026-11-12T10:00:00.000Z'
   assert.equal(parseYmlSha512(yml), 'Zm9vYmFyMTIz+/==');
   assert.equal(parseYmlSha512('version: 1'), null);
 });
+
+const { isBlockedFor, parseInstallInfo } = require('../src/services/rollbackService');
+
+test('instalação para todos os usuários não volta para versões com instalador só por usuário', () => {
+  assert.equal(isBlockedFor('1.2.2', 'all'), true);
+  assert.equal(isBlockedFor('1.2.0', 'all'), true);
+  assert.equal(isBlockedFor('1.3.0', 'all'), false, 'a 1.3.0 já tem o instalador novo');
+  assert.equal(isBlockedFor('1.2.2', 'CurrentUser'), false, 'só para mim: o instalador antigo reaproveita a pasta');
+  assert.equal(isBlockedFor('1.2.2', null), false, 'sem informação (versões antigas instalavam por usuário)');
+});
+
+test('modo de instalação só vale para a pasta do app que está rodando', () => {
+  const out = [
+    '',
+    'HKEY_CURRENT_USER\\Software\\CWU-App\\Installer',
+    '    Desktop    REG_SZ    1',
+    '    InstallMode    REG_SZ    all',
+    '    InstallDir    REG_SZ    C:\\Program Files\\CWU App',
+    ''
+  ].join('\r\n');
+  assert.equal(parseInstallInfo(out, 'C:\\Program Files\\CWU App'), 'all');
+  assert.equal(parseInstallInfo(out, 'c:\\program files\\cwu app\\'), 'all', 'sem diferença de maiúsculas ou barra final');
+  assert.equal(parseInstallInfo(out, 'D:\\Outra pasta'), null, 'registro de outra instalação');
+  assert.equal(parseInstallInfo('', 'C:\\x'), null);
+});

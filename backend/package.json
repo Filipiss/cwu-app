@@ -8,6 +8,7 @@
     "dev": "node --watch server.js",
     "electron": "electron electron-main.js",
     "app": "electron .",
+    "predist": "node scripts/check-presentmon.js",
     "dist": "electron-builder --win nsis --publish never",
     "check-winget": "node scripts/check-winget.js",
     "test": "node --test tests/*.test.js"
@@ -54,13 +55,22 @@
     "asar": true,
     "nsis": {
       "artifactName": "CWU-App-Setup.${ext}",
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "allowElevation": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "CWU App",
       "runAfterFinish": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerLanguages": [
+        "pt_BR"
+      ],
+      "language": "1046",
+      "multiLanguageInstaller": false,
+      "include": "build/installer.nsh",
       "deleteAppDataOnUninstall": false
     },
     "publish": [
@@ -80,9 +90,6 @@
   ],
   "author": "Filipi Soares",
   "license": "MIT",
-  "dependencies": {
-    "electron-updater": "^6.8.11"
-  },
   "devDependencies": {
     "electron": "^45.1.0",
     "electron-builder": "^26.18.0"

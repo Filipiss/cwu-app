@@ -46,7 +46,8 @@ function createWindow() {
     backgroundColor: '#0a0d14',
     autoHideMenuBar: true,
     icon: ICON,
-    show: true,
+    // Aberto pelo Windows na inicialização (--hidden): fica só nos ícones ocultos
+    show: !process.argv.includes('--hidden'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -274,71 +275,62 @@ function finishOverlayEdit(save) {
   refreshTrayMenu();
 }
 
-// ===== Atualização automática =====
-// Usa o electron-updater com as releases do GitHub (latest.yml + instalador + .blockmap).
-// O arquivo baixado é conferido pelo SHA-512 publicado no latest.yml antes de instalar.
-// Só funciona na versão instalada; no modo de desenvolvimento a aba mostra o link de download.
-function setupAutoUpdater() {
+// ===== Atualização =====
+// O download (com pausar, parar e retomar) fica no servidor local (updateDownloader.js), que confere
+// o SHA-512 publicado no latest.yml. Aqui o Electron só executa o instalador pronto e fecha o app.
+// Só na versão instalada; no modo de desenvolvimento a aba mostra o link de download.
+function runInstallerAndQuit(file) {
+  const { spawn } = require('child_process');
+  // --updated: o instalador mantém pasta e atalhos escolhidos; --force-run: abre o app ao terminar
+  spawn(file, ['/S', '--updated', '--force-run'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+  isQuitting = true;
+  setTimeout(() => app.quit(), 500);
+}
+
+function setupUpdates() {
   if (!app.isPackaged || process.env.PORTABLE_EXECUTABLE_FILE) return;
-  let autoUpdater;
-  try { ({ autoUpdater } = require('electron-updater')); } catch (e) { return; }
-  autoUpdater.autoDownload = false;        // só baixa quando o usuário clicar em "Atualizar agora"
-  autoUpdater.autoInstallOnAppQuit = true; // se ele não reiniciar na hora, aplica ao sair
   updateState.set({ supported: true });
+  const downloader = require('./src/services/updateDownloader');
 
-  autoUpdater.on('update-available', (info) => updateState.set({ version: info.version }));
-  autoUpdater.on('update-not-available', () => updateState.set({ status: 'none' }));
-  autoUpdater.on('download-progress', (p) => updateState.set({ status: 'downloading', percent: Math.round(p.percent || 0) }));
-  autoUpdater.on('update-downloaded', (info) => updateState.set({ status: 'downloaded', percent: 100, version: info.version }));
-  autoUpdater.on('error', (err) => updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) }));
-
-  db.events.on('update-download', async () => {
-    const { status } = updateState.get();
-    if (status === 'checking' || status === 'downloading' || status === 'downloaded') return;
-    updateState.set({ status: 'checking', percent: 0, error: null });
-    try {
-      const result = await autoUpdater.checkForUpdates();
-      if (!result || !result.isUpdateAvailable) { updateState.set({ status: 'none' }); return; }
-      updateState.set({ status: 'downloading' });
-      await autoUpdater.downloadUpdate();
-    } catch (err) {
-      updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) });
+  db.events.on('update-install', async () => {
+    const file = await downloader.readyFile();
+    if (!file) {
+      updateState.set({ status: 'error', error: 'O instalador baixado não foi encontrado ou não confere mais. Baixe a atualização de novo.' });
+      return;
     }
+    runInstallerAndQuit(file);
   });
 
   // Versão anterior: baixa e confere o instalador, roda em silêncio e fecha o app (ele reabre na versão escolhida)
   db.events.on('rollback-install', async (version) => {
     const { status } = updateState.get();
-    if (['checking', 'downloading', 'rollback'].includes(status)) return;
+    if (['rollback', 'rollback-ready'].includes(status)) return;
     updateState.set({ status: 'rollback', percent: 0, version, error: null });
     try {
       const file = await require('./src/services/rollbackService').prepare(version, (pct) => updateState.set({ percent: pct }));
       updateState.set({ status: 'rollback-ready', percent: 100 });
-      const { spawn } = require('child_process');
-      spawn(file, ['/S', '--force-run'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
-      isQuitting = true;
-      setTimeout(() => app.quit(), 500);
+      runInstallerAndQuit(file);
     } catch (err) {
       updateState.set({ status: 'error', error: String(err && err.message || err).slice(0, 300) });
     }
   });
-
-  db.events.on('update-install', () => {
-    if (updateState.get().status !== 'downloaded') return;
-    isQuitting = true; // não manda para os ícones ocultos ao fechar
-    setImmediate(() => autoUpdater.quitAndInstall(true, true)); // instala em silêncio e reabre
-  });
 }
 
-// Instaladores baixados para voltar de versão ficam na pasta temporária: quando o app abre,
-// a instalação já terminou, então eles podem ser apagados
-function cleanupRollbackInstallers() {
+// Instaladores baixados ficam na pasta temporária. Quando o app abre, a instalação já terminou:
+// apaga os prontos e os parciais de versões que não são mais novas que esta (um parcial de versão
+// mais nova fica, para o download poder continuar de onde parou)
+function cleanupDownloadedInstallers() {
   try {
     const fs = require('fs');
     const dir = require('os').tmpdir();
-    fs.readdirSync(dir)
-      .filter(f => /^CWU-App-Setup-\d+\.\d+\.\d+\.exe$/.test(f))
-      .forEach(f => { try { fs.unlinkSync(path.join(dir, f)); } catch (e) { /* em uso: fica para a próxima */ } });
+    const { compareVersions } = require('./src/services/versionService');
+    const current = app.getVersion();
+    fs.readdirSync(dir).forEach(f => {
+      const m = f.match(/^CWU-App-Setup-(\d+\.\d+\.\d+)\.exe(\.part)?$/);
+      if (!m) return;
+      if (m[2] && compareVersions(m[1], current) > 0) return;
+      try { fs.unlinkSync(path.join(dir, f)); } catch (e) { /* em uso: fica para a próxima */ }
+    });
   } catch (e) { /* pasta temporária inacessível */ }
 }
 
@@ -351,8 +343,8 @@ if (!gotTheLock) {
 
   app.whenReady().then(() => {
     registerNotificationIdentity();
-    setupAutoUpdater();
-    cleanupRollbackInstallers();
+    setupUpdates();
+    cleanupDownloadedInstallers();
     createWindow();
     createTray();
     if (!globalShortcut.register(OVERLAY_HOTKEY, toggleOverlay)) {

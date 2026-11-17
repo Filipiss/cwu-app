@@ -620,6 +620,24 @@ window.CWU_TRANSLATIONS = {
     "A limpeza de disco já está medindo ou limpando. Aguarde terminar.": "Disk cleanup is already measuring or cleaning. Wait for it to finish.",
     "Nada recomendado para limpar agora. Veja os outros itens na Limpeza de disco.": "Nothing recommended to clean right now. See the other items in Disk cleanup.",
     "Não foi possível medir as pastas da limpeza de disco.": "Could not measure the disk cleanup folders.",
-    "Discos": "Drives"
+    "Discos": "Drives",
+    "Pausar": "Pause",
+    "Parar": "Stop",
+    "Retomar": "Resume",
+    "faltam": "remaining",
+    "de": "of",
+    "Preparando o download da": "Preparing the download of",
+    "Download pausado.": "Download paused.",
+    "Download parado.": "Download stopped.",
+    "Conferindo a integridade do arquivo…": "Checking the file integrity…",
+    "Não foi possível baixar a atualização.": "Could not download the update.",
+    "O que foi baixado foi descartado: Retomar começa o download do zero.": "What was downloaded was discarded: Resume starts the download from scratch.",
+    "O que já foi baixado fica guardado: Retomar continua do mesmo ponto.": "What was already downloaded is kept: Resume continues from the same point.",
+    "Clique em Retomar para tentar de novo.": "Click Resume to try again.",
+    "Baixar e instalar a": "Download and install",
+    "Atualização pronta. Clique em \"Reiniciar e aplicar\": o app fecha, atualiza e abre de novo.": "Update ready. Click \"Restart and apply\": the app closes, updates and opens again.",
+    "Não foi possível baixar a versão escolhida.": "Could not download the chosen version.",
+    "indisponível nesta instalação": "unavailable in this installation",
+    "O CWU App está instalado para todos os usuários. As versões anteriores à 1.3.0 só sabem instalar para um usuário e criariam uma segunda cópia do app. Para voltar a uma delas, desinstale o CWU App pelo Windows e instale essa versão pela página de releases do GitHub.": "CWU App is installed for all users. Versions before 1.3.0 can only install for one user and would create a second copy of the app. To go back to one of them, uninstall CWU App from Windows and install that version from the GitHub releases page."
   }
 };

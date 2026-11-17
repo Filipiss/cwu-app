@@ -11,6 +11,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - SysMain nos ajustes do Windows: mostra quando o serviço está desligado e permite reativar (desligar não acelera jogos em SSD e deixa o PC mais lento depois de ligar)
 - Inicialização rápida do Windows nos ajustes: mostra se está ligada e permite ligar ou desligar
 - Aviso quando um jogo está em tela cheia exclusiva de verdade, modo em que o Windows não mostra nada por cima do jogo
+- Instalador completo: escolha entre instalar só para você ou para todos os usuários, escolha da pasta de instalação e uma página para escolher os atalhos (área de trabalho e menu Iniciar) e se o CWU App inicia com o Windows (nos ícones ocultos). As atualizações mantêm a pasta e as escolhas. Numa instalação para todos os usuários, "Voltar para uma versão anterior" não oferece as versões anteriores à 1.3.0, porque o instalador delas criaria uma segunda cópia do app
+- Atualização dentro do app: um link já começa o download, com barra de progresso, tamanho, quanto já foi baixado, velocidade e tempo restante, e botões para pausar, parar e retomar. Pausar guarda o que foi baixado; parar descarta. O instalador é conferido (SHA-512) antes de aplicar
 
 ### Corrigido
 - A sobreposição de desempenho (Alt + I) sumia em jogos em tela cheia: agora ela volta para cima do jogo sozinha, sem tirar o foco dele

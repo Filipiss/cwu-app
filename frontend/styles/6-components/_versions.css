@@ -49,6 +49,13 @@
 .c-update-progress { margin-top: var(--spacing-md); }
 .c-update-progress__head { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-secondary); }
 .c-update-progress .c-progress-bar__fill { transition: width 0.3s ease; }
+.c-update-progress__meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.8rem; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.c-update-progress__meta span:empty { display: none; }
+.c-update-progress__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: var(--spacing-sm); }
+.c-update-progress__actions .c-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.c-update-progress .c-field__hint { margin-top: 6px; }
+.c-update-link { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: 0; padding: 0; font: inherit; }
+.c-update-link:hover { filter: brightness(1.15); }
 
 /* Voltar para uma versão anterior */
 .c-rollback { display: flex; gap: var(--spacing-sm); align-items: center; flex-wrap: wrap; margin-bottom: var(--spacing-sm); }

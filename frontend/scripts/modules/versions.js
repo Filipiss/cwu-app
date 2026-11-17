@@ -10,6 +10,13 @@ const VersionsModule = {
   async init() {
     document.getElementById('btn-check-new-version')?.addEventListener('click', () => this.checkForUpdates());
     document.getElementById('btn-apply-update')?.addEventListener('click', () => this.onApplyClick());
+    document.getElementById('btn-update-pause')?.addEventListener('click', () => this.control('pause'));
+    document.getElementById('btn-update-stop')?.addEventListener('click', () => this.control('stop'));
+    document.getElementById('btn-update-resume')?.addEventListener('click', () => this.control('resume'));
+    // O link "Baixar e instalar" fica dentro do texto do resultado da verificação
+    document.getElementById('update-check-result')?.addEventListener('click', (e) => {
+      if (e.target.closest('.js-update-start')) { e.preventDefault(); this.startDownload(); }
+    });
     document.getElementById('btn-rollback')?.addEventListener('click', () => this.onRollbackClick());
     document.getElementById('rollback-select')?.addEventListener('change', (e) => {
       const btn = document.getElementById('btn-rollback');
@@ -20,6 +27,7 @@ const VersionsModule = {
     }));
     await this.loadVersionInfo();
     this.loadRollbackVersions();
+    this.resumeWatching();
     if (location.hash === '#versions') this.checkForUpdates();
   },
 
@@ -87,9 +95,12 @@ const VersionsModule = {
       }
       select.innerHTML = `<option value="">${this.esc(this.t('Escolha uma versão'))}</option>` + list.map(v => {
         const date = v.date ? ` (${v.date.split('-').reverse().join('/')})` : '';
-        const tag = v.older ? '' : ` • ${this.t('mais nova')}`;
-        return `<option value="${this.esc(v.version)}">v${this.esc(v.version)}${date}${this.esc(tag)}</option>`;
+        const tag = v.blocked ? ` • ${this.t('indisponível nesta instalação')}` : (v.older ? '' : ` • ${this.t('mais nova')}`);
+        return `<option value="${this.esc(v.version)}"${v.blocked ? ' disabled' : ''}>v${this.esc(v.version)}${date}${this.esc(tag)}</option>`;
       }).join('');
+      // Instalação para todos os usuários: as versões antigas só instalam por usuário (criariam uma segunda cópia)
+      const blockedHint = document.getElementById('rollback-blocked-hint');
+      if (blockedHint) blockedHint.classList.toggle('u-hidden', !list.some(v => v.blocked));
     } catch (e) {
       select.innerHTML = `<option value="">${this.esc(this.t('Sem conexão com o GitHub'))}</option>`;
     }
@@ -111,66 +122,153 @@ const VersionsModule = {
     this.pollUpdate();
   },
 
-  setApplyLabel(mode) {
-    const btn = document.getElementById('btn-apply-update');
-    if (!btn) return;
-    btn.dataset.mode = mode;
-    btn.querySelector('span').textContent = mode === 'install' ? this.t('Reiniciar e aplicar') : `${this.t('Atualizar para')} v${this.latestVersion || ''}`;
-    btn.querySelector('use').setAttribute('href', mode === 'install' ? '#i-rotate-ccw' : '#i-download');
+  // ===== Download da atualização (pausar, parar e retomar) =====
+  fmtBytes(b) {
+    if (!b) return '0 MB';
+    if (b >= 1024 ** 3) return `${(b / 1024 ** 3).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} GB`;
+    return `${(b / 1024 ** 2).toLocaleString('pt-BR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })} MB`;
+  },
+
+  fmtEta(sec) {
+    if (!sec && sec !== 0) return '';
+    if (sec < 60) return `${this.t('faltam')} ${sec} s`;
+    const m = Math.floor(sec / 60);
+    return `${this.t('faltam')} ${m} min ${String(sec % 60).padStart(2, '0')} s`;
+  },
+
+  async startDownload() {
+    this.showProgress();
+    this.renderDownload({ status: 'preparing', version: this.latestVersion, totalBytes: 0, receivedBytes: 0, percent: 0, canPause: false, canStop: false, canResume: false });
+    try { await API.downloadUpdate(this.latestVersion); } catch (e) {}
+    this.watchDownload();
+  },
+
+  async control(action) {
+    const call = { pause: 'pauseUpdate', stop: 'stopUpdate', resume: 'resumeUpdate' }[action];
+    ['btn-update-pause', 'btn-update-stop', 'btn-update-resume'].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
+    try {
+      const d = (await API[call]()).data;
+      if (d) this.renderDownload(d);
+    } catch (e) {}
+    this.watchDownload();
+  },
+
+  // Se o download já estava em andamento (ou pausado) quando a aba abriu, mostra o painel
+  async resumeWatching() {
+    let st;
+    try { st = (await API.getUpdateStatus()).data; } catch (e) { return; }
+    const d = st && st.download;
+    if (!d || d.status === 'idle') return;
+    this.latestVersion = d.version;
+    this.showProgress();
+    this.renderDownload(d);
+    this.watchDownload();
+  },
+
+  showProgress() {
+    document.getElementById('update-progress')?.classList.remove('u-hidden');
+    document.getElementById('update-progress-actions')?.classList.remove('u-hidden');
+  },
+
+  // Consulta o andamento enquanto há algo acontecendo; parado ou pausado, para de consultar
+  watchDownload() {
+    clearInterval(this.updateTimer);
+    const tick = async () => {
+      let st;
+      try { st = (await API.getUpdateStatus()).data; } catch (e) { return; }
+      if (!st || !st.download) return;
+      this.renderDownload(st.download);
+      if (!['preparing', 'downloading', 'verifying'].includes(st.download.status)) clearInterval(this.updateTimer);
+    };
+    tick();
+    this.updateTimer = setInterval(tick, 500);
+  },
+
+  renderDownload(d) {
+    const $ = (id) => document.getElementById(id);
+    const v = d.version || this.latestVersion || '';
+    const texts = {
+      preparing: `${this.t('Preparando o download da')} v${v}…`,
+      downloading: `${this.t('Baixando a versão')} ${v}…`,
+      paused: this.t('Download pausado.'),
+      stopped: this.t('Download parado.'),
+      verifying: this.t('Conferindo a integridade do arquivo…'),
+      ready: this.t('Download concluído e verificado.'),
+      error: d.error || this.t('Não foi possível baixar a atualização.')
+    };
+    if ($('update-progress-text')) $('update-progress-text').textContent = texts[d.status] || '';
+    if ($('update-progress-pct')) $('update-progress-pct').textContent = `${d.percent || 0}%`;
+    if ($('update-progress-fill')) $('update-progress-fill').style.width = `${d.percent || 0}%`;
+    if ($('update-progress-bytes')) $('update-progress-bytes').textContent = d.totalBytes
+      ? `${this.fmtBytes(d.receivedBytes)} ${this.t('de')} ${this.fmtBytes(d.totalBytes)}`
+      : (d.receivedBytes ? this.fmtBytes(d.receivedBytes) : '');
+    if ($('update-progress-speed')) $('update-progress-speed').textContent = d.status === 'downloading' && d.bytesPerSecond ? `${this.fmtBytes(d.bytesPerSecond)}/s` : '';
+    if ($('update-progress-eta')) $('update-progress-eta').textContent = d.status === 'downloading' ? this.fmtEta(d.etaSeconds) : '';
+
+    // Pausar e Parar só durante o download; Retomar só depois de pausar ou parar
+    if ($('btn-update-pause')) $('btn-update-pause').disabled = !d.canPause;
+    if ($('btn-update-stop')) $('btn-update-stop').disabled = !d.canStop;
+    if ($('btn-update-resume')) $('btn-update-resume').disabled = !d.canResume;
+
+    const hint = $('update-progress-hint');
+    if (hint) {
+      const msg = d.status === 'stopped' ? this.t('O que foi baixado foi descartado: Retomar começa o download do zero.')
+        : d.status === 'paused' ? this.t('O que já foi baixado fica guardado: Retomar continua do mesmo ponto.')
+        : d.status === 'error' ? this.t('Clique em Retomar para tentar de novo.') : '';
+      hint.textContent = msg;
+      hint.classList.toggle('u-hidden', !msg);
+    }
+    // Erro: Retomar vira "tentar de novo"
+    if (d.status === 'error' && $('btn-update-resume')) {
+      $('btn-update-resume').disabled = false;
+      $('btn-update-resume').onclick = () => { this.startDownload(); };
+    } else if ($('btn-update-resume')) {
+      $('btn-update-resume').onclick = null;
+    }
+
+    const apply = $('btn-apply-update');
+    const ready = d.status === 'ready';
+    $('update-progress-actions')?.classList.toggle('u-hidden', ready);
+    if (apply) { apply.classList.toggle('u-hidden', !ready); apply.disabled = false; }
+    if (ready) this.setStatus('update-available', this.t('Atualização pronta. Clique em "Reiniciar e aplicar": o app fecha, atualiza e abre de novo.'));
   },
 
   async onApplyClick() {
     const btn = document.getElementById('btn-apply-update');
-    if (btn?.dataset.mode === 'install') {
-      btn.disabled = true;
-      this.setStatus('checking', 'Fechando o CWU App para aplicar a atualização. Ele abre de novo sozinho em alguns segundos.');
-      try { await API.installUpdate(); } catch (e) { /* o app já está fechando */ }
-      return;
-    }
     if (btn) btn.disabled = true;
-    try { await API.downloadUpdate(); } catch (e) {}
-    this.pollUpdate();
+    this.setStatus('checking', this.t('Fechando o CWU App para aplicar a atualização. Ele abre de novo sozinho em alguns segundos.'));
+    try { await API.installUpdate(); } catch (e) { /* o app já está fechando */ }
+    // Se o instalador não pôde ser usado, o motivo aparece no estado
+    setTimeout(async () => {
+      try {
+        const st = (await API.getUpdateStatus()).data;
+        if (st && st.status === 'error') { this.setStatus('offline', st.error); if (btn) btn.disabled = false; }
+      } catch (e) {}
+    }, 2500);
   },
 
-  // Acompanha o download feito pelo app (progresso, concluído ou erro)
+  // Volta de versão: só acompanha o progresso (o app fecha sozinho no fim)
   pollUpdate() {
     clearInterval(this.updateTimer);
-    const box = document.getElementById('update-progress');
-    const fill = document.getElementById('update-progress-fill');
-    const pct = document.getElementById('update-progress-pct');
     const text = document.getElementById('update-progress-text');
-    const btn = document.getElementById('btn-apply-update');
-    box?.classList.remove('u-hidden');
+    document.getElementById('update-progress')?.classList.remove('u-hidden');
+    document.getElementById('update-progress-actions')?.classList.add('u-hidden');
     this.updateTimer = setInterval(async () => {
       let st;
       try { st = (await API.getUpdateStatus()).data; } catch (e) { return; }
+      const fill = document.getElementById('update-progress-fill');
+      const pct = document.getElementById('update-progress-pct');
       if (fill) fill.style.width = `${st.percent || 0}%`;
       if (pct) pct.textContent = `${st.percent || 0}%`;
-      if (st.status === 'checking' && text) text.textContent = 'Preparando o download…';
-      if ((st.status === 'rollback' || st.status === 'rollback-ready') && text) {
-        text.textContent = st.status === 'rollback-ready'
-          ? this.t('Instalando… o app fecha e abre de novo sozinho.')
-          : `${this.t('Baixando a versão')} ${st.version}…`;
-      }
-      if (st.status === 'downloading' && text) text.textContent = `${this.t('Baixando a versão')} ${st.version || this.latestVersion}…`;
-      if (st.status === 'downloaded') {
+      if (text) text.textContent = st.status === 'rollback-ready'
+        ? this.t('Instalando… o app fecha e abre de novo sozinho.')
+        : `${this.t('Baixando a versão')} ${st.version}…`;
+      if (st.status === 'error') {
         clearInterval(this.updateTimer);
-        if (text) text.textContent = 'Download concluído e verificado.';
-        this.setApplyLabel('install');
-        if (btn) btn.disabled = false;
-        this.setStatus('update-available', 'Atualização pronta. Clique em "Reiniciar e aplicar": o app fecha, atualiza e abre de novo. Se preferir, ela é aplicada quando você sair do app.');
-      }
-      if (st.status === 'none' || st.status === 'error') {
-        clearInterval(this.updateTimer);
-        box?.classList.add('u-hidden');
-        if (btn) btn.disabled = false;
-        this.setStatus('offline', st.status === 'none'
-          ? 'O instalador desta versão ainda não está disponível no GitHub. Tente de novo em alguns minutos.'
-          : (st.error && /confere|verifica/i.test(st.error) ? st.error : 'Não foi possível baixar a atualização. Verifique a internet e tente de novo, ou baixe pela página da versão.'));
+        document.getElementById('update-progress')?.classList.add('u-hidden');
+        this.setStatus('offline', st.error || this.t('Não foi possível baixar a versão escolhida.'));
         const rb = document.getElementById('btn-rollback');
         if (rb) rb.disabled = !document.getElementById('rollback-select')?.value;
-        const download = document.getElementById('btn-download-update');
-        download?.classList.remove('u-hidden');
       }
     }, 700);
   },
@@ -196,17 +294,23 @@ const VersionsModule = {
       const when = new Date(d.checkedAt || Date.now()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       this.setStatus(d.status || 'offline', `${d.message} Verificado às ${when}.`);
 
-      // Versão instalada: "Atualizar agora" baixa e aplica sozinho. Sem suporte (modo dev ou exe
-      // portátil antigo), fica o botão que abre a página de download.
+      // Versão instalada: um link no próprio resultado já começa o download. Sem suporte (modo dev
+      // ou exe portátil antigo), fica o botão que abre a página de download.
       let auto = false;
       if (d.updateAvailable) {
         try { auto = Boolean((await API.getUpdateStatus()).data.supported); } catch (e) {}
       }
-      const apply = document.getElementById('btn-apply-update');
-      if (apply) {
-        apply.classList.toggle('u-hidden', !(d.updateAvailable && auto));
-        this.latestVersion = d.latestVersion;
-        if (d.updateAvailable && auto) this.setApplyLabel('download');
+      this.latestVersion = d.latestVersion;
+      if (d.updateAvailable && auto) {
+        const el = document.querySelector('#update-check-result .c-update-status__text');
+        if (el) {
+          el.textContent = `${d.message} `;
+          const link = document.createElement('button');
+          link.type = 'button';
+          link.className = 'c-update-link js-update-start';
+          link.textContent = `${this.t('Baixar e instalar a')} v${d.latestVersion}`;
+          el.appendChild(link);
+        }
       }
       if (download) {
         download.classList.toggle('u-hidden', !d.updateAvailable || auto);

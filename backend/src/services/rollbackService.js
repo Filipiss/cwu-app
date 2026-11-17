@@ -10,6 +10,10 @@ const config = require('../config');
 const { compareVersions } = require('./versionService');
 
 const SETUP_NAME = 'CWU-App-Setup.exe';
+// Primeira versão com o instalador assistido (escolhe para quem instalar). As anteriores só
+// instalam para o usuário atual: numa instalação para todos os usuários, elas criariam uma
+// segunda cópia do app em vez de substituir a que existe.
+const FIRST_ASSISTED_INSTALLER = '1.3.0';
 const GH_HEADERS = { 'Accept': 'application/vnd.github+json', 'User-Agent': 'CWU-App' };
 
 // Só releases publicadas (sem rascunho/pre-release) que tenham instalador e latest.yml (pura, testável)
@@ -37,6 +41,36 @@ function pickInstallable(releases, currentVersion, repo) {
     .sort((a, b) => compareVersions(b.version, a.version));
 }
 
+/** Versões que não podem ser instaladas por cima desta instalação (pura, testável). */
+function isBlockedFor(version, installMode) {
+  return installMode === 'all' && compareVersions(version, FIRST_ASSISTED_INSTALLER) < 0;
+}
+
+// Lê do registro para quem o instalador instalou o app ("all" ou "CurrentUser").
+// Só vale se a pasta gravada for a do app que está rodando (senão é de outra instalação).
+function readInstallMode() {
+  if (process.platform !== 'win32') return Promise.resolve(null);
+  return new Promise((resolve) => {
+    require('child_process').execFile('reg', ['query', 'HKCU\\Software\\CWU-App\\Installer'], { windowsHide: true }, (err, stdout) => {
+      if (err) return resolve(null);
+      resolve(parseInstallInfo(stdout, path.dirname(process.execPath)));
+    });
+  });
+}
+
+/** Extrai o modo de instalação da saída do "reg query" (pura, testável). */
+function parseInstallInfo(regOutput, appDir) {
+  const value = (name) => {
+    const m = String(regOutput || '').match(new RegExp(`^\\s*${name}\\s+REG_SZ\\s+(.+?)\\s*$`, 'mi'));
+    return m ? m[1] : null;
+  };
+  const mode = value('InstallMode');
+  const dir = value('InstallDir');
+  if (!mode) return null;
+  if (dir && appDir && path.resolve(dir).toLowerCase() !== path.resolve(appDir).toLowerCase()) return null;
+  return mode;
+}
+
 // O latest.yml do electron-builder traz o SHA-512 (base64) do instalador no nível de cima (pura, testável)
 function parseYmlSha512(text) {
   const m = String(text || '').match(/^sha512:\s*['"]?([A-Za-z0-9+/=]+)['"]?\s*$/m);
@@ -48,7 +82,12 @@ class RollbackService {
     const resp = await fetch(`https://api.github.com/repos/${config.githubRepo}/releases?per_page=30`, { headers: GH_HEADERS });
     if (!resp.ok) throw new Error(`GitHub respondeu ${resp.status}`);
     const all = pickInstallable(await resp.json(), config.appVersion, config.githubRepo);
-    return all.map(({ version, date, size }) => ({ version, date, size, older: compareVersions(version, config.appVersion) < 0 }));
+    const installMode = await readInstallMode();
+    return all.map(({ version, date, size }) => ({
+      version, date, size,
+      older: compareVersions(version, config.appVersion) < 0,
+      blocked: isBlockedFor(version, installMode)
+    }));
   }
 
   /** Baixa e confere o instalador da versão escolhida. Devolve o caminho do arquivo verificado. */
@@ -57,6 +96,9 @@ class RollbackService {
     if (!resp.ok) throw new Error(`GitHub respondeu ${resp.status}`);
     const target = pickInstallable(await resp.json(), config.appVersion, config.githubRepo).find(r => r.version === version);
     if (!target) throw new Error('Versão não encontrada entre as releases com instalador.');
+    if (isBlockedFor(version, await readInstallMode())) {
+      throw new Error(`O CWU App está instalado para todos os usuários e a versão ${version} só instala para um usuário. Para voltar a ela, desinstale o CWU App e instale essa versão pelo GitHub.`);
+    }
 
     const yml = await fetch(target.ymlUrl, { headers: { 'User-Agent': 'CWU-App' } });
     if (!yml.ok) throw new Error('Não foi possível ler o latest.yml da versão.');
@@ -89,3 +131,6 @@ class RollbackService {
 module.exports = new RollbackService();
 module.exports.pickInstallable = pickInstallable;
 module.exports.parseYmlSha512 = parseYmlSha512;
+module.exports.isBlockedFor = isBlockedFor;
+module.exports.parseInstallInfo = parseInstallInfo;
+module.exports.FIRST_ASSISTED_INSTALLER = FIRST_ASSISTED_INSTALLER;

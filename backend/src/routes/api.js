@@ -87,8 +87,16 @@ const routes = [
   { method: 'POST', path: '/api/overlay/cancel-edit', handler: (req, res) => { require('../database/db').events.emit('overlay-cancel-edit'); res.json({ success: true }); } },
   { method: 'POST', path: '/api/overlay/toggle', handler: (req, res) => { require('../database/db').events.emit('overlay-toggle'); res.json({ success: true }); } },
   // Atualização automática (versão instalada): o Electron baixa e aplica; aqui só repassa
-  { method: 'GET', path: '/api/update/status', handler: (req, res) => res.json({ success: true, data: require('../utils/updateState').get() }) },
-  { method: 'POST', path: '/api/update/download', handler: (req, res) => { require('../database/db').events.emit('update-download'); res.json({ success: true }); } },
+  // Atualização: estado do app (suporte e volta de versão) + o download com pausar/parar/retomar
+  { method: 'GET', path: '/api/update/status', handler: (req, res) => res.json({ success: true, data: { ...require('../utils/updateState').get(), download: require('../services/updateDownloader').snapshot() } }) },
+  { method: 'POST', path: '/api/update/download', handler: async (req, res) => {
+    const version = req.body && req.body.version ? String(req.body.version) : undefined;
+    if (version && !/^\d+\.\d+\.\d+$/.test(version)) return res.json({ success: false, error: 'Versão inválida.' });
+    res.json({ success: true, data: await require('../services/updateDownloader').start(version) });
+  } },
+  { method: 'POST', path: '/api/update/pause', handler: (req, res) => res.json({ success: true, data: require('../services/updateDownloader').pause() }) },
+  { method: 'POST', path: '/api/update/stop', handler: (req, res) => res.json({ success: true, data: require('../services/updateDownloader').stop() }) },
+  { method: 'POST', path: '/api/update/resume', handler: async (req, res) => res.json({ success: true, data: await require('../services/updateDownloader').resume() }) },
   { method: 'POST', path: '/api/update/install', handler: (req, res) => { require('../database/db').events.emit('update-install'); res.json({ success: true }); } },
   // Voltar para uma versão anterior (lista vem do GitHub; quem instala é o Electron)
   { method: 'GET', path: '/api/update/versions', handler: async (req, res) => {
