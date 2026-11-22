@@ -24,6 +24,8 @@ class LocalDatabase {
         notifyOutdatedDrivers: true,
         // Bandeja e sobreposição (overlay) de desempenho
         closeToTray: true,
+        // Abrir sempre como administrador (o app pede a permissão do Windows ao abrir)
+        startAsAdmin: false,
         overlayPosition: 'top-right',
         overlayX: 40,
         overlayY: 40,

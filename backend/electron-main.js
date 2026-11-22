@@ -334,6 +334,19 @@ function cleanupDownloadedInstallers() {
   } catch (e) { /* pasta temporária inacessível */ }
 }
 
+// "Sempre iniciar como administrador": pede a permissão do Windows (UAC) antes de abrir a janela.
+// Se o usuário negar, o app abre normalmente, sem administrador. Devolve true quando vai reabrir.
+async function elevateOnStartIfWanted() {
+  if (process.platform !== 'win32' || !settings().startAsAdmin) return false;
+  try {
+    const elevation = require('./src/services/elevationService');
+    if ((await elevation.status()).isAdmin) return false;
+    const r = await elevation.relaunchAsAdmin(); // a instância elevada abre e esta fecha sozinha
+    if (r.success) { isQuitting = true; return true; }
+  } catch (e) { /* segue sem administrador */ }
+  return false;
+}
+
 // Previne abrir múltiplas instâncias simultâneas
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -341,8 +354,9 @@ if (!gotTheLock) {
 } else {
   app.on('second-instance', showMainWindow);
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     registerNotificationIdentity();
+    if (await elevateOnStartIfWanted()) return;
     setupUpdates();
     cleanupDownloadedInstallers();
     createWindow();

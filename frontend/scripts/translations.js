@@ -655,6 +655,9 @@ window.CWU_TRANSLATIONS = {
     "Este PC usa Modern Standby e não tem o plano Alto desempenho. O app liga o Modo de energia \"Melhor desempenho\", o mesmo de Configurações › Sistema › Energia, sem trocar de plano. Em notebook, use na tomada.": "This PC uses Modern Standby and does not have the High performance plan. The app turns on the \"Best performance\" power mode, the same as Settings › System › Power, without switching plans. On a laptop, use it plugged in.",
     "O Modo de energia \"Melhor desempenho\" já está ativo.": "The \"Best performance\" power mode is already on.",
     "Modo de energia anterior restaurado.": "Previous power mode restored.",
-    "Este PC usa Modern Standby e o Windows não deixou mudar o Modo de energia. Nada foi alterado. Mude manualmente em Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "This PC uses Modern Standby and Windows did not allow changing the power mode. Nothing was changed. Change it manually in Settings › System › Power › Power mode › Best performance."
+    "Este PC usa Modern Standby e o Windows não deixou mudar o Modo de energia. Nada foi alterado. Mude manualmente em Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "This PC uses Modern Standby and Windows did not allow changing the power mode. Nothing was changed. Change it manually in Settings › System › Power › Power mode › Best performance.",
+    "Permissão de administrador": "Administrator permission",
+    "Sempre iniciar o CWU App como administrador": "Always start CWU App as administrator",
+    "Ao abrir, o Windows pede a permissão de administrador. Assim o FPS da sobreposição, a vida útil dos discos e os ajustes do sistema funcionam sem precisar clicar em \"Reiniciar como administrador\". Se você negar, o app abre normalmente. Vale a partir da próxima vez que o app abrir.": "When opening, Windows asks for administrator permission. This way the overlay FPS, drive health and system tweaks work without clicking \"Restart as administrator\". If you decline, the app opens normally. Takes effect the next time the app opens."
   }
 };
