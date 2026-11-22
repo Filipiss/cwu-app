@@ -45,6 +45,6 @@ test('ações com parâmetro inválido são recusadas antes de tocar no sistema'
   Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
   assert.equal((await c.setMouseAcceleration({ enabled: 'sim' })).success, false);
   assert.equal((await c.setMouseSpeed({ speed: 99 })).success, false);
-  assert.equal((await c.setUltimatePlan({})).success, false);
+  assert.equal((await c.setPowerPlan({})).success, false);
   assert.equal((await c.setAdapterPowerSaving({ setting: 'rm -rf', enabled: true })).success, false);
 });

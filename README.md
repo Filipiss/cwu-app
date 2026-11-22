@@ -7,7 +7,7 @@
 **Pós-formatação e otimização do Windows para jogos, em um único app. Sem placebo.**
 
 [![Testes](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml/badge.svg)](https://github.com/Filipiss/cwu-app/actions/workflows/tests.yml)
-![Versão](https://img.shields.io/badge/versão-1.3.0-blue)
+![Versão](https://img.shields.io/badge/versão-1.3.1-blue)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?logo=windows)
 ![Electron](https://img.shields.io/badge/Electron-45-47848F?logo=electron)
 
@@ -35,7 +35,7 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Instalação em lote (winget)** | ✅ | Marque vários programas (ou use as "Sugestões de programas pós-formatação") e instale todos de uma vez pelo winget, com fila, progresso e detecção do que já está instalado. |
 | **Diagnóstico de erros / BSOD** | ✅ | Analisa 30 dias do Visualizador de Eventos (Kernel-Power 41, BugCheck 1001, WHEA, disco, crashes de apps), agrupa repetições e lista minidumps. |
 | **Boost** | ✅ | Plano de energia, baixa latência NVIDIA/AMD, limpeza de RAM e de %TEMP% (com MB liberados reais), pausa de telemetria. Toda alteração fica registrada e pode ser **revertida**. |
-| **Competitivo (input lag e consistência)** | ✅ | Monitor na taxa máxima (EnumDisplaySettings/ChangeDisplaySettingsEx), aceleração e velocidade 1:1 do mouse, teste de polling rate no navegador (pointerrawupdate), overlays em execução, plano Desempenho Máximo, suspensão seletiva de USB, teste de ping/jitter/perda com ajustes da placa de rede, guia de latência por GPU (Reflex/Anti-Lag/XeLL + limite de FPS para VRR) e uma seção de mitos de otimização. |
+| **Competitivo (input lag e consistência)** | ✅ | Monitor na taxa máxima (EnumDisplaySettings/ChangeDisplaySettingsEx), aceleração e velocidade 1:1 do mouse, teste de polling rate no navegador (pointerrawupdate), overlays em execução, plano Alto desempenho do Windows (sem criar planos; em PCs com Modern Standby indica o Modo de energia), suspensão seletiva de USB, teste de ping/jitter/perda com ajustes da placa de rede, guia de latência por GPU (Reflex/Anti-Lag/XeLL + limite de FPS para VRR) e uma seção de mitos de otimização. |
 | **Prioridade de processos** | ✅ | Escolha um programa em execução e defina a prioridade de CPU, na hora ou de forma permanente (Image File Execution Options). |
 | **Monitor em tempo real** | ✅ | Uso de CPU, GPU, RAM e disco com histórico, temperaturas (GPU de qualquer fabricante, discos, ACPI com detecção de sensor travado) e processos que mais consomem. Um único PowerShell contínuo, para não pesar o PC. |
 | **Programas na inicialização** | ✅ | Ativa/desativa pelo mesmo mecanismo do Gerenciador de Tarefas (StartupApproved), reversível. |

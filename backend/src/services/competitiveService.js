@@ -8,7 +8,6 @@ const IS_ADMIN = `([Security.Principal.WindowsPrincipal][Security.Principal.Wind
 
 // GUIDs do powercfg (independentes do idioma do Windows)
 const POWER = {
-  ultimate: 'e9a42b02-d5df-448d-aa00-03f14749eb61',
   usbSub: '2a737441-1930-4402-8d77-b2bebba308a3',
   usbSelectiveSuspend: '48e6b7a6-50f5-4782-a5d4-53bb8f07e226'
 };
@@ -187,6 +186,12 @@ $ErrorActionPreference = 'SilentlyContinue'
 ${DISPLAY_TYPES}
 ${MOUSE_TYPES}
 $usb = (powercfg /query SCHEME_CURRENT ${POWER.usbSub} ${POWER.usbSelectiveSuspend}) -join ' '
+Add-Type -TypeDefinition @"
+using System; using System.Runtime.InteropServices;
+public static class CwuPwrCapsC { [DllImport("powrprof.dll")] public static extern bool GetPwrCapabilities(byte[] caps); }
+"@
+$cwuCaps = New-Object byte[] 256
+$cwuAoAc = [bool]([CwuPwrCapsC]::GetPwrCapabilities($cwuCaps) -and $cwuCaps[20])
 [PSCustomObject]@{
   isAdmin = ${IS_ADMIN}
   displays = @([CwuDisplay]::List())
@@ -198,14 +203,14 @@ $usb = (powercfg /query SCHEME_CURRENT ${POWER.usbSub} ${POWER.usbSelectiveSuspe
   schemes = (powercfg /list) -join ' '
   usb = $usb
   battery = [bool](Get-CimInstance Win32_Battery)
+  modernStandby = $cwuAoAc
 } | ConvertTo-Json -Depth 4 -Compress`, 30000);
     if (!res.success || !res.data) return { available: false, message: 'Não foi possível ler as configurações: ' + (res.error || res.raw || 'sem resposta') };
     const d = res.data;
 
     const displays = (Array.isArray(d.displays) ? d.displays : (d.displays ? [d.displays] : [])).map(analyzeDisplay);
     const accel = Array.isArray(d.accel) ? d.accel : [];
-    const activeGuid = parseGuid(d.activeScheme);
-    const ultimateGuid = (db.state.competitive || {}).ultimateGuid || null;
+    const plan = require('./powerPlanService').interpret({ active: d.activeScheme, list: d.schemes, modernStandby: d.modernStandby });
     const usb = parsePowercfgIndexes(d.usb);
 
     return {
@@ -221,8 +226,9 @@ $usb = (powercfg /query SCHEME_CURRENT ${POWER.usbSub} ${POWER.usbSelectiveSuspe
       overlays: overlayMatch(Array.isArray(d.processes) ? d.processes : []),
       gameBarOverlayOn: d.gameBarOverlay !== 0,
       power: {
-        ultimateActive: Boolean(ultimateGuid && activeGuid === ultimateGuid),
-        activeGuid,
+        highActive: plan.highActive,
+        highBlockReason: require('./powerPlanService').blockReason(plan),
+        activeGuid: plan.activeGuid,
         usbSelectiveSuspendOn: usb ? usb.ac === 1 || usb.dc === 1 : null
       }
     };
@@ -285,38 +291,22 @@ New-ItemProperty $k -Name UseNexusForGameBarEnabled -Value ${enabled ? 1 : 0} -P
   }
 
   // ---- Energia ----
-  async setUltimatePlan({ enabled }) {
+  // Alto desempenho que já vem no Windows (nunca cria planos; ver powerPlanService.js)
+  async setPowerPlan({ enabled }) {
     if (typeof enabled !== 'boolean') return { success: false, message: 'Parâmetro inválido.' };
-    const state = db.state.competitive || (db.state.competitive = {});
-    const status = await this.getStatus();
-
+    const powerPlan = require('./powerPlanService');
     if (!enabled) {
-      const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const back = GUID_RE.test(state.previousScheme || '') ? state.previousScheme : '381b4222-f694-41f0-9685-ff5bb260df2e'; // Equilibrado
-      await runPowerShell(`powercfg /setactive ${back}`, 10000);
-      db.save();
-      this.log('power_plan', 'Plano de energia restaurado', { enabled: true });
-      return { success: true, message: 'Plano de energia anterior restaurado.' };
+      const r = await powerPlan.restore();
+      if (r.success) this.log('power_plan', 'Plano de energia restaurado', { enabled: true });
+      return r;
     }
-
-    // Reaproveita o plano criado antes, se ainda existir (evita duplicar a cada clique)
-    const schemes = await runPowerShell(`(powercfg /list) -join ' '`, 10000);
-    const listText = schemes.raw || (schemes.data ? String(schemes.data) : '');
-    let guid = /^[0-9a-f-]{36}$/i.test(state.ultimateGuid || '') && listText.toLowerCase().includes(state.ultimateGuid) ? state.ultimateGuid : null;
-    if (!guid) {
-      const dup = await runPowerShell(`(powercfg -duplicatescheme ${POWER.ultimate}) -join ' '`, 15000);
-      guid = parseGuid(dup.raw || dup.data);
-    }
-    if (!guid) return { success: false, message: 'O Windows não criou o plano Desempenho Máximo (algumas edições não o oferecem).' };
-
-    state.previousScheme = status.power ? status.power.activeGuid : null;
-    state.ultimateGuid = guid;
-    db.save();
-    await runPowerShell(`powercfg /setactive ${guid}`, 10000);
-    this.log('power_plan', 'Plano de energia: Desempenho Máximo', { enabled: false });
+    const r = await powerPlan.enableHigh();
+    if (!r.success || r.already) return r;
+    const status = await this.getStatus();
+    this.log('power_plan', 'Plano de energia: Alto desempenho', { enabled: false });
     return {
       success: true,
-      message: 'Plano Desempenho Máximo ativo: a CPU não entra em estados de economia profundos, reduzindo picos de latência.' +
+      message: 'Plano Alto desempenho do Windows ativo: a CPU fica menos tempo em estados de economia, reduzindo picos de latência.' +
         (status.isLaptop ? ' Em notebook, isso gasta mais bateria: use na tomada.' : '')
     };
   }
@@ -404,7 +394,7 @@ try { ${cmd}; '{"ok":true}' } catch { [PSCustomObject]@{ ok = $false; error = $_
       case 'mouse_accel': return this.setMouseAcceleration({ enabled: Boolean(p.enabled) });
       case 'mouse_speed': return this.setMouseSpeed({ speed: p.speed || 10 });
       case 'gamebar': return this.setGameBarOverlay({ enabled: p.enabled !== false });
-      case 'power_plan': return this.setUltimatePlan({ enabled: Boolean(p.enabled) });
+      case 'power_plan': return this.setPowerPlan({ enabled: Boolean(p.enabled) });
       case 'usb_suspend': return this.setUsbSelectiveSuspend({ enabled: p.enabled !== false });
       case 'net_eee':
       case 'net_powerSaving': return this.setAdapterPowerSaving({ adapter: p.adapter, setting: p.setting, enabled: p.enabled !== false });

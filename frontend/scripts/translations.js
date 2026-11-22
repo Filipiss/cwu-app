@@ -638,6 +638,17 @@ window.CWU_TRANSLATIONS = {
     "Atualização pronta. Clique em \"Reiniciar e aplicar\": o app fecha, atualiza e abre de novo.": "Update ready. Click \"Restart and apply\": the app closes, updates and opens again.",
     "Não foi possível baixar a versão escolhida.": "Could not download the chosen version.",
     "indisponível nesta instalação": "unavailable in this installation",
-    "O CWU App está instalado para todos os usuários. As versões anteriores à 1.3.0 só sabem instalar para um usuário e criariam uma segunda cópia do app. Para voltar a uma delas, desinstale o CWU App pelo Windows e instale essa versão pela página de releases do GitHub.": "CWU App is installed for all users. Versions before 1.3.0 can only install for one user and would create a second copy of the app. To go back to one of them, uninstall CWU App from Windows and install that version from the GitHub releases page."
+    "O CWU App está instalado para todos os usuários. As versões anteriores à 1.3.0 só sabem instalar para um usuário e criariam uma segunda cópia do app. Para voltar a uma delas, desinstale o CWU App pelo Windows e instale essa versão pela página de releases do GitHub.": "CWU App is installed for all users. Versions before 1.3.0 can only install for one user and would create a second copy of the app. To go back to one of them, uninstall CWU App from Windows and install that version from the GitHub releases page.",
+    "Plano de energia Alto desempenho": "High performance power plan",
+    "Ativar Alto desempenho": "Enable High performance",
+    "Indisponível": "Unavailable",
+    "Troca para o plano Alto desempenho que já vem no Windows: a CPU fica pronta para responder, sem os atrasos de \"acordar\" núcleos. Nenhum plano novo é criado.": "Switches to the High performance plan that comes with Windows: the CPU stays ready to respond, without the delay of \"waking up\" cores. No new plan is created.",
+    "Troca para o plano Alto desempenho que já vem no Windows: a CPU fica pronta para responder, sem os atrasos de \"acordar\" núcleos. Nenhum plano novo é criado. Em notebook, use na tomada.": "Switches to the High performance plan that comes with Windows: the CPU stays ready to respond, without the delay of \"waking up\" cores. No new plan is created. On a laptop, use it plugged in.",
+    "Este PC usa Modern Standby: nele o Windows só suporta o plano Equilibrado, e trocar de plano pode deixar o sistema instável. Nada foi alterado. Para mais desempenho, use Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "This PC uses Modern Standby: Windows only supports the Balanced plan on it, and switching plans can make the system unstable. Nothing was changed. For more performance, use Settings › System › Power › Power mode › Best performance.",
+    "O plano \"Alto desempenho\" do Windows não está disponível neste PC. Nada foi alterado. Para mais desempenho, use Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "The Windows \"High performance\" plan is not available on this PC. Nothing was changed. For more performance, use Settings › System › Power › Power mode › Best performance.",
+    "Plano de energia Alto desempenho do Windows ativado.": "Windows High performance power plan enabled.",
+    "O plano Alto desempenho já está ativo.": "The High performance plan is already active.",
+    "Plano de energia Equilibrado restaurado.": "Balanced power plan restored.",
+    "Plano de energia anterior restaurado.": "Previous power plan restored."
   }
 };

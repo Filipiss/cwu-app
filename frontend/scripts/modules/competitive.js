@@ -134,12 +134,14 @@ const CompetitiveModule = {
     const p = d.power;
     box.innerHTML =
       this.row({
-        title: 'Plano de energia Desempenho Máximo',
-        desc: 'Plano oculto do Windows que mantém a CPU pronta para responder, sem os atrasos de "acordar" núcleos.' + (d.isLaptop ? ' Em notebook, use na tomada.' : ''),
-        state: this.badge(p.ultimateActive, 'Ativo', 'Inativo'),
-        action: p.ultimateActive
+        title: 'Plano de energia Alto desempenho',
+        desc: (p.highBlockReason && !p.highActive)
+          ? p.highBlockReason
+          : 'Troca para o plano Alto desempenho que já vem no Windows: a CPU fica pronta para responder, sem os atrasos de "acordar" núcleos. Nenhum plano novo é criado.' + (d.isLaptop ? ' Em notebook, use na tomada.' : ''),
+        state: (p.highBlockReason && !p.highActive) ? '<span class="c-badge c-badge--neutral">Indisponível</span>' : this.badge(p.highActive, 'Ativo', 'Inativo'),
+        action: p.highActive
           ? this.actionBtn('Restaurar anterior', { action: 'ultimate', enabled: 'false' }, 'secondary')
-          : this.actionBtn('Ativar', { action: 'ultimate', enabled: 'true' })
+          : (p.highBlockReason ? '' : this.actionBtn('Ativar', { action: 'ultimate', enabled: 'true' }))
       }) +
       this.row({
         title: 'Suspensão seletiva de USB',

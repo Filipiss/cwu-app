@@ -132,7 +132,7 @@ const routes = [
   { method: 'POST', path: '/api/competitive/mouse-accel', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setMouseAcceleration(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/mouse-speed', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setMouseSpeed(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/gamebar', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setGameBarOverlay(req.body || {}) }) },
-  { method: 'POST', path: '/api/competitive/ultimate', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUltimatePlan(req.body || {}) }) },
+  { method: 'POST', path: '/api/competitive/ultimate', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setPowerPlan(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/usb-suspend', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setUsbSelectiveSuspend(req.body || {}) }) },
   { method: 'POST', path: '/api/competitive/adapter', handler: async (req, res) => res.json({ success: true, data: await competitiveService.setAdapterPowerSaving(req.body || {}) }) },
 

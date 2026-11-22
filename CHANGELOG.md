@@ -2,6 +2,13 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.3.1] - 2026-11-22
+
+### Corrigido
+- Plano de energia (Boost e Competitivo): o app só troca para o plano Alto desempenho que já vem no Windows e nunca mais cria planos. Antes, o Boost criava uma cópia do plano "Desempenho Máximo" a cada clique
+- Em PCs com Modern Standby (comum em notebooks e PCs mais novos), o app não troca mais o plano de energia, porque nesses PCs o Windows só suporta o Equilibrado e a troca podia travar o sistema. No lugar, indica o Modo de energia "Melhor desempenho" das Configurações
+- O Boost dizia "ativado" mesmo quando o Windows recusava a troca de plano. Agora o app confere se o plano mudou de verdade e mostra o erro quando não muda
+
 ## [1.3.0] - 2026-11-16
 
 ### Adicionado

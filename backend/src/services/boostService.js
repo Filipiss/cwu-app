@@ -136,12 +136,12 @@ class BoostService {
       },
       {
         id: 'power_plan',
-        title: 'Plano de Energia de Desempenho Máximo',
-        description: 'Evita que os núcleos da CPU entrem em estados de economia C-State durante partidas de jogos competitivos.<br><span style="display:inline-block; margin-top:8px; font-size:0.85rem; color: var(--color-text-muted, #94a3b8); line-height: 1.45;">📌 <strong>Como ativar manualmente:</strong> Painel de Controle › Sistema e Segurança › <strong>Opções de Energia</strong> › Selecionar <strong>Alto Desempenho</strong>.</span>',
+        title: 'Plano de energia Alto desempenho',
+        description: 'Troca para o plano Alto desempenho que já vem no Windows: os núcleos da CPU ficam menos tempo em estados de economia (C-States) durante as partidas. Nenhum plano novo é criado.<br><span style="display:inline-block; margin-top:8px; font-size:0.85rem; color: var(--color-text-muted, #94a3b8); line-height: 1.45;">📌 <strong>Como ativar manualmente:</strong> Painel de Controle › Sistema e Segurança › <strong>Opções de Energia</strong> › Selecionar <strong>Alto Desempenho</strong>.</span>',
         status: 'ready',
         active: false,
         potentialGain: 'Latência de CPU reduzida',
-        btnLabel: 'Ativar Plano Máximo',
+        btnLabel: 'Ativar Alto desempenho',
         manualAction: 'open_power_settings',
         manualLabel: 'Mudar Manualmente',
         manualTooltip: 'Abre as Opções de Energia do Painel de Controle'
@@ -283,36 +283,27 @@ class BoostService {
       };
     }
 
-    // 3. Plano de Energia Máximo / Equilibrado (Reversão)
+    // 3. Plano Alto desempenho do Windows / volta ao anterior (Reversão)
+    //    Só alterna entre planos que o Windows já tem; nunca cria planos (powerPlanService.js)
     if (actionId === 'power_plan' || actionId === 'power_balanced') {
-      if (process.platform === 'win32') {
-        try {
-          if (actionId === 'power_plan') {
-            await runPowerShell(`powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61; powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c`, 5000);
-          } else {
-            // Reverte para Equilibrado (Balanced) padrão do Windows
-            await runPowerShell(`powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e`, 5000);
-          }
-        } catch (e) {}
+      const powerPlan = require('./powerPlanService');
+      if (actionId === 'power_balanced') {
+        const r = await powerPlan.restore();
+        return { success: r.success, actionId, message: r.message, freedMemoryMb: 0 };
       }
 
-      if (actionId === 'power_plan') {
+      const r = await powerPlan.enableHigh();
+      if (r.success && !r.already) {
         db.addUpdateLog({
           type: 'boost',
-          title: 'Plano de Energia de Alto Desempenho',
+          title: 'Plano de energia Alto desempenho',
           category: 'Energia Windows',
-          details: 'Configurado plano de energia para Alto Desempenho no Windows.',
+          details: 'Plano de energia trocado para o Alto desempenho que vem no Windows.',
           actionId: 'power_plan',
           revertAction: 'power_balanced'
         });
       }
-
-      return {
-        success: true,
-        actionId,
-        message: actionId === 'power_plan' ? 'Plano de Alto Desempenho ativado no Windows!' : 'Plano de Energia restaurado para o padrão Equilibrado.',
-        freedMemoryMb: 0
-      };
+      return { success: r.success, actionId, message: r.message, freedMemoryMb: 0 };
     }
 
     // 4/5. Baixa latência NVIDIA / AMD
