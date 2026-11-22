@@ -137,7 +137,7 @@ class BoostService {
       {
         id: 'power_plan',
         title: 'Plano de energia Alto desempenho',
-        description: 'Troca para o plano Alto desempenho que já vem no Windows: os núcleos da CPU ficam menos tempo em estados de economia (C-States) durante as partidas. Nenhum plano novo é criado.<br><span style="display:inline-block; margin-top:8px; font-size:0.85rem; color: var(--color-text-muted, #94a3b8); line-height: 1.45;">📌 <strong>Como ativar manualmente:</strong> Painel de Controle › Sistema e Segurança › <strong>Opções de Energia</strong> › Selecionar <strong>Alto Desempenho</strong>.</span>',
+        description: 'Troca para o plano Alto desempenho que já vem no Windows: os núcleos da CPU ficam menos tempo em estados de economia (C-States) durante as partidas. Nenhum plano novo é criado. Em PCs com Modern Standby (sem esse plano), liga o Modo de energia "Melhor desempenho" das Configurações.<br><span style="display:inline-block; margin-top:8px; font-size:0.85rem; color: var(--color-text-muted, #94a3b8); line-height: 1.45;">📌 <strong>Como ativar manualmente:</strong> Painel de Controle › Sistema e Segurança › <strong>Opções de Energia</strong> › Selecionar <strong>Alto Desempenho</strong>.</span>',
         status: 'ready',
         active: false,
         potentialGain: 'Latência de CPU reduzida',
@@ -294,11 +294,14 @@ class BoostService {
 
       const r = await powerPlan.enableHigh();
       if (r.success && !r.already) {
+        const mode = r.method === 'mode';
         db.addUpdateLog({
           type: 'boost',
-          title: 'Plano de energia Alto desempenho',
+          title: mode ? 'Modo de energia Melhor desempenho' : 'Plano de energia Alto desempenho',
           category: 'Energia Windows',
-          details: 'Plano de energia trocado para o Alto desempenho que vem no Windows.',
+          details: mode
+            ? 'Modo de energia do Windows trocado para "Melhor desempenho" (PC com Modern Standby, sem o plano Alto desempenho).'
+            : 'Plano de energia trocado para o Alto desempenho que vem no Windows.',
           actionId: 'power_plan',
           revertAction: 'power_balanced'
         });

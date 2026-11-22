@@ -134,10 +134,12 @@ const CompetitiveModule = {
     const p = d.power;
     box.innerHTML =
       this.row({
-        title: 'Plano de energia Alto desempenho',
+        title: p.method === 'mode' ? 'Modo de energia Melhor desempenho' : 'Plano de energia Alto desempenho',
         desc: (p.highBlockReason && !p.highActive)
           ? p.highBlockReason
-          : 'Troca para o plano Alto desempenho que já vem no Windows: a CPU fica pronta para responder, sem os atrasos de "acordar" núcleos. Nenhum plano novo é criado.' + (d.isLaptop ? ' Em notebook, use na tomada.' : ''),
+          : (p.method === 'mode'
+            ? 'Este PC usa Modern Standby e não tem o plano Alto desempenho. O app liga o Modo de energia "Melhor desempenho", o mesmo de Configurações › Sistema › Energia, sem trocar de plano.'
+            : 'Troca para o plano Alto desempenho que já vem no Windows: a CPU fica pronta para responder, sem os atrasos de "acordar" núcleos. Nenhum plano novo é criado.') + (d.isLaptop ? ' Em notebook, use na tomada.' : ''),
         state: (p.highBlockReason && !p.highActive) ? '<span class="c-badge c-badge--neutral">Indisponível</span>' : this.badge(p.highActive, 'Ativo', 'Inativo'),
         action: p.highActive
           ? this.actionBtn('Restaurar anterior', { action: 'ultimate', enabled: 'false' }, 'secondary')

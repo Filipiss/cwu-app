@@ -186,12 +186,6 @@ $ErrorActionPreference = 'SilentlyContinue'
 ${DISPLAY_TYPES}
 ${MOUSE_TYPES}
 $usb = (powercfg /query SCHEME_CURRENT ${POWER.usbSub} ${POWER.usbSelectiveSuspend}) -join ' '
-Add-Type -TypeDefinition @"
-using System; using System.Runtime.InteropServices;
-public static class CwuPwrCapsC { [DllImport("powrprof.dll")] public static extern bool GetPwrCapabilities(byte[] caps); }
-"@
-$cwuCaps = New-Object byte[] 256
-$cwuAoAc = [bool]([CwuPwrCapsC]::GetPwrCapabilities($cwuCaps) -and $cwuCaps[20])
 [PSCustomObject]@{
   isAdmin = ${IS_ADMIN}
   displays = @([CwuDisplay]::List())
@@ -203,14 +197,13 @@ $cwuAoAc = [bool]([CwuPwrCapsC]::GetPwrCapabilities($cwuCaps) -and $cwuCaps[20])
   schemes = (powercfg /list) -join ' '
   usb = $usb
   battery = [bool](Get-CimInstance Win32_Battery)
-  modernStandby = $cwuAoAc
 } | ConvertTo-Json -Depth 4 -Compress`, 30000);
     if (!res.success || !res.data) return { available: false, message: 'Não foi possível ler as configurações: ' + (res.error || res.raw || 'sem resposta') };
     const d = res.data;
 
     const displays = (Array.isArray(d.displays) ? d.displays : (d.displays ? [d.displays] : [])).map(analyzeDisplay);
     const accel = Array.isArray(d.accel) ? d.accel : [];
-    const plan = require('./powerPlanService').interpret({ active: d.activeScheme, list: d.schemes, modernStandby: d.modernStandby });
+    const plan = await require('./powerPlanService').status();
     const usb = parsePowercfgIndexes(d.usb);
 
     return {
@@ -226,9 +219,10 @@ $cwuAoAc = [bool]([CwuPwrCapsC]::GetPwrCapabilities($cwuCaps) -and $cwuCaps[20])
       overlays: overlayMatch(Array.isArray(d.processes) ? d.processes : []),
       gameBarOverlayOn: d.gameBarOverlay !== 0,
       power: {
-        highActive: plan.highActive,
-        highBlockReason: require('./powerPlanService').blockReason(plan),
-        activeGuid: plan.activeGuid,
+        highActive: Boolean(plan.performanceActive),
+        method: plan.method || null,
+        highBlockReason: plan.available ? plan.blockReason : null,
+        activeGuid: plan.activeGuid || null,
         usbSelectiveSuspendOn: usb ? usb.ac === 1 || usb.dc === 1 : null
       }
     };
@@ -303,12 +297,11 @@ New-ItemProperty $k -Name UseNexusForGameBarEnabled -Value ${enabled ? 1 : 0} -P
     const r = await powerPlan.enableHigh();
     if (!r.success || r.already) return r;
     const status = await this.getStatus();
-    this.log('power_plan', 'Plano de energia: Alto desempenho', { enabled: false });
-    return {
-      success: true,
-      message: 'Plano Alto desempenho do Windows ativo: a CPU fica menos tempo em estados de economia, reduzindo picos de latência.' +
-        (status.isLaptop ? ' Em notebook, isso gasta mais bateria: use na tomada.' : '')
-    };
+    this.log('power_plan', r.method === 'mode' ? 'Modo de energia: Melhor desempenho' : 'Plano de energia: Alto desempenho', { enabled: false });
+    const base = r.method === 'mode'
+      ? r.message
+      : 'Plano Alto desempenho do Windows ativo: a CPU fica menos tempo em estados de economia, reduzindo picos de latência.';
+    return { success: true, message: base + (status.isLaptop ? ' Em notebook, isso gasta mais bateria: use na tomada.' : '') };
   }
 
   async setUsbSelectiveSuspend({ enabled }) {

@@ -649,6 +649,12 @@ window.CWU_TRANSLATIONS = {
     "Plano de energia Alto desempenho do Windows ativado.": "Windows High performance power plan enabled.",
     "O plano Alto desempenho já está ativo.": "The High performance plan is already active.",
     "Plano de energia Equilibrado restaurado.": "Balanced power plan restored.",
-    "Plano de energia anterior restaurado.": "Previous power plan restored."
+    "Plano de energia anterior restaurado.": "Previous power plan restored.",
+    "Modo de energia Melhor desempenho": "Best performance power mode",
+    "Este PC usa Modern Standby e não tem o plano Alto desempenho. O app liga o Modo de energia \"Melhor desempenho\", o mesmo de Configurações › Sistema › Energia, sem trocar de plano.": "This PC uses Modern Standby and does not have the High performance plan. The app turns on the \"Best performance\" power mode, the same as Settings › System › Power, without switching plans.",
+    "Este PC usa Modern Standby e não tem o plano Alto desempenho. O app liga o Modo de energia \"Melhor desempenho\", o mesmo de Configurações › Sistema › Energia, sem trocar de plano. Em notebook, use na tomada.": "This PC uses Modern Standby and does not have the High performance plan. The app turns on the \"Best performance\" power mode, the same as Settings › System › Power, without switching plans. On a laptop, use it plugged in.",
+    "O Modo de energia \"Melhor desempenho\" já está ativo.": "The \"Best performance\" power mode is already on.",
+    "Modo de energia anterior restaurado.": "Previous power mode restored.",
+    "Este PC usa Modern Standby e o Windows não deixou mudar o Modo de energia. Nada foi alterado. Mude manualmente em Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "This PC uses Modern Standby and Windows did not allow changing the power mode. Nothing was changed. Change it manually in Settings › System › Power › Power mode › Best performance."
   }
 };

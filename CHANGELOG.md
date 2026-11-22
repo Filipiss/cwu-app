@@ -2,6 +2,11 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [1.3.2] - 2026-11-22
+
+### Alterado
+- Em PCs com Modern Standby, o botão de desempenho de energia (Boost e Competitivo) agora liga o Modo de energia "Melhor desempenho", o mesmo de Configurações › Sistema › Energia, em vez de só avisar. Esses PCs não têm o plano Alto desempenho, então o app não troca de plano nem cria planos. O Reverter volta ao modo anterior
+
 ## [1.3.1] - 2026-11-22
 
 ### Corrigido
