@@ -5,7 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
-- Comandos de voz: com a escuta ligada (atalho Alt + H), fale "Ei app" e o comando, como "execute o boost", "ligue a sobreposição", "alinhe a sobreposição à direita superior" ou "ative o alto desempenho". Usa o reconhecimento de fala do próprio Windows, em português e sem internet; o áudio não sai do PC. O app confirma na tela e, se quiser, em voz alta
+- Comandos de voz: com a escuta ligada (atalho Alt + H), fale "Ei app" e o que quer fazer, do seu jeito: o app entende pelas palavras-chave, então "sobreposição no canto superior direito" e "mudar a sobreposição para a direita em cima" fazem a mesma coisa. Funciona para quase tudo do app: sobreposição (ligar, canto, tamanho, transparência, layout, itens), boost e limpezas, plano de energia, ajustes do Windows, monitor, mouse, Game Bar, ponto de restauração, drivers, atualizações, relatório, tema, idioma, abrir qualquer aba e perguntas como "qual a temperatura da CPU?". Usa o reconhecimento de fala do próprio Windows, em português e sem internet; o áudio não sai do PC. A limpeza de disco pede confirmação na tela
 - Atalhos personalizáveis em Configurações › Preferências: troque o atalho da sobreposição e o dos comandos de voz. O app só aceita combinações que o Windows deixa usar (não em uso por outro programa)
 
 ## [1.3.2] - 2026-11-22

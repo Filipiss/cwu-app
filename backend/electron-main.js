@@ -433,6 +433,7 @@ if (!gotTheLock) {
     registerHotkeys();
     db.events.on('overlay-set', setOverlayVisible);
     db.events.on('show-main-window', showMainWindow);
+    db.events.on('hide-main-window', () => { if (mainWindow) mainWindow.minimize(); });
     db.events.on('voice-feedback', voiceFeedback);
     db.events.on('voice-toggle', toggleVoice);
     voice.on('state', (st) => {

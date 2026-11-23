@@ -19,6 +19,7 @@ const HotkeysModule = {
     document.addEventListener('keydown', (e) => this.onKey(e), true);
     this.load();
     this.loadVoice();
+    this.watchVoiceUi();
     // Atualiza o estado da voz enquanto a aba de configurações está aberta
     this.voiceTimer = setInterval(() => {
       const card = document.getElementById('voice-card');
@@ -124,6 +125,72 @@ const HotkeysModule = {
     if (last) {
       last.classList.toggle('u-hidden', !d.last);
       if (d.last) last.textContent = `Último comando: "${d.last.phrase}" → ${d.last.reply}`;
+    }
+  },
+
+  // ===== Ações de tela pedidas por comando de voz (abrir aba, analisar, tema…) =====
+  uiSeq: null,
+
+  watchVoiceUi() {
+    const tick = async () => {
+      let d;
+      try { d = (await API.request(`/api/voice/ui?after=${this.uiSeq || 0}`)).data || {}; } catch (e) { return; }
+      // Na primeira leitura, só marca onde está (não repete ações antigas)
+      if (this.uiSeq === null) { this.uiSeq = d.seq || 0; return; }
+      for (const a of d.actions || []) {
+        this.uiSeq = Math.max(this.uiSeq, a.seq);
+        try { await this.runVoiceUi(a); } catch (e) { console.error('[voz]', e); }
+      }
+    };
+    tick();
+    setInterval(tick, 1000);
+  },
+
+  async runVoiceUi(a) {
+    const wait = (ms) => new Promise(r => setTimeout(r, ms));
+    switch (a.type) {
+      case 'navigate':
+        App.switchTab(a.tab);
+        if (a.group && a.view && typeof SubTabs !== 'undefined') SubTabs.show(a.group, a.view);
+        break;
+      case 'disk-analyze':
+        DisksModule.load();
+        await wait(300);
+        DisksModule.analyzeCleanup();
+        break;
+      case 'disk-clean':
+        DisksModule.load();
+        await wait(300);
+        if (await DisksModule.analyzeCleanup()) {
+          if (DisksModule.selectedCleanup().length) DisksModule.runCleanup();
+          else App.showToast(this.t('Nada recomendado para limpar agora. Veja os outros itens na Limpeza de disco.'), 'info', 7000);
+        }
+        break;
+      case 'drivers-scan':
+        if (typeof ScanModule !== 'undefined') ScanModule.runScan();
+        break;
+      case 'updates-check':
+        if (typeof VersionsModule !== 'undefined') VersionsModule.checkForUpdates();
+        break;
+      case 'report-export':
+        document.getElementById('btn-export-report')?.click();
+        break;
+      case 'theme':
+        if (['graphite', 'frost', 'indigo'].includes(a.theme)) { SettingsModule.setTheme(a.theme); SettingsModule.saveSettings(); }
+        break;
+      case 'language':
+        if (['pt-BR', 'en-US'].includes(a.lang)) {
+          SettingsModule.settings.language = a.lang;
+          SettingsModule.saveSettings();
+          I18N.set(a.lang);
+          const sel = document.getElementById('setting-language-select');
+          if (sel) sel.value = a.lang;
+        }
+        break;
+      case 'voice-help':
+        await wait(200);
+        document.getElementById('voice-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        break;
     }
   },
 

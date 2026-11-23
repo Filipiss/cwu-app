@@ -104,6 +104,11 @@ const routes = [
     res.json({ success: true, data: require('../utils/hotkeys').set(String(b.id || ''), String(b.accelerator || '')) });
   } },
   { method: 'POST', path: '/api/hotkeys/reset', handler: (req, res) => res.json({ success: true, data: require('../utils/hotkeys').reset(String((req.body || {}).id || '')) }) },
+  { method: 'GET', path: '/api/voice/ui', handler: (req, res) => {
+    const voice = require('../services/voiceService');
+    const after = Number(new URL(req.url, 'http://x').searchParams.get('after')) || 0;
+    res.json({ success: true, data: { seq: voice.uiSeq, actions: voice.uiSince(after) } });
+  } },
   { method: 'GET', path: '/api/voice/status', handler: (req, res) => res.json({ success: true, data: require('../services/voiceService').snapshot() }) },
   { method: 'POST', path: '/api/voice/toggle', handler: (req, res) => {
     // No app, o Electron liga/desliga (e avisa na tela); sem ele, o próprio serviço alterna

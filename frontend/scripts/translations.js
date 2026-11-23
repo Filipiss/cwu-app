@@ -678,6 +678,8 @@ window.CWU_TRANSLATIONS = {
     "Desligar comandos de voz": "Turn off voice commands",
     "Responder em voz alta": "Reply out loud",
     "O app confirma cada comando falando (voz do Windows), além do aviso na tela.": "The app confirms each command by speaking (Windows voice), besides the on-screen notice.",
-    "Exemplos": "Examples"
+    "Exemplos": "Examples",
+    "Fale do seu jeito": "Speak your way",
+    "Não precisa decorar frases: comece com \"Ei app\" e use as palavras do que quer fazer. \"Ei app, sobreposição no canto superior direito\" e \"Ei app, mudar a sobreposição para a direita em cima\" fazem a mesma coisa.": "No need to memorize phrases: start with \"Ei app\" and use the words of what you want to do (in Portuguese). Different phrasings of the same command do the same thing."
   }
 };

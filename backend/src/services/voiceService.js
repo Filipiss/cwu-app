@@ -1,71 +1,28 @@
 // backend/src/services/voiceService.js
 // Comandos por voz com o reconhecedor de fala do próprio Windows (Windows.Media.SpeechRecognition),
-// no modo de comandos: ele só reconhece as frases da lista abaixo, funciona sem internet e o áudio
-// não sai do PC. Toda frase começa com a palavra de ativação ("Ei app").
+// sem internet: o áudio não sai do PC. O reconhecedor usa uma gramática SRGS gerada a partir das
+// palavras-chave de voiceIntents.js, com coringas (GARBAGE) entre elas: o usuário pode falar do jeito
+// dele, desde que comece com a palavra de ativação ("Ei app") e use as palavras-chave do comando.
 // A escuta só fica ligada quando o usuário liga (atalho Alt + H, configurável).
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const { spawn } = require('child_process');
 const { EventEmitter } = require('events');
 const db = require('../database/db');
+const intents = require('./voiceIntents');
 
-const WAKE = 'ei app';
 const LANGUAGE = 'pt-BR';
 
-// Verbo no infinitivo e no imperativo ("ligar" / "ligue"): o usuário pode falar dos dois jeitos
-const both = (inf, imp, rest) => [`${inf} ${rest}`, `${imp} ${rest}`];
-
-const POSITIONS = {
-  'top-left': { label: 'canto superior esquerdo', words: [['superior', 'esquerdo'], ['esquerda', 'superior'], ['em cima', 'à esquerda']] },
-  'top-center': { label: 'topo, no centro', words: [['superior', 'central'], ['centro', 'superior'], ['em cima', 'no centro']] },
-  'top-right': { label: 'canto superior direito', words: [['superior', 'direito'], ['direita', 'superior'], ['em cima', 'à direita']] },
-  'bottom-left': { label: 'canto inferior esquerdo', words: [['inferior', 'esquerdo'], ['esquerda', 'inferior'], ['embaixo', 'à esquerda']] },
-  'bottom-center': { label: 'rodapé, no centro', words: [['inferior', 'central'], ['centro', 'inferior'], ['embaixo', 'no centro']] },
-  'bottom-right': { label: 'canto inferior direito', words: [['inferior', 'direito'], ['direita', 'inferior'], ['embaixo', 'à direita']] }
-};
-
-function positionPhrases(pos) {
-  const out = [];
-  for (const [a, b] of POSITIONS[pos].words) {
-    const where = /^(superior|inferior)$/.test(a) ? `no canto ${a} ${b}` : (/^(esquerda|direita|centro)$/.test(a) ? `à ${a} ${b}`.replace('à centro', 'no centro') : `${a} ${b}`);
-    out.push(`sobreposição ${where}`);
-    out.push(...both('alinhar', 'alinhe', `a sobreposição ${where}`));
-    out.push(...both('mover', 'mova', `a sobreposição ${where}`));
-    out.push(...both('colocar', 'coloque', `a sobreposição ${where}`));
-  }
-  return out;
+/** Comando a partir do que o reconhecedor devolveu: a etiqueta da gramática ou, sem ela, o texto (pura). */
+function resolveCommand({ tag, text }) {
+  return intents.fromTag(tag) || intents.parseIntent(text);
 }
 
-const COMMANDS = [
-  { id: 'boost', phrases: [...both('executar', 'execute', 'o boost'), ...both('executar', 'execute', 'boost'), ...both('executar', 'execute', 'game booster'), ...both('ativar', 'ative', 'o boost'), 'boost', 'game booster'] },
-  { id: 'overlay_on', phrases: [...both('ligar', 'ligue', 'a sobreposição'), ...both('mostrar', 'mostre', 'a sobreposição'), ...both('mostrar', 'mostre', 'o fps'), ...both('ativar', 'ative', 'a sobreposição')] },
-  { id: 'overlay_off', phrases: [...both('desligar', 'desligue', 'a sobreposição'), ...both('esconder', 'esconda', 'a sobreposição'), ...both('esconder', 'esconda', 'o fps'), ...both('desativar', 'desative', 'a sobreposição')] },
-  ...Object.keys(POSITIONS).map(pos => ({ id: 'overlay_position', arg: pos, phrases: positionPhrases(pos) })),
-  { id: 'power_high', phrases: [...both('ativar', 'ative', 'o alto desempenho'), ...both('ativar', 'ative', 'alto desempenho'), ...both('ligar', 'ligue', 'o alto desempenho'), 'modo desempenho'] },
-  { id: 'power_restore', phrases: [...both('restaurar', 'restaure', 'o plano de energia'), ...both('desativar', 'desative', 'o alto desempenho'), ...both('voltar', 'volte', 'o plano de energia')] },
-  { id: 'open_app', phrases: [...both('abrir', 'abra', 'o app'), ...both('mostrar', 'mostre', 'o app')] },
-  { id: 'voice_off', phrases: ['parar de ouvir', 'pare de ouvir', ...both('desligar', 'desligue', 'os comandos de voz'), ...both('desligar', 'desligue', 'o comando de voz')] }
-];
-
-const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-
-/** Todas as frases que o reconhecedor aceita, já com a palavra de ativação (pura, testável). */
-function buildPhrases() {
-  const list = [];
-  for (const c of COMMANDS) for (const p of c.phrases) list.push(`${WAKE} ${p}`);
-  return [...new Set(list)];
-}
-
-const LOOKUP = new Map();
-for (const c of COMMANDS) for (const p of c.phrases) LOOKUP.set(norm(`${WAKE} ${p}`), { id: c.id, arg: c.arg || null });
-
-/** Frase reconhecida → comando, ou null. Sem a palavra de ativação, não vale (pura, testável). */
-function parseCommand(text) {
-  return LOOKUP.get(norm(text)) || null;
-}
-
-// Script do reconhecedor: escuta em loop e avisa por linha "@@VOICE@@{json}".
-// Devolve o índice da frase (e não o texto) para não depender da codificação do console.
-function recognizerScript(phrases) {
-  const payload = Buffer.from(JSON.stringify(phrases), 'utf8').toString('base64');
+// Script do reconhecedor: escuta em loop e avisa por linha "@@VOICE@@{json}". O texto vai em base64
+// (para não depender da codificação do console) junto com a etiqueta do comando definida na gramática.
+function recognizerScript(grammarPath) {
+  const p = Buffer.from(grammarPath, 'utf8').toString('base64');
   return `
 $ErrorActionPreference = 'Stop'
 function Out-Voice($o) { [Console]::Out.WriteLine('@@VOICE@@' + ($o | ConvertTo-Json -Compress)); [Console]::Out.Flush() }
@@ -75,25 +32,25 @@ try {
   function Await($op, [Type]$type) { $t = $asTask.MakeGenericMethod($type).Invoke($null, @($op)); $t.Wait(-1) | Out-Null; $t.Result }
   $null = [Windows.Media.SpeechRecognition.SpeechRecognizer, Windows.Media.SpeechRecognition, ContentType = WindowsRuntime]
   $null = [Windows.Globalization.Language, Windows.Globalization, ContentType = WindowsRuntime]
-  $phrases = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${payload}')) | ConvertFrom-Json
-  $index = @{}
-  $list = New-Object 'System.Collections.Generic.List[string]'
-  for ($i = 0; $i -lt $phrases.Count; $i++) { $list.Add($phrases[$i]); $index[$phrases[$i].ToLowerInvariant()] = $i }
+  $null = [Windows.Storage.StorageFile, Windows.Storage, ContentType = WindowsRuntime]
+  $grammarPath = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${p}'))
   try { $rec = New-Object Windows.Media.SpeechRecognition.SpeechRecognizer (New-Object Windows.Globalization.Language '${LANGUAGE}') }
   catch { Out-Voice @{ type = 'error'; code = 'language'; message = $_.Exception.Message }; exit 2 }
-  $constraint = [Windows.Media.SpeechRecognition.SpeechRecognitionListConstraint]::new($list, 'cwu')
+  $file = Await ([Windows.Storage.StorageFile]::GetFileFromPathAsync($grammarPath)) ([Windows.Storage.StorageFile])
+  $constraint = [Windows.Media.SpeechRecognition.SpeechRecognitionGrammarFileConstraint]::new($file, 'cwu')
   [System.Collections.Generic.ICollection[Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint]].GetMethod('Add').Invoke($rec.Constraints, @($constraint))
   $comp = Await ($rec.CompileConstraintsAsync()) ([Windows.Media.SpeechRecognition.SpeechRecognitionCompilationResult])
   if ([string]$comp.Status -ne 'Success') { Out-Voice @{ type = 'error'; code = 'language'; message = [string]$comp.Status }; exit 2 }
   $rec.Timeouts.InitialSilenceTimeout = [TimeSpan]::FromSeconds(30)
-  $rec.Timeouts.EndSilenceTimeout = [TimeSpan]::FromMilliseconds(600)
+  $rec.Timeouts.EndSilenceTimeout = [TimeSpan]::FromMilliseconds(700)
   Out-Voice @{ type = 'ready' }
   while ($true) {
     $r = Await ($rec.RecognizeAsync()) ([Windows.Media.SpeechRecognition.SpeechRecognitionResult])
     $conf = [string]$r.Confidence
     if ([string]$r.Status -eq 'Success' -and $r.Text -and ($conf -eq 'High' -or $conf -eq 'Medium')) {
-      $i = $index[$r.Text.ToLowerInvariant()]
-      if ($i -ne $null) { Out-Voice @{ type = 'heard'; i = $i; confidence = $conf } }
+      $tag = ''
+      try { $props = $r.SemanticInterpretation.Properties; if ($props.ContainsKey('cmd')) { $tag = [string]($props['cmd'] | Select-Object -First 1) } } catch {}
+      Out-Voice @{ type = 'heard'; text = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($r.Text)); tag = $tag; confidence = $conf }
     }
   }
 } catch {
@@ -118,13 +75,14 @@ class VoiceService extends EventEmitter {
     this.child = null;
     this.status = 'off';   // off | starting | listening | error
     this.error = null;
-    this.last = null;      // { phrase, command, reply, at }
-    this.phrases = buildPhrases();
+    this.last = null;      // { phrase, command, reply, ok, at }
     this.buffer = '';
+    this.uiSeq = 0;
+    this.uiQueue = [];     // ações de tela para o app (navegar, analisar, tema…)
   }
 
   snapshot() {
-    return { supported: process.platform === 'win32', status: this.status, error: this.error, last: this.last, wake: 'Ei app' };
+    return { supported: process.platform === 'win32', status: this.status, error: this.error, last: this.last, wake: 'Ei app', uiSeq: this.uiSeq };
   }
 
   setStatus(status, error = null) {
@@ -133,10 +91,30 @@ class VoiceService extends EventEmitter {
     this.emit('state', this.snapshot());
   }
 
+  /** Ação para a janela do app executar (a tela consulta /api/voice/ui). */
+  pushUi(action) {
+    this.uiSeq += 1;
+    this.uiQueue.push({ seq: this.uiSeq, at: Date.now(), ...action });
+    this.uiQueue = this.uiQueue.filter(a => Date.now() - a.at < 60000).slice(-20);
+    return this.uiSeq;
+  }
+
+  uiSince(seq) {
+    return this.uiQueue.filter(a => a.seq > (Number(seq) || 0) && Date.now() - a.at < 60000);
+  }
+
+  grammarFile() {
+    const file = path.join(os.tmpdir(), `cwu-voice-${process.pid}.grxml`);
+    fs.writeFileSync(file, intents.buildGrammar(LANGUAGE), 'utf8');
+    return file;
+  }
+
   start() {
     if (process.platform !== 'win32') return this.snapshot();
     if (this.child) return this.snapshot();
     this.setStatus('starting');
+    let grammar;
+    try { grammar = this.grammarFile(); } catch (e) { this.setStatus('error', ERRORS.failed); return this.snapshot(); }
     const child = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', '-'], { windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     this.child = child;
     this.buffer = '';
@@ -144,11 +122,12 @@ class VoiceService extends EventEmitter {
     child.stderr.on('data', () => {});
     child.on('error', () => { if (this.child === child) { this.child = null; this.setStatus('error', ERRORS.failed); } });
     child.on('exit', () => {
+      try { fs.unlinkSync(grammar); } catch (e) {}
       if (this.child !== child) return;
       this.child = null;
       if (this.status !== 'error') this.setStatus('off');
     });
-    child.stdin.end(recognizerScript(this.phrases));
+    child.stdin.end(recognizerScript(grammar));
     return this.snapshot();
   }
 
@@ -175,13 +154,18 @@ class VoiceService extends EventEmitter {
       try { msg = JSON.parse(line.slice(at + 9)); } catch (e) { continue; }
       if (msg.type === 'ready') this.setStatus('listening');
       else if (msg.type === 'error') this.setStatus('error', ERRORS[msg.code] || ERRORS.failed);
-      else if (msg.type === 'heard') this.onHeard(this.phrases[msg.i]);
+      else if (msg.type === 'heard') {
+        let text = '';
+        try { text = Buffer.from(String(msg.text || ''), 'base64').toString('utf8'); } catch (e) {}
+        this.onHeard({ text, tag: msg.tag });
+      }
     }
   }
 
-  async onHeard(phrase) {
-    const cmd = parseCommand(phrase);
+  async onHeard({ text, tag }) {
+    const cmd = resolveCommand({ text, tag });
     if (!cmd) return;
+    const phrase = String(text || '').replace(/\.\.\./g, '…').trim();
     let result;
     try { result = await require('./voiceCommands').run(cmd, this); }
     catch (e) { result = { ok: false, reply: 'Não consegui executar o comando.' }; }
@@ -194,9 +178,7 @@ class VoiceService extends EventEmitter {
 const instance = new VoiceService();
 process.on('exit', () => { if (instance.child) { try { instance.child.kill(); } catch (e) {} } });
 module.exports = instance;
-module.exports.COMMANDS = COMMANDS;
-module.exports.POSITIONS = POSITIONS;
-module.exports.buildPhrases = buildPhrases;
-module.exports.parseCommand = parseCommand;
+module.exports.VoiceService = VoiceService;
 module.exports.recognizerScript = recognizerScript;
-module.exports.WAKE = WAKE;
+module.exports.resolveCommand = resolveCommand;
+module.exports.parseCommand = intents.parseIntent;
