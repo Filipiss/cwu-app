@@ -48,6 +48,8 @@ Depois de formatar um PC, você perde horas instalando drivers e programas e ca�
 | **Relatório exportável** | ✅ | Baixa um HTML com nota, hardware, drivers com problema e erros dos últimos 30 dias, pronto para enviar a um técnico. |
 | **Atualizações do app** | ✅ | Consulta a última release no GitHub e, na versão instalada, baixa com barra de progresso, velocidade e tempo restante, com pausar, parar e retomar (continua de onde parou). Confere o SHA-512 e aplica com um clique. |
 | **Sobreposição de desempenho (Alt + I)** | ✅ | FPS e 1% low do jogo em primeiro plano (PresentMon, sem injeção), uso e temperatura de CPU/GPU e RAM sobre a tela. Posição fixa ou livre (arrastar), vertical/horizontal, tamanho e transparência ajustáveis. Funciona em tela cheia, janela e janela sem bordas; em tela cheia exclusiva de verdade, o app avisa o que fazer. |
+| **Comandos de voz** | ✅ | Com a escuta ligada (Alt + H), fale "Ei app" e o comando: boost, ligar/desligar e posicionar a sobreposição, plano de energia e mais. Reconhecimento de fala do Windows em português, sem internet. |
+| **Atalhos personalizáveis** | ✅ | Troque os atalhos globais (sobreposição e voz) em Configurações › Preferências; o app confere se o Windows aceita a combinação. |
 | **Ícones ocultos** | ✅ | O X mantém o app na bandeja do Windows, com menu para abrir, ligar a sobreposição ou sair. |
 | **Assistente IA** | ✅ | Chat sobre hardware, software, configurações de jogos e periféricos, com respostas baseadas no hardware lido pelo app (Gemini via Supabase Edge Function; a chave nunca fica no app). |
 | **Minha Conta** | ✅ | Login opcional (Supabase) para montar a sua lista pós-formatação e levá-la para qualquer PC. |

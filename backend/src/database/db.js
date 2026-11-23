@@ -26,6 +26,11 @@ class LocalDatabase {
         closeToTray: true,
         // Abrir sempre como administrador (o app pede a permissão do Windows ao abrir)
         startAsAdmin: false,
+        // Atalhos globais (trocados só pela rota /api/hotkeys, que confere se o Windows aceita)
+        hotkeyOverlay: 'Alt+I',
+        hotkeyVoice: 'Alt+H',
+        // Comandos de voz: responder em voz alta (voz do Windows)
+        voiceReplies: true,
         overlayPosition: 'top-right',
         overlayX: 40,
         overlayY: 40,

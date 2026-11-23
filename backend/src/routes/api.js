@@ -97,6 +97,22 @@ const routes = [
   { method: 'POST', path: '/api/update/pause', handler: (req, res) => res.json({ success: true, data: require('../services/updateDownloader').pause() }) },
   { method: 'POST', path: '/api/update/stop', handler: (req, res) => res.json({ success: true, data: require('../services/updateDownloader').stop() }) },
   { method: 'POST', path: '/api/update/resume', handler: async (req, res) => res.json({ success: true, data: await require('../services/updateDownloader').resume() }) },
+  // Atalhos globais personalizáveis e comandos de voz
+  { method: 'GET', path: '/api/hotkeys', handler: (req, res) => res.json({ success: true, data: require('../utils/hotkeys').list() }) },
+  { method: 'POST', path: '/api/hotkeys/set', handler: (req, res) => {
+    const b = req.body || {};
+    res.json({ success: true, data: require('../utils/hotkeys').set(String(b.id || ''), String(b.accelerator || '')) });
+  } },
+  { method: 'POST', path: '/api/hotkeys/reset', handler: (req, res) => res.json({ success: true, data: require('../utils/hotkeys').reset(String((req.body || {}).id || '')) }) },
+  { method: 'GET', path: '/api/voice/status', handler: (req, res) => res.json({ success: true, data: require('../services/voiceService').snapshot() }) },
+  { method: 'POST', path: '/api/voice/toggle', handler: (req, res) => {
+    // No app, o Electron liga/desliga (e avisa na tela); sem ele, o próprio serviço alterna
+    const db = require('../database/db');
+    const voice = require('../services/voiceService');
+    if (db.events.listenerCount('voice-toggle') > 0) db.events.emit('voice-toggle');
+    else voice.toggle();
+    res.json({ success: true, data: voice.snapshot() });
+  } },
   { method: 'POST', path: '/api/update/install', handler: (req, res) => { require('../database/db').events.emit('update-install'); res.json({ success: true }); } },
   // Voltar para uma versão anterior (lista vem do GitHub; quem instala é o Electron)
   { method: 'GET', path: '/api/update/versions', handler: async (req, res) => {

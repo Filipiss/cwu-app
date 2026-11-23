@@ -18,6 +18,7 @@ class SettingsController {
       const newSettings = {};
       for (const [key, value] of Object.entries(input).slice(0, 40)) {
         if (!/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/.test(key)) continue;
+        if (/^hotkey/.test(key)) continue; // atalhos: só pela rota /api/hotkeys
         if (['string', 'boolean', 'number'].includes(typeof value)) {
           newSettings[key] = typeof value === 'string' ? value.slice(0, 200) : value;
         }

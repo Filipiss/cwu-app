@@ -36,6 +36,7 @@ const App = {
     ProcessesModule.init();
     CompetitiveModule.init();
     DisksModule.init();
+    HotkeysModule.init();
     PerfModule.init();
     SecurityModule.init();
     document.getElementById('btn-export-report')?.addEventListener('click', () => {

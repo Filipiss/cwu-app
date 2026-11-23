@@ -14,10 +14,11 @@ require('./server.js');
 const db = require('./src/database/db');
 const { overlayBounds } = require('./src/utils/overlayLayout');
 const updateState = require('./src/utils/updateState');
+const hotkeys = require('./src/utils/hotkeys');
+const voice = require('./src/services/voiceService');
 
 const APP_ORIGIN = 'http://127.0.0.1:4321';
 const APP_ID = 'com.cwuapp.utility'; // mesmo appId do package.json
-const OVERLAY_HOTKEY = 'Alt+I';
 const ICON = path.join(__dirname, 'build', 'icon.png');
 
 // Só abre no navegador links web; bloqueia file://, ms-settings: forjados, etc.
@@ -91,7 +92,7 @@ function createWindow() {
       tray.displayBalloon({
         iconType: 'info',
         title: 'CWU App continua aberto',
-        content: `Ele ficou nos ícones ocultos da barra de tarefas. Use ${OVERLAY_HOTKEY} para mostrar a sobreposição de desempenho.`
+        content: `Ele ficou nos ícones ocultos da barra de tarefas. Use ${hotkeys.current('overlay')} para mostrar a sobreposição de desempenho.`
       });
     }
   });
@@ -146,10 +147,16 @@ function refreshTrayMenu() {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Abrir CWU App', click: showMainWindow },
     {
-      label: `Sobreposição de desempenho (${OVERLAY_HOTKEY})`,
+      label: `Sobreposição de desempenho (${hotkeys.current('overlay')})`,
       type: 'checkbox',
       checked: Boolean(overlayWindow && overlayWindow.isVisible()),
       click: toggleOverlay
+    },
+    {
+      label: `Comandos de voz: "Ei app" (${hotkeys.current('voice')})`,
+      type: 'checkbox',
+      checked: voice.status === 'listening' || voice.status === 'starting',
+      click: toggleVoice
     },
     { type: 'separator' },
     { label: 'Sair', click: quitApp }
@@ -243,6 +250,68 @@ function toggleOverlay() {
     keepOverlayOnTop(true);
   }
   refreshTrayMenu();
+}
+
+function setOverlayVisible(visible) {
+  const isVisible = Boolean(overlayWindow && overlayWindow.isVisible());
+  if (Boolean(visible) !== isVisible || (visible && overlayEditing)) toggleOverlay();
+  else if (visible) positionOverlay();
+}
+
+// ===== Atalhos globais (personalizáveis em Configurações › Preferências) =====
+const HOTKEY_ACTIONS = { overlay: () => toggleOverlay(), voice: () => toggleVoice() };
+const activeHotkeys = {}; // id -> atalho registrado agora
+
+function applyHotkey(id, accelerator) {
+  const prev = activeHotkeys[id];
+  if (prev) { try { globalShortcut.unregister(prev); } catch (e) {} }
+  let ok = false;
+  try { ok = globalShortcut.register(accelerator, HOTKEY_ACTIONS[id]); } catch (e) { ok = false; }
+  if (ok) {
+    activeHotkeys[id] = accelerator;
+  } else if (prev) {
+    // Não deu: volta o atalho anterior
+    try { globalShortcut.register(prev, HOTKEY_ACTIONS[id]); } catch (e) {}
+  }
+  hotkeys.setRegistered(id, ok || Boolean(prev));
+  refreshTrayMenu();
+  return ok;
+}
+
+function registerHotkeys() {
+  hotkeys.setImpl({ apply: applyHotkey });
+  for (const id of Object.keys(hotkeys.HOTKEYS)) {
+    const acc = hotkeys.current(id);
+    if (!applyHotkey(id, acc)) {
+      hotkeys.setRegistered(id, false);
+      console.warn(`[atalho] ${acc} em uso por outro programa`);
+    }
+  }
+}
+
+// ===== Comandos de voz =====
+// Liga e desliga a escuta. A resposta de cada comando aparece como notificação e, se a opção
+// estiver ligada, é falada pela voz do Windows.
+function toggleVoice() {
+  const st = voice.toggle();
+  const on = st.status === 'starting' || st.status === 'listening';
+  voiceFeedback({ text: on ? 'Comandos de voz ligados. Fale "Ei app" e o comando.' : 'Comandos de voz desligados.', ok: true, short: on ? 'Comandos de voz ligados.' : 'Comandos de voz desligados.' });
+}
+
+function speak(text) {
+  if (!settings().voiceReplies || process.platform !== 'win32') return;
+  const b64 = Buffer.from(String(text).slice(0, 200), 'utf8').toString('base64');
+  require('./src/utils/powershell').runPowerShell(`
+Add-Type -AssemblyName System.Speech
+$s = New-Object System.Speech.Synthesis.SpeechSynthesizer
+$v = $s.GetInstalledVoices() | Where-Object { $_.VoiceInfo.Culture.Name -eq 'pt-BR' } | Select-Object -First 1
+if ($v) { $s.SelectVoice($v.VoiceInfo.Name) }
+$s.Speak([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}')))`, 15000).catch(() => {});
+}
+
+function voiceFeedback({ text, ok, short }) {
+  speak(short || text);
+  if (Notification.isSupported()) new Notification({ title: ok === false ? 'CWU App: comando não executado' : 'CWU App', body: text, icon: ICON, silent: true }).show();
 }
 
 // Modo de posicionamento: a caixa vira arrastável até o usuário salvar (Enter) ou cancelar (Esc)
@@ -361,9 +430,15 @@ if (!gotTheLock) {
     cleanupDownloadedInstallers();
     createWindow();
     createTray();
-    if (!globalShortcut.register(OVERLAY_HOTKEY, toggleOverlay)) {
-      console.warn(`[overlay] Atalho ${OVERLAY_HOTKEY} em uso por outro programa`);
-    }
+    registerHotkeys();
+    db.events.on('overlay-set', setOverlayVisible);
+    db.events.on('show-main-window', showMainWindow);
+    db.events.on('voice-feedback', voiceFeedback);
+    db.events.on('voice-toggle', toggleVoice);
+    voice.on('state', (st) => {
+      refreshTrayMenu();
+      if (st.status === 'error' && st.error) voiceFeedback({ text: st.error, ok: false, short: 'Os comandos de voz pararam. Veja o motivo no app.' });
+    });
     // Configurações alteradas no app: a sobreposição relê sozinha; aqui só reposiciona
     db.events.on('settings', positionOverlay);
     db.events.on('overlay-toggle', toggleOverlay);
@@ -380,7 +455,7 @@ if (!gotTheLock) {
   });
 
   app.on('before-quit', () => { isQuitting = true; });
-  app.on('will-quit', () => globalShortcut.unregisterAll());
+  app.on('will-quit', () => { globalShortcut.unregisterAll(); voice.stop(); });
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin' && isQuitting) app.quit();

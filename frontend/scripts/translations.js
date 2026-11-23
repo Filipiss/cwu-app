@@ -658,6 +658,26 @@ window.CWU_TRANSLATIONS = {
     "Este PC usa Modern Standby e o Windows não deixou mudar o Modo de energia. Nada foi alterado. Mude manualmente em Configurações › Sistema › Energia › Modo de energia › Melhor desempenho.": "This PC uses Modern Standby and Windows did not allow changing the power mode. Nothing was changed. Change it manually in Settings › System › Power › Power mode › Best performance.",
     "Permissão de administrador": "Administrator permission",
     "Sempre iniciar o CWU App como administrador": "Always start CWU App as administrator",
-    "Ao abrir, o Windows pede a permissão de administrador. Assim o FPS da sobreposição, a vida útil dos discos e os ajustes do sistema funcionam sem precisar clicar em \"Reiniciar como administrador\". Se você negar, o app abre normalmente. Vale a partir da próxima vez que o app abrir.": "When opening, Windows asks for administrator permission. This way the overlay FPS, drive health and system tweaks work without clicking \"Restart as administrator\". If you decline, the app opens normally. Takes effect the next time the app opens."
+    "Ao abrir, o Windows pede a permissão de administrador. Assim o FPS da sobreposição, a vida útil dos discos e os ajustes do sistema funcionam sem precisar clicar em \"Reiniciar como administrador\". Se você negar, o app abre normalmente. Vale a partir da próxima vez que o app abrir.": "When opening, Windows asks for administrator permission. This way the overlay FPS, drive health and system tweaks work without clicking \"Restart as administrator\". If you decline, the app opens normally. Takes effect the next time the app opens.",
+    "Atalhos": "Shortcuts",
+    "Funcionam em qualquer lugar, até com um jogo aberto. Clique em \"Alterar\" e pressione a nova combinação (Ctrl, Alt ou Win junto com outra tecla).": "They work anywhere, even with a game open. Click \"Change\" and press the new combination (Ctrl, Alt or Win together with another key).",
+    "Carregando atalhos…": "Loading shortcuts…",
+    "Alterar": "Change",
+    "Padrão": "Default",
+    "Mostrar ou esconder a sobreposição de desempenho": "Show or hide the performance overlay",
+    "Ligar ou desligar os comandos de voz": "Turn voice commands on or off",
+    "Pressione o novo atalho… (Esc cancela)": "Press the new shortcut… (Esc cancels)",
+    "Em uso por outro programa: escolha outro atalho.": "In use by another program: choose another shortcut.",
+    "Use Ctrl, Alt ou Win junto com uma letra, número ou tecla F.": "Use Ctrl, Alt or Win together with a letter, number or F key.",
+    "Comandos de voz": "Voice commands",
+    "Desligado": "Off",
+    "Ligando…": "Starting…",
+    "Ouvindo": "Listening",
+    "Erro": "Error",
+    "Ligar comandos de voz": "Turn on voice commands",
+    "Desligar comandos de voz": "Turn off voice commands",
+    "Responder em voz alta": "Reply out loud",
+    "O app confirma cada comando falando (voz do Windows), além do aviso na tela.": "The app confirms each command by speaking (Windows voice), besides the on-screen notice.",
+    "Exemplos": "Examples"
   }
 };

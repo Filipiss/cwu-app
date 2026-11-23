@@ -281,3 +281,17 @@
   background: color-mix(in srgb, var(--color-text-primary) 5%, var(--color-bg-card));
   font: 600 0.78em/1.5 ui-monospace, Consolas, monospace; color: var(--color-text-primary);
 }
+
+/* Atalhos e comandos de voz (Configurações › Preferências) */
+.c-hotkeys { display: flex; flex-direction: column; margin-top: var(--spacing-sm); }
+.c-hotkey-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--color-border); font-size: 0.9rem; }
+.c-hotkey-row__text { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 2px; }
+.c-hotkey-row__warn { color: var(--color-warning); }
+.c-hotkey-row__keys { display: flex; align-items: center; gap: 4px; }
+.c-hotkey-row__capture { font-size: 0.82rem; color: var(--color-primary); }
+.c-hotkey-row__actions { display: flex; gap: 6px; }
+.c-kbd { display: inline-block; min-width: 26px; padding: 2px 8px; border: 1px solid var(--color-border); border-bottom-width: 2px; border-radius: 6px; font: 600 0.8rem/1.4 inherit; text-align: center; color: var(--color-text-primary); background: var(--color-bg-elevated, transparent); }
+.c-kbd__plus { color: var(--color-text-muted); font-size: 0.8rem; }
+.c-voice__error { color: var(--color-danger); }
+.c-voice__help { margin-top: var(--spacing-sm); font-size: 0.85rem; color: var(--color-text-secondary); }
+.c-voice__help ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.6; }

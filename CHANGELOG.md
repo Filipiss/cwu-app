@@ -2,6 +2,12 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Adicionado
+- Comandos de voz: com a escuta ligada (atalho Alt + H), fale "Ei app" e o comando, como "execute o boost", "ligue a sobreposição", "alinhe a sobreposição à direita superior" ou "ative o alto desempenho". Usa o reconhecimento de fala do próprio Windows, em português e sem internet; o áudio não sai do PC. O app confirma na tela e, se quiser, em voz alta
+- Atalhos personalizáveis em Configurações › Preferências: troque o atalho da sobreposição e o dos comandos de voz. O app só aceita combinações que o Windows deixa usar (não em uso por outro programa)
+
 ## [1.3.2] - 2026-11-22
 
 ### Adicionado
